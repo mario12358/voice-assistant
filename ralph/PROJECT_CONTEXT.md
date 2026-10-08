@@ -26,6 +26,7 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 | 2026-10-08 | 📌 Aplikacja wyłącznie na macOS, instalowana z .dmg; Windows/Linux poza zakresem | decyzja właściciela |
 | 2026-10-08 | 📌 Specky (projekt 01M4EJNFTHDZ3ECMHT7425APR0) jest jedynym źródłem wymagań; `wymagania.md` to tylko wsad importu | decyzja właściciela |
 | 2026-10-08 | 📌 Model rozpoznawania mowy tylko na GPU (Metal), bez fallbacku CPU | spec/WYTYCZNE_TECHNICZNE.md |
+| 2026-10-08 | 📌 Model large-v3-turbo NIE jest w instalatorze; aplikacja pobiera go po instalacji do ~/Library/Application Support/VoiceAsystent/models/ (VA-MODEL-1) | decyzja właściciela: mały .dmg |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -55,4 +56,4 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 
 - Ostatnie ukończone zadanie: brak (plan przepisany pod macOS 2026-10-08)
 - Następne zadanie: 1.1
-- Blokery: brak toolchainu Rust (od 1.2); 11 wymagań czeka na akceptację w Specky (kotwice)
+- Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)

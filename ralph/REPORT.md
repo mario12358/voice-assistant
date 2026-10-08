@@ -14,8 +14,8 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: Zablokowany częściowo (patrz ralph/BLOCKED.md): brak Rust, wymagania czekają na akceptację w Specky
-- **Postęp**: 0/45 pozycji ukończonych (plan przepisany pod macOS)
+- **Status**: W trakcie
+- **Postęp**: 0/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta, 0 wymagań w projekcie.
 
 ## Stan testów
@@ -93,3 +93,4 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 <!-- Listy zmienionych plików NIE prowadzimy — git zna ją lepiej: git log --stat -->
 - [2026-10-08] Start sesji: PLAN (Linux/CUDA, LLM, TTS) przeczy wymagania.md (macOS, schowek, pasek menu). Specky pusty, brak repo git i toolchainu Rust. RALPH BLOCKED, czekam na decyzję właściciela.
 - [2026-10-08] Odpowiedź właściciela: tylko macOS + .dmg, Specky jedynym źródłem wymagań, git z origin gotowy. Plan przepisany, 11 wymagań zaproponowanych w Specky (wsad 01M4EK43A6GBPR63H0FV0VBCV0). Zostało: instalacja Rust, akceptacja wymagań.
+- [2026-10-08] Blokada rozwiązana: Rust 1.99 zainstalowany, wsad 11 wymagań zaakceptowany, kotwice w planie. Model pobierany po instalacji: dodano 5.6 i propozycję VA-MODEL-1 w Specky.
