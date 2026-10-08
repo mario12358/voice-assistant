@@ -73,11 +73,11 @@
 
 ### Faza 3: Transkrypcja — Whisper large-v3-turbo na Metal
 
-- [ ] Zadanie 3.1: Weryfikacja GPU Metal przy starcie (obecność urządzenia Metal, build z feature `metal`); brak → komunikat „Wymagane GPU (Metal) — praca na CPU nie jest wspierana", transkrypcja zablokowana (wymaga: 1.2) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-2] (pr: #5)
+- [x] Zadanie 3.1: Weryfikacja GPU Metal przy starcie (obecność urządzenia Metal, build z feature `metal`); brak → komunikat „Wymagane GPU (Metal) — praca na CPU nie jest wspierana", transkrypcja zablokowana (wymaga: 1.2) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-2] (pr: #5)
   - Specky: (req: 01M4EKHCM2WDGKPH824D8532JD v1 @5e21e03)
   - AC: brak Metal → komunikat i brak wywołania STT na CPU
   - AC: wejście — start aplikacji i `va-dev transcribe`
-- [ ] Test: 3.1 — logika decyzji (brak GPU / OK) na wstrzykniętych danych o urządzeniu (pr: #5)
+- [x] Test: 3.1 — logika decyzji (brak GPU / OK) na wstrzykniętych danych o urządzeniu (pr: #5)
 - [ ] Zadanie 3.2: Crate model: pobieranie GGML large-v3-turbo z Hugging Face do `~/Library/Application Support/VoiceAsystent/models/` (wznawianie przez HTTP Range, postęp przez callback, weryfikacja SHA-256, plik `.part` → atomowa zmiana nazwy); sprawdzenie obecności i sumy przy starcie; `va-dev model-download` (wymaga: 1.3) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-1, VA-MODEL-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - AC: zła suma SHA-256 → plik usunięty, błąd; ponowna próba możliwa
