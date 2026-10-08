@@ -43,3 +43,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: W trakcie pracy właściciel poprosił o zatrzymanie po bieżącym zadaniu z planu.
 **Ustalenie**: Zadanie 2.2 zostało dokończone i zacommitowane, potem praca stanęła. Następne do zrobienia jest 2.3 (przycinanie ciszy).
 **Wpływ**: Faza 2
+
+## 2026-10-08 23:10 — code_ready dla VA-PLAT-1 i VA-TECH-1
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel w trakcie zadania 2.3 poprosił o ustawienie w Specky statusu code_ready dla VA-PLAT-1 i VA-TECH-1.
+**Ustalenie**: Ustawiono code_ready dla obu wymagań (odcisk treści v1 z get_requirement). Faza 1 (szkielet macOS-only, workspace Cargo) je realizuje; status done ustala właściciel.
+**Wpływ**: Specky — VA-PLAT-1, VA-TECH-1
