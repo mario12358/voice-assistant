@@ -3,10 +3,12 @@
 pub mod convert;
 mod devices;
 mod recorder;
+pub mod silence;
 
 pub use convert::TARGET_SAMPLE_RATE;
 pub use devices::{AudioHost, CpalHost, DeviceChoice, InputDevice, choose_device};
 pub use recorder::{CpalRecorder, Recorder};
+pub use silence::{SilenceParams, speech_bounds, trim_silence};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

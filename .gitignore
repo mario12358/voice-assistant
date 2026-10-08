@@ -11,3 +11,4 @@ models/
 ralph/PERMISSIONS.jsonl
 ralph/KONTROLE.jsonl
 .claude/settings.local.json
+__pycache__/
