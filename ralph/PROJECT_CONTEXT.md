@@ -50,6 +50,8 @@ Konwencje:
 | 2026-10-08 | 📌 Wątek główny = pętla tao (tray-icon, global-hotkey); logika w `va-core` bez zależności od GUI, testowalna na wstrzykniętych zdarzeniach | wymóg AppKit + testowalność |
 | 2026-10-08 | Skróty przez global-hotkey (Carbon RegisterEventHotKey) — nie wymaga uprawnienia Dostępność | prostsza instalacja |
 | 2026-10-08 | Lewe kliknięcie ikony = start/stop, menu (mikrofon, zakończ) pod prawym kliknięciem | VA-UI-2 + VA-REC-4 bez konfliktu |
+| 2026-10-08 | Logi: JSON do dziennego pliku `~/Library/Logs/VoiceAsystent/voice-asystent.log.*` + tekst na stderr, spany z czasem (FmtSpan::CLOSE); bez OTLP/eksportu — aplikacja lokalna, po pobraniu modelu zero ruchu sieciowego | odstępstwo od observability.md uzasadnione VA-MODEL-1 |
+| 2026-10-08 | 📌 Treść transkrypcji logujemy tylko przez `va_core::logging::transcription_finished` (debug); na info tylko długość i czas | prywatność |
 | 2026-10-08 | Język transkrypcji domyślnie `auto` (konfigurowalny pl/en) | wymagania nie określają języka |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
@@ -82,6 +84,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 1.3 (konfiguracja TOML)
-- Następne zadanie: 1.4
+- Ostatnie ukończone zadanie: 1.4 (logowanie) — Faza 1 zamknięta, tag ralph/faza-1
+- Następne zadanie: 2.1
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)

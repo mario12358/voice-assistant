@@ -46,10 +46,10 @@
   - AC: zapis wyboru mikrofonu i ponowny odczyt zwraca tę samą wartość
   - AC: wejście — start aplikacji (odczyt) i wybór mikrofonu w menu z 5.3 (zapis)
 - [x] Test: 1.3 — parsowanie pełnego/pustego/błędnego pliku, zapis i odczyt w katalogu tymczasowym
-- [ ] Zadanie 1.4: Logowanie `tracing` do `~/Library/Logs/VoiceAsystent/` (rotacja dzienna) i stderr; spany na etapach nagranie/transkrypcja z czasem; treść transkrypcji tylko na poziomie debug; audio nie trafia na dysk (wymaga: 1.2) (tech: observability) [VA-STT-1]
+- [x] Zadanie 1.4: Logowanie `tracing` do `~/Library/Logs/VoiceAsystent/` (rotacja dzienna) i stderr; spany na etapach nagranie/transkrypcja z czasem; treść transkrypcji tylko na poziomie debug; audio nie trafia na dysk (wymaga: 1.2) (tech: observability) [VA-STT-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - AC: domyślny poziom info nie loguje treści transkrypcji
-- [ ] Test: 1.4 — przechwycenie logów: treść transkrypcji nieobecna na poziomie info
+- [x] Test: 1.4 — przechwycenie logów: treść transkrypcji nieobecna na poziomie info
 
 ### Faza 2: Audio — mikrofony, nagrywanie, cisza
 

@@ -15,7 +15,7 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 5/47 pozycji ukończonych
+- **Postęp**: 7/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta; 11 wymagań zaakceptowanych, VA-MODEL-1 czeka na decyzję.
 
 ## Stan testów
@@ -33,13 +33,15 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Regresja po Fazie 1 (2026-10-08) — ZIELONA:** `cargo test --workspace -- --include-ignored` 17/0 (0 ignored), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Tag `ralph/faza-1`.
+
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 14 |
-| Pass | 14 |
+| Łącznie testów | 17 |
+| Pass | 17 |
 | Fail | 0 |
 | Skip | 0 |
-| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace) |
+| Ostatnie uruchomienie | 2026-10-08 (pełny suite po Fazie 1) |
 
 ## Historia realizacji
 
@@ -47,7 +49,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 |---------|--------|-------|-------|--------|------|
 | 1.1 Architektura i konwencje | ✅ | n/d (dokument) | 1 | dd3d2cc | 2026-10-08 |
 | 1.2 Workspace Cargo + test 1.2 | ✅ | 2/0 | 1 | 70a8fe2 | 2026-10-08 |
-| 1.3 Konfiguracja TOML + test 1.3 (`va-dev config`, start aplikacji) | ✅ | 14/0, mutacja numeru linii czerwona | 1 | (ten commit) | 2026-10-08 |
+| 1.3 Konfiguracja TOML + test 1.3 (`va-dev config`, start aplikacji) | ✅ | 14/0, mutacja numeru linii czerwona | 1 | 99d8692 | 2026-10-08 |
+| 1.4 Logowanie tracing + test 1.4 | ✅ | 17/0, mutacja info→treść czerwona | 1 | (ten commit) | 2026-10-08 |
 
 ## Historia zmian
 

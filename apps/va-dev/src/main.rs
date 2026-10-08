@@ -6,11 +6,15 @@ use std::path::PathBuf;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use va_config::{Config, Paths};
+use va_core::logging::{self, LogOptions};
 
 /// Narzędzia deweloperskie VoiceAsystent.
 #[derive(Parser)]
 #[command(name = "va-dev", version, about)]
 struct Cli {
+    /// Więcej logów na stderr (-v debug, -vv trace).
+    #[arg(short, long, action = clap::ArgAction::Count, global = true)]
+    verbose: u8,
     #[command(subcommand)]
     command: Option<Command>,
 }
@@ -26,7 +30,12 @@ enum Command {
 }
 
 fn main() -> anyhow::Result<()> {
-    match Cli::parse().command {
+    let cli = Cli::parse();
+    let _log_guard = logging::init(&LogOptions {
+        logs_dir: None,
+        verbosity: cli.verbose,
+    });
+    match cli.command {
         Some(Command::Config { file }) => show_config(file),
         None => Ok(()),
     }
