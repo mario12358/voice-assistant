@@ -1,0 +1,58 @@
+# Źródło: Specky plugin/templates/specky-ci.yml (Specky v0.32.0) — kopia w Ralphie.
+# Kontrakt ze Specky — TYLKO te dwie rzeczy muszą się zgadzać:
+#   - artefakt z raportami JUnit XML ma w nazwie "junit"
+#   - pokaz kryterium (nagranie/zrzut) to artefakt "specky-demo-<criterion_id>"
+# Reszta (język, komendy testów, kroki) jest per projekt — Ralph dopasowuje ten plik
+# do stacku w zadaniu 1.1 (szkielet), zachowując oba punkty kontraktu.
+#
+# Specky czyta raport JUnit z tego workflow i przy każdym kryterium oznaczonym w kodzie
+# komentarzem `specky: crit <criterion_id>` (linia nad testem) pokazuje na PR ✅/❌.
+# Nazwa joba ("test") jest jednym z "Wymaganych checków" w ralph/config.md.
+
+name: test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: macos-latest          # projekt buduje się wyłącznie na macOS (compile_error! poza nim)
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Rust (workspace, macOS) ------------------------------------------------
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@nextest
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      # Testy z raportem JUnit (profil "ci" w .config/nextest.toml). Raport kopiowany także
+      # przy czerwonych testach — Specky ma widzieć, które kryterium padło. Testy #[ignore]
+      # (wymagają mikrofonu) nie są uruchamiane, jak lokalnie.
+      - run: |
+          mkdir -p reports
+          status=0
+          cargo nextest run --workspace --profile ci || status=$?
+          cp target/nextest/ci/junit.xml reports/junit.xml || true
+          exit $status
+
+      # --- Kontrakt 1: raport JUnit jako artefakt z "junit" w nazwie ---------------
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-reports
+          path: reports/*.xml
+          if-no-files-found: error
+
+      # --- Kontrakt 2 (opcjonalny): pokaz kryterium ------------------------------
+      # Nagranie/zrzut dla kryterium → artefakt "specky-demo-<criterion_id>"
+      # (np. wideo Playwright z artifacts/flows/ — sekcja 0.5 instrukcji Ralpha).
+      # - uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: specky-demo-<criterion_id>
+      #     path: artifacts/flows/krok-N-*.webm

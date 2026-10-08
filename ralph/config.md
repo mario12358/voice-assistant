@@ -15,17 +15,17 @@
   <!-- nie po całej fazie). Np. testy ukończonych modułów. Małe projekty: pełny suite.       -->
   <!-- "brak" = pomiń (tylko testy zadania + pełny suite po fazie).                           -->
 - **Pełny suite po**: każdej fazie
-- **Linter/formatter**: cargo clippy --workspace --all-targets -- -D warnings; cargo fmt --all --check
-- **Komenda typów**: brak
+- **Linter/formatter**: `cargo clippy --workspace --all-targets -- -D warnings` · `cargo fmt --all --check`
+- **Komenda typów**: cargo check --workspace --all-targets
   <!-- Typechecker, np. `mypy src`, `pyright`, `npx tsc --noEmit`. Kontrola lint-typy (## Kontrole)  -->
   <!-- uruchamia linter na zmienionych plikach przy commicie, a typechecker przy fazie.          -->
   <!-- "brak" = bez typecheckera.                                                               -->
-- **Linter przed commit**: nie
+- **Linter przed commit**: tak
 
 ## Git
 
 - **Auto-commit**: tak
-- **Auto-push**: nie
+- **Auto-push**: tak
 - **Strategia branchy**: brak (commit na bieżący branch)
 - **Ignoruj przy commit**: `.env`, `.env.*`, `*.log`, `*.tmp`, `node_modules/`, `__pycache__/`, `.DS_Store`, `*.sqlite`, `artifacts/`, `ralph/PERMISSIONS.jsonl`, `ralph/KONTROLE.jsonl`
   <!-- Wzorce w backtickach CELOWO — lintery markdown zamieniają gołe *.log / __pycache__ -->
@@ -39,11 +39,11 @@
 <!-- i zmienia definicję "zadanie zrobione". Kreator: ./ralph-start.sh --integracje <proj> -->
 <!-- (uruchamia się też sam przy pierwszym utworzeniu config.md).                          -->
 
-- **Repozytorium**: brak
+- **Repozytorium**: github
   <!-- brak | github. Integracja z repozytorium = gałąź per zadanie + PR + merge;          -->
   <!-- zadanie jest zamknięte po MERGE, nie po otwarciu PR. Wymaga: gh (GitHub CLI)        -->
   <!-- zalogowanego, `Auto-push: tak` w ## Git. Ralph nigdy nie pushuje na main.           -->
-- **Repo**:
+- **Repo**: mario12358/voice-assistant
   <!-- owner/nazwa na GitHubie — kreator wykrywa z `git remote get-url origin` -->
 - **Merge**: agent
   <!-- auto   = GitHub auto-merge (`gh pr merge --auto --squash`); wymaga repo publicznego  -->
@@ -53,7 +53,7 @@
   <!--          "merge tylko przy zielonych wymaganych checkach" pilnuje sędzia uprawnień  -->
   <!--          (własne `gh pr checks` przed każdym merge), nie instrukcja.                -->
   <!-- ręczny = PR czeka na człowieka; liczy się do limitu otwartych PR.                   -->
-- **Wymagane checki**: brak
+- **Wymagane checki**: Specky contract check, test, Ralph: kontrole (lokalnie)
   <!-- Nazwy checków po przecinku, np. "Specky contract check, test". W trybie agent       -->
   <!-- lista NIE może być pusta — agent bez listy nie ma na co czekać.                     -->
 - **Limit otwartych PR**: 3
@@ -89,7 +89,7 @@
 <!-- Fałszywy alarm → wyjątek po odcisku w ralph/KONTROLE_WYJATKI.md — wpisuje człowiek;  -->
 <!-- zapis do tego pliku, do modułów i do tej sekcji zawsze pyta człowieka.               -->
 
-- **Włączone**: nie
+- **Włączone**: tak
   <!-- tak = hook PreToolUse + moduły kopiowane do ralph-kontrole/ przy starcie -->
 - **Status na PR**: tak
   <!-- Przy integracji z repozytorium (sekcja Integracje → Repozytorium: github): po każdym pushu -->
@@ -101,12 +101,14 @@
   <!-- nie = nic nie jest wysyłane.                                                             -->
 
 ### sekrety
-- **Kiedy**: commit, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- klucze w znanych formatach, pliki .env/*.pem; gitleaks, gdy jest w PATH -->
 
 ### oslabienia
+
 - **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
@@ -114,43 +116,49 @@
   <!-- MUTANT w kodzie blokuje zawsze; TLS off / debug / csrf_exempt bez znacznika ostrzega -->
 
 ### zaleznosci
-- **Kiedy**: commit, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- nowy pakiet w package.json / requirements / pyproject / deno.json vs rejestr:      -->
   <!-- nie istnieje (nazwa wymyślona przez model), ma < 7 dni, literówka popularnego → blokuje -->
 
 ### audyt-zaleznosci
-- **Kiedy**: faza, wydanie, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: całość
 - **Przy błędzie**: blokuje
   <!-- podatności z bazy OSV dla wersji z lockfile'i; blokuje krytyczne/wysokie z poprawką  -->
   <!-- w zależnościach produkcyjnych — reszta ostrzega                                     -->
 
 ### testy
-- **Kiedy**: commit, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- .only / fit / skip bez powodu / usunięty plik testu blokują; kod bez testu w commicie,  -->
   <!-- test zmieniony razem z kodem, który sprawdza, test bez asercji — ostrzegają           -->
 
 ### higiena
-- **Kiedy**: commit, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- katalogi budowania (dist/, node_modules/, __pycache__/…), plik > 5 MB, manifest        -->
   <!-- zmieniony bez lockfile'a → blokują; wersje pływające, binaria w kodzie, pliki IDE → ostrzegają -->
 
 ### martwe-wejscie
-- **Kiedy**: faza, wydanie, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: całość
-- **Przy błędzie**: ostrzega
+- **Przy błędzie**: blokuje
   <!-- symbol (funkcja / klasa / trasa / komponent) dodany od ostatniego tagu fazy, do którego   -->
   <!-- poza własnym testem nic się nie odwołuje — mechaniczny strażnik reguły "AC: wejście".    -->
   <!-- Narzędzia: vulture / knip / ts-prune, gdy są; bez nich grep po definicjach. Tylko ostrzega. -->
 
 ### sast
-- **Kiedy**: commit, faza, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- semgrep (p/owasp-top-ten, p/security-audit) na zmienionych plikach; bez semgrepa wzorce  -->
@@ -158,7 +166,8 @@
   <!-- reszta ostrzega. Pliki testów pomijane.                                                   -->
 
 ### lint-typy
-- **Kiedy**: commit, faza, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- Linter z pola "Linter/formatter" i typechecker z "Komenda typów" (## Testy) na            -->
@@ -166,7 +175,8 @@
   <!-- przy fazie. Dodatkowo cudzysłów typograficzny jako ogranicznik stringu — zawsze.          -->
 
 ### intencja
-- **Kiedy**: commit, faza, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- Kod vs mapa powierzchni ataku ralph/BEZPIECZENSTWO.md (szkielet zakłada ralph-start.sh): -->
@@ -175,7 +185,8 @@
   <!-- blob base64 — ostrzegają. Projekt bez tras HTTP: cisza.                                  -->
 
 ### red-team
-- **Kiedy**: faza, wydanie, ci
+
+- **Kiedy**: commit, faza, wydanie, ci
 - **Zakres**: zmienione
 - **Przy błędzie**: blokuje
   <!-- Chroniona trasa zmieniona w fazie musi mieć test ze znacznikiem                          -->
@@ -461,6 +472,30 @@
   <!-- nie = wpisy zostają dokładnie takie, jak zatwierdzono                             -->
 
 - **Dozwolone komendy**:
+  - mcp__plugin_specky_specky
+  - mcp__claude_ai_Specky
+  - Bash(gh pr status:*)
+  - Bash(gh pr diff:*)
+  - Bash(gh pr checks:*)
+  - Bash(gh pr view:*)
+  - Bash(gh pr list:*)
+  - Bash(gh pr create:*)
+  - Bash(gh repo view:*)
+  - Bash(gh auth status)
+  - Bash(git branch -d:*)
+  - Bash(git branch --list:*)
+  - Bash(git branch --show-current)
+  - Bash(git rev-parse:*)
+  - Bash(git merge-base:*)
+  - Bash(git rebase:*)
+  - Bash(git switch:*)
+  - Bash(git checkout main)
+  - Bash(git checkout -b:*)
+  - Bash(git pull:*)
+  - Bash(git fetch:*)
+  - Bash(git push --force-with-lease origin zadanie-:*)
+  - Bash(git push origin zadanie-:*)
+  - Bash(git push -u origin zadanie-:*)
   - Bash(git add:*)
   - Bash(git commit:*)
   - Bash(git describe:*)
@@ -482,4 +517,3 @@
   - Bash(git reset --hard:*)
   - Bash(rm -rf:*)
   - Bash(sudo:*)
-

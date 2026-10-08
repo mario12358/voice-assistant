@@ -1,0 +1,6 @@
+# Profil CI: raport JUnit dla Specky (.github/workflows/specky-ci.yml)
+[profile.ci]
+fail-fast = false
+
+[profile.ci.junit]
+path = "junit.xml"
