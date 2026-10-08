@@ -57,8 +57,8 @@ mod tests {
         assert_eq!(ready.device_name, "Apple M2");
     }
 
-    // specky: crit 01M4EKHCMW0ZW9K5GYM7D2NM9H
     #[test]
+    // specky: crit 01M4EKHCMW0ZW9K5GYM7D2NM9H
     fn missing_metal_device_blocks_transcription_with_gpu_message() {
         let error = require_metal(&FakeProbe(None), true).unwrap_err();
 

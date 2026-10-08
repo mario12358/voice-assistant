@@ -1,7 +1,7 @@
 use std::process::Command;
 
-// specky: crit 01M4EKHCMW0ZW9K5GYM7D2NM9H
 #[test]
+// specky: crit 01M4EKHCMW0ZW9K5GYM7D2NM9H
 fn startup_reports_gpu_verdict() {
     let home = tempfile::tempdir().expect("katalog tymczasowy");
 
