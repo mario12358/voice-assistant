@@ -591,13 +591,30 @@ def wczytaj_wyjatki(root):
         return set()
 
 
+# Hook uruchamia Claude Code bez profilu powłoki użytkownika, więc PATH nie ma katalogów
+# instalatorów narzędzi: na voice_asystent clippy, fmt i cargo check przechodziły jako
+# „brak narzędzia”, bo hook nie widział ~/.cargo/bin. Dokładamy istniejące, na końcu —
+# PATH użytkownika (np. wybrana wersja Node) wygrywa.
+KATALOGI_NARZEDZI = ('~/.cargo/bin', '~/.local/bin', '~/go/bin', '~/.deno/bin', '~/.bun/bin',
+                     '~/.volta/bin', '/opt/homebrew/bin', '/usr/local/bin')
+
+
+def sciezka_narzedzi():
+    czesci = [c for c in os.environ.get('PATH', '').split(os.pathsep) if c]
+    for k in KATALOGI_NARZEDZI:
+        d = os.path.expanduser(k)
+        if d not in czesci and os.path.isdir(d):
+            czesci.append(d)
+    return os.pathsep.join(czesci)
+
+
 def uruchom_kontrole(root, u, punkt, pliki, budzet, od=None):
     """Zwraca (znaleziska, błąd albo None)."""
     uruchom = u['modul'].get('uruchom')
     if not uruchom:
         return [], 'moduł bez pola „uruchom"'
     limit = min(u['limit'] or LIMIT_DOMYSLNY[punkt], max(budzet, 1))
-    env = {**os.environ, 'RALPH_PUNKT': punkt, 'RALPH_ROOT': root}
+    env = {**os.environ, 'RALPH_PUNKT': punkt, 'RALPH_ROOT': root, 'PATH': sciezka_narzedzi()}
     if od:
         env['RALPH_OD'] = od      # punkt odniesienia z `--od` (CI) — moduły liczące „nowe od…" go potrzebują
     try:
