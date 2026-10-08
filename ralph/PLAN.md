@@ -63,10 +63,10 @@
   - AC: wynik zawsze 16 kHz mono f32 niezależnie od formatu wejścia (44.1/48 kHz, stereo)
   - AC: nagranie nie trafia na dysk
 - [x] Test: 2.2 — konwersja syntetycznego sygnału 48 kHz stereo → 16 kHz mono (długość, częstotliwość tonu zachowana)
-- [ ] Zadanie 2.3: Przycinanie ciszy na początku/końcu nagrania (energetyczny VAD, progi z konfiguracji); nagranie samej ciszy → wynik pusty (wymaga: 2.2) [VA-REC-3]
+- [ ] Zadanie 2.3: Przycinanie ciszy na początku/końcu nagrania (energetyczny VAD, progi z konfiguracji); nagranie samej ciszy → wynik pusty (wymaga: 2.2) [VA-REC-3] (pr: #1)
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
   - AC: nagranie samej ciszy → brak wywołania STT, schowek bez zmian
-- [ ] Test: 2.3 — fixtures WAV (cisza, mowa z ciszą, sama cisza) → oczekiwane granice segmentu
+- [ ] Test: 2.3 — fixtures WAV (cisza, mowa z ciszą, sama cisza) → oczekiwane granice segmentu (pr: #1)
 - [ ] Zadanie 2.4: Komenda `va-dev mic-test [--seconds N] [--save plik.wav]`: lista mikrofonów, nagranie N s, poziom sygnału w terminalu; zapis WAV tylko przy jawnym `--save` (wymaga: 2.2, 2.3)
   - AC: wejście — komenda `va-dev mic-test`
 - [ ] Test: 2.4 — zapis WAV z bufora (hound) i odczyt z powrotem
