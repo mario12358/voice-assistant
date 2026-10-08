@@ -91,5 +91,5 @@ Konwencje:
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
 - Ostatnie ukończone: 3.1 (weryfikacja Metal, PR #5); wersja v0.1.0
-- Następne zadanie: 3.2 (pobieranie modelu) — czeka na decyzję VA-MODEL-1 w Specky
-- Blokery: (1) Specky nie rozpoznaje znaczników `specky: crit` w testach Rusta — ralph/BLOCKED.md; (2) VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
+- Następne zadanie: 3.2 (pobieranie modelu) (VA-MODEL-1 zaakceptowane)
+- Blokery: (1) Specky nie rozpoznaje znaczników `specky: crit` w testach Rusta — ralph/BLOCKED.md

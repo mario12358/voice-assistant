@@ -80,6 +80,7 @@
 - [x] Test: 3.1 — logika decyzji (brak GPU / OK) na wstrzykniętych danych o urządzeniu (pr: #5)
 - [ ] Zadanie 3.2: Crate model: pobieranie GGML large-v3-turbo z Hugging Face do `~/Library/Application Support/VoiceAsystent/models/` (wznawianie przez HTTP Range, postęp przez callback, weryfikacja SHA-256, plik `.part` → atomowa zmiana nazwy); sprawdzenie obecności i sumy przy starcie; `va-dev model-download` (wymaga: 1.3) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-1, VA-MODEL-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
+  - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: zła suma SHA-256 → plik usunięty, błąd; ponowna próba możliwa
   - AC: przerwane pobieranie wznawiane od miejsca przerwania; istniejący poprawny model → brak pobierania
   - AC: wejście — `va-dev model-download` i start aplikacji bez modelu (5.6)
@@ -142,6 +143,7 @@
   - AC: wejście — próba Start bez uprawnienia; start aplikacji bez modelu/GPU
 - [ ] Test: 5.5 — mapowanie błędów (brak uprawnienia, brak modelu, brak GPU) na komunikaty (bez GUI)
 - [ ] Zadanie 5.6: Pobieranie modelu po instalacji: przy starcie bez modelu aplikacja w tle pobiera go (3.2), postęp w menu („Pobieranie modelu… 42%”) i podpowiedzi ikony; Start w tym czasie → komunikat zamiast nagrania; błąd → pozycja menu „Ponów pobieranie”; po pobraniu ładowanie STT (wymaga: 3.2, 4.3, 5.5) [VA-MODEL-1]
+  - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: wejście — pierwsze uruchomienie aplikacji bez modelu
   - AC: po pobraniu aplikacja nie wykonuje ruchu sieciowego
 - [ ] Test: 5.6 — automat stanów pobierania (brak → pobieranie → gotowy / błąd → ponów) z mockiem pobierania; Start podczas pobierania odrzucony
@@ -150,6 +152,7 @@
 
 - [ ] Zadanie 6.1: Bundle VoiceAsystent.app: Info.plist (CFBundleIdentifier, LSUIElement=true, NSMicrophoneUsageDescription po polsku, LSMinimumSystemVersion), ikona aplikacji, bez modelu (pobierany po instalacji — 5.6), podpis ad-hoc (`codesign -s -`); skrypt `scripts/build-app.sh` (release, `--features metal`) (wymaga: 5.6) [VA-PLAT-2, VA-MODEL-1]
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
+  - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: `scripts/build-app.sh` tworzy `dist/VoiceAsystent.app`, która uruchamia się z Findera i pokazuje ikonę w pasku menu
 - [ ] Test: 6.1 — walidacja wygenerowanego Info.plist (`plutil -lint`) i struktury bundla w teście skryptu
 - [ ] Zadanie 6.2: Skrypt `scripts/build-dmg.sh`: obraz `dist/VoiceAsystent-<wersja>.dmg` (hdiutil) z aplikacją i skrótem do /Applications; wersja z `git describe` (wymaga: 6.1) [VA-PLAT-2]
@@ -174,7 +177,7 @@
 | VA-REC-2 | ctrl+cmd+s stop + transkrypcja | 4.2, 4.3, 5.4 |
 | VA-REC-3 | transkrypcja w schowku, cmd+v | 2.3, 4.1, 4.3 |
 | VA-REC-4 | wybór mikrofonu | 1.3, 2.1, 5.3 |
-| VA-MODEL-1 | model pobierany po instalacji (propozycja czeka na akceptację) | 3.2, 5.6, 6.1, 6.2 |
+| VA-MODEL-1 | model pobierany po instalacji, SHA-256, wznawianie, potem zero ruchu sieciowego | 3.2, 5.6, 6.1, 6.2 |
 | VA-UI-1 | ikona szare/czerwone kółko | 5.1 |
 | VA-UI-2 | klik ikony start/stop | 4.2, 5.2 |
 | spec/APP_FLOW.md, spec/ux_ui/LINKS.md | niewypełnione szablony | poza zakresem |

@@ -73,3 +73,15 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel wybrał PXC 550 jako mikrofon do testów v0.1.0.
 **Ustalenie**: Utworzono ~/Library/Application Support/VoiceAsystent/config.toml z `microphone = "PXC 550"`; `va-dev devices` pokazuje `>` przy PXC 550, pozostałe ustawienia domyślne.
 **Wpływ**: scenariusz 1.2 v0.1.0
+
+## 2026-10-08 23:44 — Wymagania czekające na akceptację w Specky
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel zapytał, czy w Specky są wymagania do zaakceptowania.
+**Ustalenie**: Czeka jedna propozycja: VA-MODEL-1 (model pobierany po instalacji, wsad 01M4EKHX2XBS6ZSPSE9DAV9QFD, zmiana 01M4EKHXE3M2312B7EECQ55EHJ). Od niej zależą 3.2 i 5.6. Brak otwartych pytań i kolizji. Akceptacja na wyraźną prośbę właściciela.
+**Wpływ**: zadania 3.2, 5.6
+
+## 2026-10-08 23:47 — Akceptacja VA-MODEL-1
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel poprosił o zaakceptowanie propozycji VA-MODEL-1 w Specky.
+**Ustalenie**: Zaakceptowano (wymaganie 01M4EQH9D30871ZG5JMWK8VHFV v1, 6 kryteriów: .dmg bez modelu, pobieranie z postępem przy pierwszym starcie, SHA-256 z usunięciem uszkodzonego pliku, wznawianie, komunikat zamiast nagrania przed pobraniem, zero ruchu sieciowego po pobraniu). Kotwice dopisane do 3.2, 5.6, 6.1.
+**Wpływ**: zadania 3.2, 5.6, 6.1, 6.2; ralph/SPECKY.md
