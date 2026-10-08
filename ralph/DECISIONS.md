@@ -105,3 +105,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonej regresji Fazy 3.
 **Ustalenie**: Utworzono wersję v0.2.0 (commit e338ac8): sprawdzanie GPU Metal bez fallbacku CPU, pobieranie modelu z wznawianiem i SHA-256, transkrypcja WAV na GPU (`va-dev transcribe`). Scenariusze w docs/test-scenarios/v0.2.0.md, migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM. Wersja lokalnie do czasu git push origin v0.2.0.
 **Wpływ**: tag v0.2.0, Specky
+
+## 2026-10-09 01:00 — Pauza po zadaniu 4.1
+**Rodzaj**: operacje
+**Pytanie/kontekst**: W trakcie finalizacji 4.1 właściciel poprosił o dokończenie zadania i zatrzymanie pracy.
+**Ustalenie**: Zadanie 4.1 (schowek) zmergowane (PR #13) i odhaczone, praca zatrzymana. Następne do zrobienia jest 4.2 (automat stanów nagrywania).
+**Wpływ**: Faza 4

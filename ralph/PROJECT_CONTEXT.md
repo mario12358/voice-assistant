@@ -95,6 +95,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: Faza 3, wersja v0.2.0; 4.1 (schowek) w PR #13
+- Ostatnie ukończone: 4.1 (schowek, PR #13); wersja v0.2.0
 - Następne zadanie: 4.2 (automat stanów)
 - Blokery: brak
