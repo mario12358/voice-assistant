@@ -57,6 +57,7 @@ Konwencje:
 | 2026-10-08 | Fixtures WAV w `tests/fixtures/` generowane skryptem `generate_silence_fixtures.py` (`say` macOS, 16 kHz mono) — granice mowy znane co do próbki | powtarzalność |
 | 2026-10-08 | Wykrywanie Metal przez objc2-metal (`MTLCreateSystemDefaultDevice`, bezpieczne API, bez `unsafe`); brak urządzenia lub build bez feature `metal` → `Error::GpuUnavailable`/`MetalNotBuilt`, transkrypcja zablokowana, aplikacja działa dalej | VA-STT-2 |
 | 2026-10-08 | 📌 Specky nie czyta znaczników w Ruście (tylko .py/.js/.ts): pracujemy bez dowodów kryteriów z CI; znaczniki `// specky: crit <id>` w testach ZOSTAJĄ (nad `fn`, pod `#[test]`), kryteria właściciel odhacza ręcznie w komentarzu Specky na PR; „brak testu” w tym komentarzu nie jest błędem do naprawy | decyzja właściciela |
+| 2026-10-08 | Model z Hugging Face `ggerganov/whisper.cpp` `ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 1fc70f77…bc69 z API LFS); HTTP przez ureq 3 bez gzip (Range + kompresja się gryzą), `check()` liczy SHA-256 przy każdym starcie | VA-MODEL-1 |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -91,6 +92,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 3.1 (weryfikacja Metal, PR #5); wersja v0.1.0
-- Następne zadanie: 3.2 (pobieranie modelu) (VA-MODEL-1 zaakceptowane)
+- Ostatnie ukończone: 3.1 (weryfikacja Metal); 3.2 (pobieranie modelu) w PR #8
+- Następne zadanie: 3.3 (crate stt: whisper-rs na Metal)
 - Blokery: brak
