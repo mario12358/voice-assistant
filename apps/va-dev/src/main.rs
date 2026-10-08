@@ -1,6 +1,8 @@
 #[cfg(not(target_os = "macos"))]
 compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
+mod mic_test;
+
 use std::path::PathBuf;
 
 use anyhow::Context;
@@ -30,6 +32,15 @@ enum Command {
     },
     /// Wypisuje dostępne mikrofony (* = domyślny systemu, > = używany wg konfiguracji).
     Devices,
+    /// Nagrywa próbnie z mikrofonu i pokazuje poziom sygnału; WAV tylko z --save.
+    MicTest {
+        /// Długość nagrania w sekundach.
+        #[arg(long, default_value_t = 5)]
+        seconds: u32,
+        /// Zapisz nagranie (16 kHz mono) do pliku WAV.
+        #[arg(long)]
+        save: Option<PathBuf>,
+    },
 }
 
 fn main() -> anyhow::Result<()> {
@@ -41,6 +52,7 @@ fn main() -> anyhow::Result<()> {
     match cli.command {
         Some(Command::Config { file }) => show_config(file),
         Some(Command::Devices) => list_devices(),
+        Some(Command::MicTest { seconds, save }) => mic_test::run(seconds, save.as_deref()),
         None => Ok(()),
     }
 }

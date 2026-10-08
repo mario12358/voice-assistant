@@ -86,6 +86,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 2.2 (nagrywanie → 16 kHz mono); 2.3 (przycinanie ciszy) w PR #1
-- Następne zadanie: 2.4 (`va-dev mic-test`, wymaga 2.3)
+- Ostatnie ukończone zadanie: 2.3 (przycinanie ciszy); 2.4 (`va-dev mic-test`) w PR #2
+- Następne: po merge #2 regresja Fazy 2 na main + tag; potem 3.1 (weryfikacja Metal)
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
