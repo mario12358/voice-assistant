@@ -53,11 +53,11 @@
 
 ### Faza 2: Audio — mikrofony, nagrywanie, cisza
 
-- [ ] Zadanie 2.1: Crate audio: lista mikrofonów (cpal, host CoreAudio) z oznaczeniem domyślnego; wybór po nazwie z konfiguracji, a gdy go brak — mikrofon domyślny systemu z ostrzeżeniem w logu (wymaga: 1.3) [VA-REC-4]
+- [x] Zadanie 2.1: Crate audio: lista mikrofonów (cpal, host CoreAudio) z oznaczeniem domyślnego; wybór po nazwie z konfiguracji, a gdy go brak — mikrofon domyślny systemu z ostrzeżeniem w logu (wymaga: 1.3) [VA-REC-4]
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: zniknięty mikrofon z konfiguracji → użyty domyślny systemowy
   - AC: brak jakiegokolwiek mikrofonu → czytelny błąd
-- [ ] Test: 2.1 — wybór urządzenia po nazwie i fallback na domyślne (abstrakcja hosta audio, bez sprzętu)
+- [x] Test: 2.1 — wybór urządzenia po nazwie i fallback na domyślne (abstrakcja hosta audio, bez sprzętu)
 - [ ] Zadanie 2.2: Nagrywanie do bufora w pamięci (start/stop) z dowolnego formatu urządzenia → 16 kHz mono f32 (downmix + resampling rubato); limit długości nagrania z konfiguracji (domyślnie 5 min) (wymaga: 2.1) [VA-STT-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - AC: wynik zawsze 16 kHz mono f32 niezależnie od formatu wejścia (44.1/48 kHz, stereo)

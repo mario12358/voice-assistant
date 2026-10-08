@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
+use va_audio::{AudioHost, CpalHost, choose_device};
 use va_config::{Config, Paths};
 use va_core::logging::{self, LogOptions};
 
@@ -27,6 +28,8 @@ enum Command {
         #[arg(long)]
         file: Option<PathBuf>,
     },
+    /// Wypisuje dostępne mikrofony (* = domyślny systemu, > = używany wg konfiguracji).
+    Devices,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -37,8 +40,21 @@ fn main() -> anyhow::Result<()> {
     });
     match cli.command {
         Some(Command::Config { file }) => show_config(file),
+        Some(Command::Devices) => list_devices(),
         None => Ok(()),
     }
+}
+
+fn list_devices() -> anyhow::Result<()> {
+    let (config, _) = Config::load_or_default(&Paths::for_current_user()?.config_file);
+    let devices = CpalHost::new().input_devices()?;
+    let choice = choose_device(&devices, config.microphone.as_deref())?;
+    for device in &devices {
+        let used = if device.name == choice.name { ">" } else { " " };
+        let default = if device.is_default { "*" } else { " " };
+        println!("{used}{default} {}", device.name);
+    }
+    Ok(())
 }
 
 fn show_config(file: Option<PathBuf>) -> anyhow::Result<()> {

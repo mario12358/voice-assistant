@@ -84,6 +84,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 1.4 (logowanie) — Faza 1 zamknięta, tag ralph/faza-1
-- Następne zadanie: 2.1
+- Ostatnie ukończone zadanie: 2.1 (lista mikrofonów i wybór)
+- Następne zadanie: 2.2
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
