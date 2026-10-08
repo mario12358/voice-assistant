@@ -91,3 +91,11 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Rozstrzygnięcie blokady: Specky nie łączył testów Rusta ze znacznikami kryteriów.
 **Ustalenie**: Właściciel wyjaśnił, że Specky czyta znaczniki tylko w .py/.js/.ts. Ustaliliśmy wariant (c): pracujemy dalej bez dowodów z CI, znaczniki `specky: crit` w testach zostają na przyszłość, kryteria właściciel odhacza ręcznie w komentarzu Specky na PR. Blokada usunięta.
 **Wpływ**: sekcja 18.5 kontraktu CI; ralph/BLOCKED.md usunięty; PROJECT_CONTEXT (📌)
+
+## 2026-10-09 00:40 — Naprawa kontroli zaleznosci i PATH hooka
+**Rodzaj**: błąd
+**Źródło błędu**: nieznane
+**Wykryte przez**: ralph
+**Pytanie/kontekst**: Właściciel naprawił kontrolę `zaleznosci` (wywracała się na binarnych WAV) i PATH hooka (brak ~/.cargo/bin), prosząc o dołączenie poprawek do PR #9 i merge.
+**Ustalenie**: Poprawki dołączone do gałęzi PR #9; amend ostatniego commita nie wystarczył (dowód dla wcześniejszego commita wciąż „nie wykonała się”), więc oba commity gałęzi scalone `reset --soft` i zacommitowane ponownie przez hook — wszystkie 11 kontroli przeszło, w tym clippy/fmt. PR #9 zmergowany, blokada usunięta.
+**Wpływ**: zadanie 3.3, ralph-kontrole/zaleznosci/run.py, ralph-kontrole/ralph-kontrole.py

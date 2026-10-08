@@ -75,6 +75,7 @@ Konwencje:
 |---------|-------------|
 | Specky contract check czerwony na PR zadania bez wymagania (narzędzia, stan fazy) | w commicie i w `--body` squasha linia `Specky-Req: none` |
 | `cargo` poza PATH w nowym shellu agenta | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; hook kontroli dokłada ~/.cargo/bin sam (naprawione 2026-10-09) |
+| Status kontroli PR czerwony dla commita SPRZED ostatniego (amend przelicza tylko HEAD) | `git reset --soft <baza gałęzi>` + ponowny commit przez hook, potem `push --force-with-lease` |
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
@@ -93,6 +94,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 3.2 (pobieranie modelu); 3.3 (whisper-rs na Metal) w PR #9
-- Następne zadanie: 3.4 (`va-dev transcribe`) po merge #9
+- Ostatnie ukończone: 3.3 (whisper-rs na Metal); 3.4 (`va-dev transcribe`) w PR #10
+- Następne: po merge #10 regresja Fazy 3 na main + tag; potem 4.1 (schowek)
 - Blokery: brak

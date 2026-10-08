@@ -3,6 +3,7 @@ compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
 mod mic_test;
 mod model_download;
+mod transcribe;
 
 use std::path::PathBuf;
 
@@ -51,6 +52,11 @@ enum Command {
         #[arg(long)]
         dir: Option<PathBuf>,
     },
+    /// Transkrybuje plik WAV modelem large-v3-turbo na GPU Metal i wypisuje tekst.
+    Transcribe {
+        /// Plik WAV (dowolna częstotliwość i liczba kanałów).
+        wav: PathBuf,
+    },
 }
 
 fn main() -> anyhow::Result<()> {
@@ -64,6 +70,7 @@ fn main() -> anyhow::Result<()> {
         Some(Command::Devices) => list_devices(),
         Some(Command::MicTest { seconds, save }) => mic_test::run(seconds, save.as_deref()),
         Some(Command::ModelDownload { url, dir }) => model_download::run(url, dir),
+        Some(Command::Transcribe { wav }) => transcribe::run(&wav),
         None => Ok(()),
     }
 }
