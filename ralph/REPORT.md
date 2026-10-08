@@ -17,7 +17,7 @@
 - **Status**: W trakcie
 - **Postęp**: 15/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: brak. Faza 2 zmergowana i otagowana (`ralph/faza-2`).
+- Otwarte PR: #5 (3.1). Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -40,11 +40,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 49 |
-| Pass | 49 |
+| Łącznie testów | 54 |
+| Pass | 50 |
 | Fail | 0 |
-| Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-08 (pełny suite na main po Fazie 2) |
+| Skip | 4 (ignored: mikrofon, GPU) |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 3.1) |
 
 ## Historia realizacji
 
@@ -58,6 +58,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 2.2 Nagrywanie do bufora → 16 kHz mono (rubato Fft) + test 2.2, strażnik „bez zapisu na dysk” | ✅ | 33/0 + 2 ignored (nagranie z mikrofonu zielone lokalnie), mutacja limitu czerwona | 1 | 246b3b1 | 2026-10-08 |
 | 2.3 Przycinanie ciszy (VAD RMS, ramki 20 ms) + test 2.3 na fixtures WAV | ✅ PR #1 | 41/0 + 2 ignored, mutacja progu czerwona (3 testy) | 1 | a6b7975 | 2026-10-08 |
 | 2.4 `va-dev mic-test` (poziom dBFS, granice mowy, WAV z --save) + test 2.4 | ✅ PR #2 | 46/0 + 3 ignored (mic-test z mikrofonem zielony lokalnie) | 1 | 1d996a2 | 2026-10-08 |
+| 3.1 Weryfikacja GPU Metal (objc2-metal) przy starcie + test 3.1 | ⏳ PR #5 | 50/0 + 4 ignored (prawdziwe urządzenie Metal zielone lokalnie), mutacja wpięcia w start czerwona | 1 | 04fba2c (gałąź) | 2026-10-08 |
 
 ## Historia zmian
 
@@ -109,5 +110,7 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 - [2026-10-08] Zadanie 2.3: pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) — naprawione `git commit --amend --no-edit` + push (19.4).
 - [2026-10-08] Zadanie 2.4: kontrola lint-typy ostrzega „linter niedostępny (cargo)” — hook nie widzi `~/.cargo/bin` w PATH, więc commit przeszedł BEZ clippy/fmt w hooku. Clippy `-D warnings` i fmt uruchomione ręcznie — czysto. Do decyzji właściciela: PATH dla hooka albo pełna ścieżka w config.
 - [2026-10-08] [check] PR #2 — Specky contract check: brak trailera Specky-Req (zadanie narzędziowe bez wymagania) — dopisany `Specky-Req: none` w commicie i w treści squasha.
+- [2026-10-08] [check] PR #5 — Specky contract check: kryterium VA-STT-2 K2 «brak testu» mimo `// specky: crit` nad `#[test]` (Specky nie przeskakuje atrybutów Rusta?) — próba 1: znacznik między `#[test]` a `fn`.
+- [2026-10-08] Zadanie 3.1: AC «wejście — va-dev transcribe» domknie 3.4 (komenda jeszcze nie istnieje); w 3.1 wejściem jest start aplikacji (test startup_reports_gpu_verdict).
 - [2026-10-08] Tag `ralph/faza-2`: kontrola `zaleznosci` nie wykonała się (UnicodeDecodeError 0xfa — prawdopodobnie czyta binarne fixtures WAV jako tekst); tag przeszedł bez niej. Do zgłoszenia właścicielowi.
 - [2026-10-08] Blokada rozwiązana: Rust 1.99 zainstalowany, wsad 11 wymagań zaakceptowany, kotwice w planie. Model pobierany po instalacji: dodano 5.6 i propozycję VA-MODEL-1 w Specky.

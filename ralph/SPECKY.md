@@ -1,7 +1,7 @@
 # ralph/SPECKY.md — stan synchronizacji z Specky
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
-- **since_seq**: 704
+- **since_seq**: 705
 - **Ostatnia synchronizacja**: 2026-10-08
 - **Stan projektu w Specky**: 11 zaakceptowanych wymagań (wsad 01M4EK43A6GBPR63H0FV0VBCV0, 25 kryteriów). Propozycja VA-MODEL-1 (wsad 01M4EKHX2XBS6ZSPSE9DAV9QFD) czeka na decyzję właściciela.
 

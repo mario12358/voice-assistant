@@ -55,6 +55,7 @@ Konwencje:
 | 2026-10-08 | Język transkrypcji domyślnie `auto` (konfigurowalny pl/en) | wymagania nie określają języka |
 | 2026-10-08 | `va_audio::SilenceParams` niezależne od `va-config` (audio nie zależy od konfiguracji); mapowanie `SilenceConfig` → `SilenceParams` w miejscu wywołania (va-dev, kontroler) | crate audio bez zależności od konfiguracji |
 | 2026-10-08 | Fixtures WAV w `tests/fixtures/` generowane skryptem `generate_silence_fixtures.py` (`say` macOS, 16 kHz mono) — granice mowy znane co do próbki | powtarzalność |
+| 2026-10-08 | Wykrywanie Metal przez objc2-metal (`MTLCreateSystemDefaultDevice`, bezpieczne API, bez `unsafe`); brak urządzenia lub build bez feature `metal` → `Error::GpuUnavailable`/`MetalNotBuilt`, transkrypcja zablokowana, aplikacja działa dalej | VA-STT-2 |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -89,6 +90,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: Faza 2 (2.4 `va-dev mic-test`), tag `ralph/faza-2`
-- Następne zadanie: 3.1 (weryfikacja GPU Metal)
+- Ostatnie ukończone: Faza 2, wersja v0.1.0; 3.1 (weryfikacja Metal) w PR #5
+- Następne zadanie: 3.2 (pobieranie modelu) — czeka na decyzję VA-MODEL-1 w Specky
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
