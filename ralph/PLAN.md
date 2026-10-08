@@ -35,11 +35,11 @@
   - Specky: (req: 01M4EKHBS1EMNP53JTYKVA3YTB v1 @41e9b47)
   - Specky: (req: 01M4EKHC5VP9R6P1EY8E55S2XE v1 @940ad46)
   - AC: PROJECT_CONTEXT.md zawiera mapę crate → odpowiedzialność, zasady błędów/logowania, ścieżki macOS (Application Support, Logs) i sposób dostarczenia modelu (pobierany po instalacji)
-- [ ] Zadanie 1.2: Workspace Cargo z crate'ami z 1.1, binarka `voice-asystent` (aplikacja) i `va-dev` (narzędzia deweloperskie), target tylko macOS (`compile_error!` poza macOS), `rustfmt.toml`, clippy `-D warnings`, `.gitignore`; uzupełnij pola Testy/Linter w ralph/config.md (wymaga: 1.1) [VA-PLAT-1, VA-TECH-1]
+- [x] Zadanie 1.2: Workspace Cargo z crate'ami z 1.1, binarka `voice-asystent` (aplikacja) i `va-dev` (narzędzia deweloperskie), target tylko macOS (`compile_error!` poza macOS), `rustfmt.toml`, clippy `-D warnings`, `.gitignore`; uzupełnij pola Testy/Linter w ralph/config.md (wymaga: 1.1) [VA-PLAT-1, VA-TECH-1]
   - Specky: (req: 01M4EKHBS1EMNP53JTYKVA3YTB v1 @41e9b47)
   - Specky: (req: 01M4EKHC5VP9R6P1EY8E55S2XE v1 @940ad46)
   - AC: `cargo build --workspace`, `cargo test --workspace`, `cargo clippy --workspace -- -D warnings`, `cargo fmt --check` przechodzą
-- [ ] Test: 1.2 — smoke test kompilacji workspace + `va-dev --version`
+- [x] Test: 1.2 — smoke test kompilacji workspace + `va-dev --version`
 - [ ] Zadanie 1.3: Konfiguracja TOML w `~/Library/Application Support/VoiceAsystent/config.toml`: wybrany mikrofon (nazwa), ścieżka modelu, język transkrypcji (domyślnie auto), progi ciszy; wartości domyślne; zapis zmian z aplikacji (wymaga: 1.2) [VA-REC-4]
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: brak pliku → wartości domyślne; niepoprawny TOML → log błędu z numerem linii i start na domyślnych

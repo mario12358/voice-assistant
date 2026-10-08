@@ -1,0 +1,36 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/config",
+    "crates/audio",
+    "crates/model",
+    "crates/stt",
+    "crates/clipboard",
+    "crates/core",
+    "apps/voice-asystent",
+    "apps/va-dev",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+va-config = { path = "crates/config" }
+va-audio = { path = "crates/audio" }
+va-model = { path = "crates/model" }
+va-stt = { path = "crates/stt" }
+va-clipboard = { path = "crates/clipboard" }
+va-core = { path = "crates/core" }
+anyhow = "1"
+thiserror = "2"
+clap = { version = "4", features = ["derive"] }
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }

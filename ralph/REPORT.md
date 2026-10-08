@@ -15,8 +15,8 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 1/47 pozycji ukończonych
-- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta, 0 wymagań w projekcie.
+- **Postęp**: 3/47 pozycji ukończonych
+- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta; 11 wymagań zaakceptowanych, VA-MODEL-1 czeka na decyzję.
 
 ## Stan testów
 
@@ -35,17 +35,18 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 0 |
-| Pass | 0 |
+| Łącznie testów | 2 |
+| Pass | 2 |
 | Fail | 0 |
 | Skip | 0 |
-| Ostatnie uruchomienie | - |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace) |
 
 ## Historia realizacji
 
 | Zadanie | Status | Testy | Próby | Commit | Czas |
 |---------|--------|-------|-------|--------|------|
-| 1.1 Architektura i konwencje | ✅ | n/d (dokument) | 1 | (ten commit) | 2026-10-08 |
+| 1.1 Architektura i konwencje | ✅ | n/d (dokument) | 1 | dd3d2cc | 2026-10-08 |
+| 1.2 Workspace Cargo + test 1.2 | ✅ | 2/0 | 1 | (ten commit) | 2026-10-08 |
 
 ## Historia zmian
 

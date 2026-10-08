@@ -1,0 +1,16 @@
+[package]
+name = "voice-asystent"
+description = "VoiceAsystent — nagrywanie głosu z paska menu macOS, transkrypcja do schowka."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+va-core.workspace = true
+va-stt = { workspace = true, features = ["metal"] }
+
+[lints]
+workspace = true

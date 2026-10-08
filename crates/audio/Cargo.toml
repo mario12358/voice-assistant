@@ -1,0 +1,13 @@
+[package]
+name = "va-audio"
+description = "Lista mikrofonów, nagrywanie i normalizacja audio do 16 kHz mono."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

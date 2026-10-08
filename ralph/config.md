@@ -8,14 +8,14 @@
 
 ## Testy
 
-- **Komenda testów**: [np. pytest -v, npm test, cargo test]
-- **Komenda pełnego suite**: [np. pytest -v --tb=short, npm run test:all]
-- **Smoke suite**: brak
+- **Komenda testów**: cargo test --workspace
+- **Komenda pełnego suite**: cargo test --workspace -- --include-ignored && cargo clippy --workspace --all-targets -- -D warnings && cargo fmt --all --check
+- **Smoke suite**: cargo test --workspace
   <!-- Szybki podzbiór testów uruchamiany po KAŻDYM zadaniu (regresja wykrywana od razu,     -->
   <!-- nie po całej fazie). Np. testy ukończonych modułów. Małe projekty: pełny suite.       -->
   <!-- "brak" = pomiń (tylko testy zadania + pełny suite po fazie).                           -->
 - **Pełny suite po**: każdej fazie
-- **Linter/formatter**: [np. ruff check, eslint, cargo fmt -- brak jeśli nie używasz]
+- **Linter/formatter**: cargo clippy --workspace --all-targets -- -D warnings; cargo fmt --all --check
 - **Komenda typów**: brak
   <!-- Typechecker, np. `mypy src`, `pyright`, `npx tsc --noEmit`. Kontrola lint-typy (## Kontrole)  -->
   <!-- uruchamia linter na zmienionych plikach przy commicie, a typechecker przy fazie.          -->
