@@ -300,7 +300,7 @@ def main():
             try:
                 with open(os.path.join(root, p), encoding='utf-8') as f:
                     tekst = f.read()
-            except OSError:
+            except (OSError, UnicodeDecodeError):
                 continue
             for m in re.finditer(r'^\s*registry\s*=\s*(\S+)', tekst, re.M):
                 if 'registry.npmjs.org' not in m.group(1):
@@ -308,10 +308,12 @@ def main():
                            opis=f'domyślny rejestr npm zmieniony na {m.group(1)} — sprawdź, że to zamierzone',
                            odcisk_tresci=m.group(1))
             continue
+        if manifest(p, '')[0] is None:
+            continue                  # nie manifest — nie czytamy (WAV, PNG w commicie wywracały dekodowanie)
         try:
             with open(os.path.join(root, p), encoding='utf-8') as f:
                 tekst = f.read()
-        except OSError:
+        except (OSError, UnicodeDecodeError):
             continue
         teraz, indeksy = manifest(p, tekst)
         if teraz is None:

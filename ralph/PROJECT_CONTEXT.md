@@ -58,6 +58,7 @@ Konwencje:
 | 2026-10-08 | Wykrywanie Metal przez objc2-metal (`MTLCreateSystemDefaultDevice`, bezpieczne API, bez `unsafe`); brak urządzenia lub build bez feature `metal` → `Error::GpuUnavailable`/`MetalNotBuilt`, transkrypcja zablokowana, aplikacja działa dalej | VA-STT-2 |
 | 2026-10-08 | 📌 Specky nie czyta znaczników w Ruście (tylko .py/.js/.ts): pracujemy bez dowodów kryteriów z CI; znaczniki `// specky: crit <id>` w testach ZOSTAJĄ (nad `fn`, pod `#[test]`), kryteria właściciel odhacza ręcznie w komentarzu Specky na PR; „brak testu” w tym komentarzu nie jest błędem do naprawy | decyzja właściciela |
 | 2026-10-08 | Model z Hugging Face `ggerganov/whisper.cpp` `ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 1fc70f77…bc69 z API LFS); HTTP przez ureq 3 bez gzip (Range + kompresja się gryzą), `check()` liczy SHA-256 przy każdym starcie | VA-MODEL-1 |
+| 2026-10-09 | whisper-rs 0.16 z `tracing_backend` (logi whisper.cpp/ggml w tracing); `WhisperStt::load` wymaga `GpuReady` i ustawia `use_gpu(true)`; dowód Metal w teście = linie whisper.cpp `whisper_backend_init_gpu: device 0: Metal` i `Metal total size`, nie własny log | VA-STT-2 K1 |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -73,7 +74,7 @@ Konwencje:
 | Problem | Rozwiązanie |
 |---------|-------------|
 | Specky contract check czerwony na PR zadania bez wymagania (narzędzia, stan fazy) | w commicie i w `--body` squasha linia `Specky-Req: none` |
-| `cargo` poza PATH w nowym shellu i w hooku kontroli (lint-typy „niedostępny”) | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; clippy/fmt uruchamiaj ręcznie przed commitem |
+| `cargo` poza PATH w nowym shellu agenta | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; hook kontroli dokłada ~/.cargo/bin sam (naprawione 2026-10-09) |
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
@@ -92,6 +93,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 3.1 (weryfikacja Metal); 3.2 (pobieranie modelu) w PR #8
-- Następne zadanie: 3.3 (crate stt: whisper-rs na Metal)
+- Ostatnie ukończone: 3.2 (pobieranie modelu); 3.3 (whisper-rs na Metal) w PR #9
+- Następne zadanie: 3.4 (`va-dev transcribe`) po merge #9
 - Blokery: brak
