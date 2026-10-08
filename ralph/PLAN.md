@@ -91,9 +91,9 @@
   - AC: model ładowany jednokrotnie; kolejne transkrypcje bez ponownego ładowania
   - AC: inferencja na Metal (log backendu przy starcie)
 - [x] Test: 3.3 — test `#[ignore]` (model + GPU): fixtures WAV PL i EN → transkrypcja zawiera oczekiwane słowa kluczowe (pr: #9)
-- [ ] Zadanie 3.4: Komenda `va-dev transcribe <plik.wav>` (WAV → normalizacja 2.2 → cisza 2.3 → STT → stdout, z czasem inferencji) (wymaga: 2.3, 3.3) (pr: #10)
+- [x] Zadanie 3.4: Komenda `va-dev transcribe <plik.wav>` (WAV → normalizacja 2.2 → cisza 2.3 → STT → stdout, z czasem inferencji) (wymaga: 2.3, 3.3) (pr: #10)
   - AC: wejście — komenda `va-dev transcribe plik.wav`
-- [ ] Test: 3.4 — integracja z mockiem STT: WAV 44.1 kHz stereo trafia do STT jako 16 kHz mono (pr: #10)
+- [x] Test: 3.4 — integracja z mockiem STT: WAV 44.1 kHz stereo trafia do STT jako 16 kHz mono (pr: #10)
 
 ### Faza 4: Rdzeń — stan nagrywania i schowek
 

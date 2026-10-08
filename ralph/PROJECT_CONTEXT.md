@@ -94,6 +94,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 3.3 (whisper-rs na Metal); 3.4 (`va-dev transcribe`) w PR #10
-- Następne: po merge #10 regresja Fazy 3 na main + tag; potem 4.1 (schowek)
+- Ostatnie ukończone: Faza 3 (transkrypcja na Metal, `va-dev transcribe`), tag `ralph/faza-3`
+- Następne zadanie: 4.1 (crate clipboard: TextSink + arboard)
 - Blokery: brak
