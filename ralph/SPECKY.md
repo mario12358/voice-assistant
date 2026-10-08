@@ -3,7 +3,7 @@
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
 - **since_seq**: 705
 - **Ostatnia synchronizacja**: 2026-10-08
-- **Stan projektu w Specky**: 11 zaakceptowanych wymagań (wsad 01M4EK43A6GBPR63H0FV0VBCV0, 25 kryteriów). Propozycja VA-MODEL-1 (wsad 01M4EKHX2XBS6ZSPSE9DAV9QFD) czeka na decyzję właściciela.
+- **Stan projektu w Specky**: 11 zaakceptowanych wymagań (wsad 01M4EK43A6GBPR63H0FV0VBCV0, 25 kryteriów). VA-MODEL-1 zaakceptowane 2026-10-08 przez właściciela (12 wymagań).
 
 ## Mapa wymagań → zadania
 
@@ -20,4 +20,4 @@
 | VA-REC-4 | 01M4EKHCZDHBRC6DY70CRB55G3 | v1 @956c038 | 1.3, 2.1, 5.3 |
 | VA-UI-1 | 01M4EKHD1BQYRNWBAVRA5FJTRC | v1 @df8032b | 5.1 |
 | VA-UI-2 | 01M4EKHD3Y6M9V9E01V27AH18Z | v1 @a4fdb35 | 4.2, 5.2 |
-| VA-MODEL-1 | (propozycja 01M4EKHXE3M2312B7EECQ55EHJ) | — | 3.2, 5.6, 6.1, 6.2 |
+| VA-MODEL-1 | 01M4EQH9D30871ZG5JMWK8VHFV | v1 @5a6280e | 3.2, 5.6, 6.1, 6.2 |
