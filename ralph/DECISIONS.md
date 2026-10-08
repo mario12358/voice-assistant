@@ -85,3 +85,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel poprosił o zaakceptowanie propozycji VA-MODEL-1 w Specky.
 **Ustalenie**: Zaakceptowano (wymaganie 01M4EQH9D30871ZG5JMWK8VHFV v1, 6 kryteriów: .dmg bez modelu, pobieranie z postępem przy pierwszym starcie, SHA-256 z usunięciem uszkodzonego pliku, wznawianie, komunikat zamiast nagrania przed pobraniem, zero ruchu sieciowego po pobraniu). Kotwice dopisane do 3.2, 5.6, 6.1.
 **Wpływ**: zadania 3.2, 5.6, 6.1, 6.2; ralph/SPECKY.md
+
+## 2026-10-08 23:52 — Kryteria Specky bez dowodów z CI (Rust)
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Rozstrzygnięcie blokady: Specky nie łączył testów Rusta ze znacznikami kryteriów.
+**Ustalenie**: Właściciel wyjaśnił, że Specky czyta znaczniki tylko w .py/.js/.ts. Ustaliliśmy wariant (c): pracujemy dalej bez dowodów z CI, znaczniki `specky: crit` w testach zostają na przyszłość, kryteria właściciel odhacza ręcznie w komentarzu Specky na PR. Blokada usunięta.
+**Wpływ**: sekcja 18.5 kontraktu CI; ralph/BLOCKED.md usunięty; PROJECT_CONTEXT (📌)

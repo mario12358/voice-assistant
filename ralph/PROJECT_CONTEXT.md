@@ -56,6 +56,7 @@ Konwencje:
 | 2026-10-08 | `va_audio::SilenceParams` niezależne od `va-config` (audio nie zależy od konfiguracji); mapowanie `SilenceConfig` → `SilenceParams` w miejscu wywołania (va-dev, kontroler) | crate audio bez zależności od konfiguracji |
 | 2026-10-08 | Fixtures WAV w `tests/fixtures/` generowane skryptem `generate_silence_fixtures.py` (`say` macOS, 16 kHz mono) — granice mowy znane co do próbki | powtarzalność |
 | 2026-10-08 | Wykrywanie Metal przez objc2-metal (`MTLCreateSystemDefaultDevice`, bezpieczne API, bez `unsafe`); brak urządzenia lub build bez feature `metal` → `Error::GpuUnavailable`/`MetalNotBuilt`, transkrypcja zablokowana, aplikacja działa dalej | VA-STT-2 |
+| 2026-10-08 | 📌 Specky nie czyta znaczników w Ruście (tylko .py/.js/.ts): pracujemy bez dowodów kryteriów z CI; znaczniki `// specky: crit <id>` w testach ZOSTAJĄ (nad `fn`, pod `#[test]`), kryteria właściciel odhacza ręcznie w komentarzu Specky na PR; „brak testu” w tym komentarzu nie jest błędem do naprawy | decyzja właściciela |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -92,4 +93,4 @@ Konwencje:
 
 - Ostatnie ukończone: 3.1 (weryfikacja Metal, PR #5); wersja v0.1.0
 - Następne zadanie: 3.2 (pobieranie modelu) (VA-MODEL-1 zaakceptowane)
-- Blokery: (1) Specky nie rozpoznaje znaczników `specky: crit` w testach Rusta — ralph/BLOCKED.md
+- Blokery: brak

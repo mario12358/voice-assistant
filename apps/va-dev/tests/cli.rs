@@ -64,3 +64,35 @@ fn mic_test_saves_recording_only_when_asked() {
     assert!(without_save.status.success());
     assert_eq!(std::fs::read_dir(dir.path()).unwrap().count(), 1);
 }
+
+#[test]
+fn model_download_reports_server_error_and_leaves_no_model() {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("port");
+    let url = format!("http://{}/model.bin", listener.local_addr().expect("adres"));
+    std::thread::spawn(move || {
+        use std::io::{BufRead, Write};
+        let mut stream = listener
+            .incoming()
+            .next()
+            .expect("połączenie")
+            .expect("strumień");
+        let mut line = String::new();
+        std::io::BufReader::new(stream.try_clone().expect("klon"))
+            .read_line(&mut line)
+            .expect("żądanie");
+        let _ = stream
+            .write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+    });
+    let dir = tempfile::tempdir().expect("katalog tymczasowy");
+
+    let output = va_dev()
+        .args(["model-download", "--url", &url, "--dir"])
+        .arg(dir.path())
+        .output()
+        .expect("va-dev uruchamia się");
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(stderr.contains("kodem 404"), "{stderr}");
+    assert!(!dir.path().join("ggml-large-v3-turbo.bin").exists());
+}

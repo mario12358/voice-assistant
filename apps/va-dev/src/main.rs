@@ -2,6 +2,7 @@
 compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
 mod mic_test;
+mod model_download;
 
 use std::path::PathBuf;
 
@@ -41,6 +42,15 @@ enum Command {
         #[arg(long)]
         save: Option<PathBuf>,
     },
+    /// Pobiera model large-v3-turbo (wznawia przerwane pobieranie, sprawdza SHA-256).
+    ModelDownload {
+        /// Adres pliku modelu; domyślnie Hugging Face.
+        #[arg(long)]
+        url: Option<String>,
+        /// Katalog docelowy; domyślnie katalog modeli aplikacji.
+        #[arg(long)]
+        dir: Option<PathBuf>,
+    },
 }
 
 fn main() -> anyhow::Result<()> {
@@ -53,6 +63,7 @@ fn main() -> anyhow::Result<()> {
         Some(Command::Config { file }) => show_config(file),
         Some(Command::Devices) => list_devices(),
         Some(Command::MicTest { seconds, save }) => mic_test::run(seconds, save.as_deref()),
+        Some(Command::ModelDownload { url, dir }) => model_download::run(url, dir),
         None => Ok(()),
     }
 }

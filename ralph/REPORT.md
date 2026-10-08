@@ -17,7 +17,7 @@
 - **Status**: W trakcie
 - **Postęp**: 17/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: brak. RALPH BLOCKED: znaczniki `specky: crit` w testach Rusta nie są rozpoznawane (ralph/BLOCKED.md). Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -111,6 +111,7 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 - [2026-10-08] Zadanie 2.4: kontrola lint-typy ostrzega „linter niedostępny (cargo)” — hook nie widzi `~/.cargo/bin` w PATH, więc commit przeszedł BEZ clippy/fmt w hooku. Clippy `-D warnings` i fmt uruchomione ręcznie — czysto. Do decyzji właściciela: PATH dla hooka albo pełna ścieżka w config.
 - [2026-10-08] [check] PR #2 — Specky contract check: brak trailera Specky-Req (zadanie narzędziowe bez wymagania) — dopisany `Specky-Req: none` w commicie i w treści squasha.
 - [2026-10-08] [check] PR #5 — Specky contract check: kryterium VA-STT-2 K2 «brak testu» mimo `// specky: crit` nad `#[test]` (Specky nie przeskakuje atrybutów Rusta?) — próba 1: znacznik między `#[test]` a `fn` — bez zmian (has_test=false). Podejrzenie: JUnit z nextest ma classname = nazwa crate'u, bez ścieżki pliku, więc Specky nie łączy testu z plikiem źródłowym. RALPH BLOCKED.
+- [2026-10-08] Blokada rozwiązana: Specky czyta znaczniki tylko w .py/.js/.ts — właściciel wybrał pracę bez dowodów z CI, znaczniki zostają, kryteria odhaczane ręcznie na PR. ralph/BLOCKED.md usunięty.
 - [2026-10-08] Zadanie 3.1: AC «wejście — va-dev transcribe» domknie 3.4 (komenda jeszcze nie istnieje); w 3.1 wejściem jest start aplikacji (test startup_reports_gpu_verdict).
 - [2026-10-08] Tag `ralph/faza-2`: kontrola `zaleznosci` nie wykonała się (UnicodeDecodeError 0xfa — prawdopodobnie czyta binarne fixtures WAV jako tekst); tag przeszedł bez niej. Do zgłoszenia właścicielowi.
 - [2026-10-08] Blokada rozwiązana: Rust 1.99 zainstalowany, wsad 11 wymagań zaakceptowany, kotwice w planie. Model pobierany po instalacji: dodano 5.6 i propozycję VA-MODEL-1 w Specky.
