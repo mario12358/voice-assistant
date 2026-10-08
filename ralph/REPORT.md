@@ -15,9 +15,9 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 19/47 pozycji ukończonych
+- **Postęp**: 21/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: #9 (3.3). Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -60,7 +60,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 2.4 `va-dev mic-test` (poziom dBFS, granice mowy, WAV z --save) + test 2.4 | ✅ PR #2 | 46/0 + 3 ignored (mic-test z mikrofonem zielony lokalnie) | 1 | 1d996a2 | 2026-10-08 |
 | 3.1 Weryfikacja GPU Metal (objc2-metal) przy starcie + test 3.1 | ✅ PR #5 | 50/0 + 4 ignored (prawdziwe urządzenie Metal zielone lokalnie), mutacja wpięcia w start czerwona | 1 | a4b5a09 | 2026-10-08 |
 | 3.2 Pobieranie modelu (ureq, Range, SHA-256, .part → rename), `va-dev model-download`, stan modelu przy starcie + test 3.2 | ✅ PR #8 | 58/0 + 4 ignored; mutacje sumy SHA-256 i offsetu Range czerwone; prawdziwe pobranie z HF (1,6 GB) zweryfikowane | 1 | fe42004 | 2026-10-08 |
-| 3.3 WhisperStt (whisper-rs 0.16, Metal), SpeechToText + ScriptedStt, nagrania PL/EN + test 3.3 | ⏳ PR #9 | 59/0 + 5 ignored; model na Metal: PL i EN rozpoznane, 5 s; mutacja use_gpu(false) czerwona | 1 | 1088ab5 (gałąź) | 2026-10-09 |
+| 3.3 WhisperStt (whisper-rs 0.16, Metal), SpeechToText + ScriptedStt, nagrania PL/EN + test 3.3 | ✅ PR #9 | 59/0 + 5 ignored; model na Metal: PL i EN rozpoznane, 5 s; mutacja use_gpu(false) czerwona | 1 | ca267d6 | 2026-10-09 |
 
 ## Historia zmian
 

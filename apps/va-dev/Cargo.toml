@@ -19,6 +19,7 @@ va-model.workspace = true
 va-stt = { workspace = true, features = ["metal"] }
 
 [dev-dependencies]
+va-stt = { workspace = true, features = ["metal", "testing"] }
 tempfile.workspace = true
 
 [lints]

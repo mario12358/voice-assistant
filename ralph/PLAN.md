@@ -85,12 +85,12 @@
   - AC: przerwane pobieranie wznawiane od miejsca przerwania; istniejący poprawny model → brak pobierania
   - AC: wejście — `va-dev model-download` i start aplikacji bez modelu (5.6)
 - [x] Test: 3.2 — lokalny serwer HTTP w teście: pobranie, wznowienie po przerwaniu (Range), zła suma, „już pobrany” (pr: #8)
-- [ ] Zadanie 3.3: Crate stt: trait `SpeechToText` + implementacja whisper-rs z backendem Metal, model ładowany raz przy starcie, język z konfiguracji (auto | pl | en), zwraca tekst + czas inferencji; mock do testów (wymaga: 3.1, 3.2) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-1, VA-STT-2] (pr: #9)
+- [x] Zadanie 3.3: Crate stt: trait `SpeechToText` + implementacja whisper-rs z backendem Metal, model ładowany raz przy starcie, język z konfiguracji (auto | pl | en), zwraca tekst + czas inferencji; mock do testów (wymaga: 3.1, 3.2) (spec: WYTYCZNE_TECHNICZNE.md) [VA-STT-1, VA-STT-2] (pr: #9)
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - Specky: (req: 01M4EKHCM2WDGKPH824D8532JD v1 @5e21e03)
   - AC: model ładowany jednokrotnie; kolejne transkrypcje bez ponownego ładowania
   - AC: inferencja na Metal (log backendu przy starcie)
-- [ ] Test: 3.3 — test `#[ignore]` (model + GPU): fixtures WAV PL i EN → transkrypcja zawiera oczekiwane słowa kluczowe (pr: #9)
+- [x] Test: 3.3 — test `#[ignore]` (model + GPU): fixtures WAV PL i EN → transkrypcja zawiera oczekiwane słowa kluczowe (pr: #9)
 - [ ] Zadanie 3.4: Komenda `va-dev transcribe <plik.wav>` (WAV → normalizacja 2.2 → cisza 2.3 → STT → stdout, z czasem inferencji) (wymaga: 2.3, 3.3)
   - AC: wejście — komenda `va-dev transcribe plik.wav`
 - [ ] Test: 3.4 — integracja z mockiem STT: WAV 44.1 kHz stereo trafia do STT jako 16 kHz mono

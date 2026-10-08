@@ -96,3 +96,43 @@ fn model_download_reports_server_error_and_leaves_no_model() {
     assert!(stderr.contains("kodem 404"), "{stderr}");
     assert!(!dir.path().join("ggml-large-v3-turbo.bin").exists());
 }
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+fn transcribe_prints_english_text_from_wav() {
+    let wav = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../tests/fixtures/speech_en_44k_stereo.wav");
+
+    let output = va_dev()
+        .arg("transcribe")
+        .arg(&wav)
+        .output()
+        .expect("va-dev uruchamia się");
+
+    assert!(output.status.success(), "{output:?}");
+    let stdout = String::from_utf8(output.stdout).expect("wyjście w UTF-8");
+    assert!(stdout.to_lowercase().contains("weather"), "{stdout}");
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(stderr.contains("Czas inferencji"), "{stderr}");
+}
+
+#[test]
+fn transcribe_without_model_points_to_model_download() {
+    let home = tempfile::tempdir().expect("katalog tymczasowy");
+    let wav =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tests/fixtures/speech_en.wav");
+
+    let output = va_dev()
+        .env("HOME", home.path())
+        .arg("transcribe")
+        .arg(&wav)
+        .output()
+        .expect("va-dev uruchamia się");
+
+    assert!(!output.status.success());
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(
+        stderr.contains("va-dev model-download") || stderr.contains("Wymagane GPU (Metal)"),
+        "{stderr}"
+    );
+}

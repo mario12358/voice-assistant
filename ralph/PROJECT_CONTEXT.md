@@ -75,6 +75,7 @@ Konwencje:
 |---------|-------------|
 | Specky contract check czerwony na PR zadania bez wymagania (narzędzia, stan fazy) | w commicie i w `--body` squasha linia `Specky-Req: none` |
 | `cargo` poza PATH w nowym shellu agenta | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; hook kontroli dokłada ~/.cargo/bin sam (naprawione 2026-10-09) |
+| Status kontroli PR czerwony dla commita SPRZED ostatniego (amend przelicza tylko HEAD) | `git reset --soft <baza gałęzi>` + ponowny commit przez hook, potem `push --force-with-lease` |
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
