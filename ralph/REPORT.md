@@ -106,4 +106,5 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 - [2026-10-08] Zadanie 2.3: kryterium VA-REC-3 «pusta transkrypcja nie zmienia schowka» (crit 01M4EKHCXW1S92G9Y6AS115MW9) nie ma jeszcze testu z `specky: crit` — 2.3 daje tylko pusty wynik dla ciszy; test z schowkiem i brakiem wywołania STT powstaje w 4.1/4.3.
 - [2026-10-08] Zadanie 2.3: pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) — naprawione `git commit --amend --no-edit` + push (19.4).
 - [2026-10-08] Zadanie 2.4: kontrola lint-typy ostrzega „linter niedostępny (cargo)” — hook nie widzi `~/.cargo/bin` w PATH, więc commit przeszedł BEZ clippy/fmt w hooku. Clippy `-D warnings` i fmt uruchomione ręcznie — czysto. Do decyzji właściciela: PATH dla hooka albo pełna ścieżka w config.
+- [2026-10-08] [check] PR #2 — Specky contract check: brak trailera Specky-Req (zadanie narzędziowe bez wymagania) — dopisany `Specky-Req: none` w commicie i w treści squasha.
 - [2026-10-08] Blokada rozwiązana: Rust 1.99 zainstalowany, wsad 11 wymagań zaakceptowany, kotwice w planie. Model pobierany po instalacji: dodano 5.6 i propozycję VA-MODEL-1 w Specky.
