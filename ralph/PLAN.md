@@ -40,12 +40,12 @@
   - Specky: (req: 01M4EKHC5VP9R6P1EY8E55S2XE v1 @940ad46)
   - AC: `cargo build --workspace`, `cargo test --workspace`, `cargo clippy --workspace -- -D warnings`, `cargo fmt --check` przechodzą
 - [x] Test: 1.2 — smoke test kompilacji workspace + `va-dev --version`
-- [ ] Zadanie 1.3: Konfiguracja TOML w `~/Library/Application Support/VoiceAsystent/config.toml`: wybrany mikrofon (nazwa), ścieżka modelu, język transkrypcji (domyślnie auto), progi ciszy; wartości domyślne; zapis zmian z aplikacji (wymaga: 1.2) [VA-REC-4]
+- [x] Zadanie 1.3: Konfiguracja TOML w `~/Library/Application Support/VoiceAsystent/config.toml`: wybrany mikrofon (nazwa), ścieżka modelu, język transkrypcji (domyślnie auto), progi ciszy; wartości domyślne; zapis zmian z aplikacji (wymaga: 1.2) [VA-REC-4]
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: brak pliku → wartości domyślne; niepoprawny TOML → log błędu z numerem linii i start na domyślnych
   - AC: zapis wyboru mikrofonu i ponowny odczyt zwraca tę samą wartość
   - AC: wejście — start aplikacji (odczyt) i wybór mikrofonu w menu z 5.3 (zapis)
-- [ ] Test: 1.3 — parsowanie pełnego/pustego/błędnego pliku, zapis i odczyt w katalogu tymczasowym
+- [x] Test: 1.3 — parsowanie pełnego/pustego/błędnego pliku, zapis i odczyt w katalogu tymczasowym
 - [ ] Zadanie 1.4: Logowanie `tracing` do `~/Library/Logs/VoiceAsystent/` (rotacja dzienna) i stderr; spany na etapach nagranie/transkrypcja z czasem; treść transkrypcji tylko na poziomie debug; audio nie trafia na dysk (wymaga: 1.2) (tech: observability) [VA-STT-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - AC: domyślny poziom info nie loguje treści transkrypcji

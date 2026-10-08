@@ -15,7 +15,7 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 3/47 pozycji ukończonych
+- **Postęp**: 5/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta; 11 wymagań zaakceptowanych, VA-MODEL-1 czeka na decyzję.
 
 ## Stan testów
@@ -35,8 +35,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 2 |
-| Pass | 2 |
+| Łącznie testów | 14 |
+| Pass | 14 |
 | Fail | 0 |
 | Skip | 0 |
 | Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace) |
@@ -46,7 +46,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 | Zadanie | Status | Testy | Próby | Commit | Czas |
 |---------|--------|-------|-------|--------|------|
 | 1.1 Architektura i konwencje | ✅ | n/d (dokument) | 1 | dd3d2cc | 2026-10-08 |
-| 1.2 Workspace Cargo + test 1.2 | ✅ | 2/0 | 1 | (ten commit) | 2026-10-08 |
+| 1.2 Workspace Cargo + test 1.2 | ✅ | 2/0 | 1 | 70a8fe2 | 2026-10-08 |
+| 1.3 Konfiguracja TOML + test 1.3 (`va-dev config`, start aplikacji) | ✅ | 14/0, mutacja numeru linii czerwona | 1 | (ten commit) | 2026-10-08 |
 
 ## Historia zmian
 

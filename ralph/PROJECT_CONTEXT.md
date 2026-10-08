@@ -82,6 +82,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 1.1 (architektura i konwencje)
-- Następne zadanie: 1.2
+- Ostatnie ukończone zadanie: 1.3 (konfiguracja TOML)
+- Następne zadanie: 1.4
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
