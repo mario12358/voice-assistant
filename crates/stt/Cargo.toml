@@ -11,6 +11,9 @@ publish.workspace = true
 metal = []
 
 [dependencies]
+objc2-metal = { version = "0.3", default-features = false, features = ["std", "MTLDevice"] }
+thiserror.workspace = true
+tracing.workspace = true
 
 [lints]
 workspace = true

@@ -49,3 +49,27 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel w trakcie zadania 2.3 poprosił o ustawienie w Specky statusu code_ready dla VA-PLAT-1 i VA-TECH-1.
 **Ustalenie**: Ustawiono code_ready dla obu wymagań (odcisk treści v1 z get_requirement). Faza 1 (szkielet macOS-only, workspace Cargo) je realizuje; status done ustala właściciel.
 **Wpływ**: Specky — VA-PLAT-1, VA-TECH-1
+
+## 2026-10-08 23:17 — Wydanie wersji v0.1.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonej regresji Fazy 2.
+**Ustalenie**: Utworzono wersję v0.1.0 (commit 57cf6af) obejmującą fazy 1–2: szkielet macOS, konfigurację, wybór mikrofonu, nagrywanie do 16 kHz mono i przycinanie ciszy. Scenariusze testów w docs/test-scenarios/v0.1.0.md, migawka w Specky 01M4EP1HG6SQR1GC25CTTSJ18P. Wersja jest tylko lokalnie do czasu git push origin v0.1.0.
+**Wpływ**: tag v0.1.0, Specky
+
+## 2026-10-08 23:20 — cargo niedostępny w terminalu właściciela
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Przy scenariuszach v0.1.0 terminal zgłaszał „command not found: cargo”.
+**Ustalenie**: Rust jest zainstalowany, a ~/.zshenv ładuje ~/.cargo/env; terminal był otwarty przed instalacją. Wystarczy nowy terminal albo `source "$HOME/.cargo/env"`. Hook kontroli to osobna sprawa (nie czyta ~/.zshenv) — do sprawdzenia.
+**Wpływ**: docs/test-scenarios/v0.1.0.md (sekcja 0)
+
+## 2026-10-08 23:24 — Mikrofon z konfiguracji nie ustawia się
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Przy scenariuszu 1.2 v0.1.0 wybór mikrofonu w config.toml nie działał.
+**Ustalenie**: Plik ~/Library/Application Support/VoiceAsystent/config.toml (ani katalog) nie istnieje, więc działają wartości domyślne — kod zachowuje się poprawnie. Podano dokładne nazwy urządzeń (PXC 550, BlackHole 2ch, Mikrofon (MacBook Air)) i sposób utworzenia pliku; klucz `microphone` musi stać przed sekcją [silence].
+**Wpływ**: docs/test-scenarios/v0.1.0.md (scenariusz 1.2)
+
+## 2026-10-08 23:26 — Ustawienie mikrofonu PXC 550
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel wybrał PXC 550 jako mikrofon do testów v0.1.0.
+**Ustalenie**: Utworzono ~/Library/Application Support/VoiceAsystent/config.toml z `microphone = "PXC 550"`; `va-dev devices` pokazuje `>` przy PXC 550, pozostałe ustawienia domyślne.
+**Wpływ**: scenariusz 1.2 v0.1.0

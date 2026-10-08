@@ -16,3 +16,6 @@ va-stt = { workspace = true, features = ["metal"] }
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
