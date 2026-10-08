@@ -15,7 +15,7 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 0/47 pozycji ukończonych
+- **Postęp**: 1/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta, 0 wymagań w projekcie.
 
 ## Stan testów
@@ -45,7 +45,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Zadanie | Status | Testy | Próby | Commit | Czas |
 |---------|--------|-------|-------|--------|------|
-| | | | | | |
+| 1.1 Architektura i konwencje | ✅ | n/d (dokument) | 1 | (ten commit) | 2026-10-08 |
 
 ## Historia zmian
 

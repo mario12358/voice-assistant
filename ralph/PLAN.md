@@ -31,7 +31,7 @@
 
 ### Faza 1: Setup i fundamenty
 
-- [ ] Zadanie 1.1: Szkielet architektury i konwencje — mapa crate'ów (config, audio, model, stt, clipboard, app), typy błędów (thiserror w lib, anyhow w bin), traity dla wymiennych elementów (źródło audio, STT, schowek), konwencje nazw i testów; wynik do PROJECT_CONTEXT.md [VA-PLAT-1, VA-TECH-1]
+- [x] Zadanie 1.1: Szkielet architektury i konwencje — mapa crate'ów (config, audio, model, stt, clipboard, app), typy błędów (thiserror w lib, anyhow w bin), traity dla wymiennych elementów (źródło audio, STT, schowek), konwencje nazw i testów; wynik do PROJECT_CONTEXT.md [VA-PLAT-1, VA-TECH-1]
   - Specky: (req: 01M4EKHBS1EMNP53JTYKVA3YTB v1 @41e9b47)
   - Specky: (req: 01M4EKHC5VP9R6P1EY8E55S2XE v1 @940ad46)
   - AC: PROJECT_CONTEXT.md zawiera mapę crate → odpowiedzialność, zasady błędów/logowania, ścieżki macOS (Application Support, Logs) i sposób dostarczenia modelu (pobierany po instalacji)

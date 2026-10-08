@@ -12,7 +12,27 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 
 ## Architektura
 
-[Krótki opis struktury projektu]
+Workspace Cargo: biblioteki w `crates/`, binarki w `apps/`. Kod (identyfikatory) po angielsku, komunikaty dla użytkownika po polsku.
+
+| Crate | Ścieżka | Odpowiedzialność |
+|-------|---------|------------------|
+| `va-config` | crates/config | `Config` (serde/toml): mikrofon, język, progi ciszy, limit nagrania, ścieżka modelu; odczyt/zapis; ścieżki macOS (`Paths`) |
+| `va-audio` | crates/audio | trait `AudioHost` (lista urządzeń, domyślne), wybór mikrofonu z fallbackiem, nagrywanie (cpal) → 16 kHz mono f32 (rubato), przycinanie ciszy |
+| `va-model` | crates/model | pobieranie GGML large-v3-turbo (HTTP Range, `.part` → rename), SHA-256, stan „brak/pobieranie/gotowy” |
+| `va-stt` | crates/stt | trait `SpeechToText`, implementacja whisper-rs (feature `metal`), sprawdzenie GPU (`GpuProbe`), mock testowy |
+| `va-clipboard` | crates/clipboard | trait `TextSink`, implementacja arboard; pusty tekst nie zmienia schowka |
+| `va-core` | crates/core | automat stanów (Idle/Recording/Transcribing/Error), `Controller` łączący audio → STT → schowek, zdarzenia stanu dla UI; bez GUI |
+| `voice-asystent` | apps/voice-asystent | aplikacja paska menu: tao (wątek główny), tray-icon + muda, global-hotkey, okablowanie zależności |
+| `va-dev` | apps/va-dev | CLI deweloperskie (clap): `mic-test`, `transcribe`, `model-download` |
+
+Konwencje:
+- **Błędy**: każdy crate biblioteczny ma własny `enum Error` (thiserror) i `type Result<T>`; binarki używają `anyhow` z `.context(...)`. Komunikat dla użytkownika powstaje w warstwie UI (mapowanie błędu → tekst PL), nie w bibliotekach.
+- **Wymienne elementy za traitami** (`AudioHost`, `Recorder`, `SpeechToText`, `TextSink`, `GpuProbe`, `ModelSource`), wstrzykiwane do `Controller` jako `Box<dyn Trait + Send>`; testy używają ręcznych fałszywek z crate'u `va-core` (`#[cfg(test)]`) albo modułów `testing` za feature `testing`.
+- **Logowanie**: `tracing`; spany `recording`, `transcription` z czasem; treść transkrypcji tylko `debug!`; audio nigdy na dysk (poza jawnym `va-dev mic-test --save`).
+- **Ścieżki macOS**: konfiguracja `~/Library/Application Support/VoiceAsystent/config.toml`, model `…/VoiceAsystent/models/ggml-large-v3-turbo.bin`, logi `~/Library/Logs/VoiceAsystent/`.
+- **Platforma**: `va-core` i obie binarki mają `#[cfg(not(target_os = "macos"))] compile_error!(...)`; brak konfiguracji CI/budowania dla innych systemów.
+- **Testy**: jednostkowe w module `#[cfg(test)] mod tests`, integracyjne w `crates/<x>/tests/`; fixtures WAV w `tests/fixtures/` (katalog workspace). Nazwy testów opisują zachowanie (`empty_transcript_leaves_clipboard_untouched`). Testy wymagające modelu, GPU, mikrofonu lub sesji graficznej: `#[ignore = "wymaga …"]`, uruchamiane lokalnie `cargo test --workspace -- --include-ignored`. Kryteria Specky: `// specky: crit <id>` w linii nad `#[test]`.
+- **Budowanie**: GPU tylko przez feature `metal` w `va-stt` (włączony domyślnie w binarkach); budowanie bez Metal nie jest wspierane w wydaniu.
 
 ## Kluczowe decyzje
 
@@ -27,6 +47,10 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 | 2026-10-08 | 📌 Specky (projekt 01M4EJNFTHDZ3ECMHT7425APR0) jest jedynym źródłem wymagań; `wymagania.md` to tylko wsad importu | decyzja właściciela |
 | 2026-10-08 | 📌 Model rozpoznawania mowy tylko na GPU (Metal), bez fallbacku CPU | spec/WYTYCZNE_TECHNICZNE.md |
 | 2026-10-08 | 📌 Model large-v3-turbo NIE jest w instalatorze; aplikacja pobiera go po instalacji do ~/Library/Application Support/VoiceAsystent/models/ (VA-MODEL-1) | decyzja właściciela: mały .dmg |
+| 2026-10-08 | 📌 Wątek główny = pętla tao (tray-icon, global-hotkey); logika w `va-core` bez zależności od GUI, testowalna na wstrzykniętych zdarzeniach | wymóg AppKit + testowalność |
+| 2026-10-08 | Skróty przez global-hotkey (Carbon RegisterEventHotKey) — nie wymaga uprawnienia Dostępność | prostsza instalacja |
+| 2026-10-08 | Lewe kliknięcie ikony = start/stop, menu (mikrofon, zakończ) pod prawym kliknięciem | VA-UI-2 + VA-REC-4 bez konfliktu |
+| 2026-10-08 | Język transkrypcji domyślnie `auto` (konfigurowalny pl/en) | wymagania nie określają języka |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -45,7 +69,11 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 
 ## Zależności między komponentami
 
-[Opis jak komponenty ze sobą współpracują]
+- Wątek główny (wymóg macOS): pętla tao, ikona i menu (tray-icon/muda), skróty (global-hotkey). Zdarzenia kliknięcia/skrótu → `Command::{Start, Stop}` → kanał do `Controller`.
+- Wątek `Controller` (va-core): trzyma automat stanów; Start → `Recorder` (cpal `Stream` jest `!Send`, więc nagrywanie żyje we własnym wątku audio); Stop → bufor → przycięcie ciszy → `SpeechToText` → `TextSink`.
+- `Controller` publikuje `StateChanged(State)` przez `EventLoopProxy` → UI zmienia ikonę (szare/czerwone kółko) i podpowiedź.
+- Start: `va-config` (odczyt) → `GpuProbe` → `va-model` (jest model? jeśli nie, pobieranie w tle z postępem w menu) → załadowanie `SpeechToText` raz → stan Idle.
+- Wybór mikrofonu w menu → `va-config` (zapis) → `Controller` używa go od następnego nagrania.
 
 ## Aktualny stan
 
@@ -54,6 +82,6 @@ Ten plik przechowuje kontekst projektu który przetrwa `/compact`.
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: brak (plan przepisany pod macOS 2026-10-08)
-- Następne zadanie: 1.1
+- Ostatnie ukończone zadanie: 1.1 (architektura i konwencje)
+- Następne zadanie: 1.2
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
