@@ -53,6 +53,8 @@ Konwencje:
 | 2026-10-08 | Logi: JSON do dziennego pliku `~/Library/Logs/VoiceAsystent/voice-asystent.log.*` + tekst na stderr, spany z czasem (FmtSpan::CLOSE); bez OTLP/eksportu — aplikacja lokalna, po pobraniu modelu zero ruchu sieciowego | odstępstwo od observability.md uzasadnione VA-MODEL-1 |
 | 2026-10-08 | 📌 Treść transkrypcji logujemy tylko przez `va_core::logging::transcription_finished` (debug); na info tylko długość i czas | prywatność |
 | 2026-10-08 | Język transkrypcji domyślnie `auto` (konfigurowalny pl/en) | wymagania nie określają języka |
+| 2026-10-08 | `va_audio::SilenceParams` niezależne od `va-config` (audio nie zależy od konfiguracji); mapowanie `SilenceConfig` → `SilenceParams` w miejscu wywołania (va-dev, kontroler) | crate audio bez zależności od konfiguracji |
+| 2026-10-08 | Fixtures WAV w `tests/fixtures/` generowane skryptem `generate_silence_fixtures.py` (`say` macOS, 16 kHz mono) — granice mowy znane co do próbki | powtarzalność |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -84,6 +86,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 2.2 (nagrywanie → 16 kHz mono)
-- Następne zadanie: 2.3 (przycinanie ciszy)
+- Ostatnie ukończone zadanie: 2.2 (nagrywanie → 16 kHz mono); 2.3 (przycinanie ciszy) w PR #1
+- Następne zadanie: 2.4 (`va-dev mic-test`, wymaga 2.3)
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
