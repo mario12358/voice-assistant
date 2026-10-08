@@ -3,6 +3,7 @@ compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
 use va_config::{Config, Paths};
 use va_core::logging::{self, LogOptions};
+use va_model::{LARGE_V3_TURBO, ModelState, ModelStore};
 use va_stt::{GpuReady, METAL_BUILT, MetalProbe, require_metal};
 
 fn main() -> anyhow::Result<()> {
@@ -17,7 +18,22 @@ fn main() -> anyhow::Result<()> {
         tracing::warn!(%error, "używam ustawień domyślnych");
     }
     let _gpu = check_gpu();
+    let _model = check_model(&paths);
     Ok(())
+}
+
+/// Stan modelu przy starcie; brak modelu uruchomi pobieranie w tle (zadanie 5.6).
+fn check_model(paths: &Paths) -> Option<ModelState> {
+    match ModelStore::new(&paths.models_dir, LARGE_V3_TURBO).check() {
+        Ok(state) => {
+            tracing::info!(?state, "model: stan przy starcie");
+            Some(state)
+        }
+        Err(error) => {
+            tracing::error!(%error, "model: nie udało się sprawdzić");
+            None
+        }
+    }
 }
 
 /// Bez GPU Metal transkrypcja jest zablokowana; aplikacja działa dalej i pokazuje komunikat.

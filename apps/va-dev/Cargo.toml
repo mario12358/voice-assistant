@@ -15,6 +15,7 @@ toml.workspace = true
 va-audio.workspace = true
 va-config.workspace = true
 va-core.workspace = true
+va-model.workspace = true
 va-stt = { workspace = true, features = ["metal"] }
 
 [dev-dependencies]

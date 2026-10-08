@@ -19,3 +19,20 @@ fn startup_reports_gpu_verdict() {
         "brak werdyktu GPU w logu startu:\n{stderr}"
     );
 }
+
+#[test]
+fn startup_reports_missing_model() {
+    let home = tempfile::tempdir().expect("katalog tymczasowy");
+
+    let output = Command::new(env!("CARGO_BIN_EXE_voice-asystent"))
+        .env("HOME", home.path())
+        .output()
+        .expect("voice-asystent uruchamia się");
+
+    assert!(output.status.success(), "{output:?}");
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(
+        stderr.contains("model: stan przy starcie") && stderr.contains("Missing"),
+        "{stderr}"
+    );
+}
