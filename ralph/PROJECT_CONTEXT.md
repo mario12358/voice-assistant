@@ -84,6 +84,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 2.1 (lista mikrofonów i wybór)
-- Następne zadanie: 2.2
+- Ostatnie ukończone zadanie: 2.2 (nagrywanie → 16 kHz mono)
+- Następne zadanie: 2.3 (przycinanie ciszy)
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)

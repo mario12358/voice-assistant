@@ -58,11 +58,11 @@
   - AC: zniknięty mikrofon z konfiguracji → użyty domyślny systemowy
   - AC: brak jakiegokolwiek mikrofonu → czytelny błąd
 - [x] Test: 2.1 — wybór urządzenia po nazwie i fallback na domyślne (abstrakcja hosta audio, bez sprzętu)
-- [ ] Zadanie 2.2: Nagrywanie do bufora w pamięci (start/stop) z dowolnego formatu urządzenia → 16 kHz mono f32 (downmix + resampling rubato); limit długości nagrania z konfiguracji (domyślnie 5 min) (wymaga: 2.1) [VA-STT-1]
+- [x] Zadanie 2.2: Nagrywanie do bufora w pamięci (start/stop) z dowolnego formatu urządzenia → 16 kHz mono f32 (downmix + resampling rubato); limit długości nagrania z konfiguracji (domyślnie 5 min) (wymaga: 2.1) [VA-STT-1]
   - Specky: (req: 01M4EKHCCRE1GSXSNNWR8CMD0M v1 @fd1ba16)
   - AC: wynik zawsze 16 kHz mono f32 niezależnie od formatu wejścia (44.1/48 kHz, stereo)
   - AC: nagranie nie trafia na dysk
-- [ ] Test: 2.2 — konwersja syntetycznego sygnału 48 kHz stereo → 16 kHz mono (długość, częstotliwość tonu zachowana)
+- [x] Test: 2.2 — konwersja syntetycznego sygnału 48 kHz stereo → 16 kHz mono (długość, częstotliwość tonu zachowana)
 - [ ] Zadanie 2.3: Przycinanie ciszy na początku/końcu nagrania (energetyczny VAD, progi z konfiguracji); nagranie samej ciszy → wynik pusty (wymaga: 2.2) [VA-REC-3]
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
   - AC: nagranie samej ciszy → brak wywołania STT, schowek bez zmian

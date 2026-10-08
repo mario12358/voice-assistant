@@ -15,7 +15,7 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 9/47 pozycji ukończonych
+- **Postęp**: 11/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08: 0 zmian, kolejka pusta; 11 wymagań zaakceptowanych, VA-MODEL-1 czeka na decyzję.
 
 ## Stan testów
@@ -37,11 +37,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 17 |
-| Pass | 17 |
+| Łącznie testów | 35 |
+| Pass | 33 |
 | Fail | 0 |
-| Skip | 0 |
-| Ostatnie uruchomienie | 2026-10-08 (pełny suite po Fazie 1) |
+| Skip | 2 (ignored: mikrofon) |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 2.2) |
 
 ## Historia realizacji
 
@@ -51,7 +51,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 1.2 Workspace Cargo + test 1.2 | ✅ | 2/0 | 1 | 70a8fe2 | 2026-10-08 |
 | 1.3 Konfiguracja TOML + test 1.3 (`va-dev config`, start aplikacji) | ✅ | 14/0, mutacja numeru linii czerwona | 1 | 99d8692 | 2026-10-08 |
 | 1.4 Logowanie tracing + test 1.4 | ✅ | 17/0, mutacja info→treść czerwona | 1 | 229aad4 | 2026-10-08 |
-| 2.1 Lista mikrofonów, wybór z fallbackiem, `va-dev devices` + test 2.1 | ✅ | 23/0 (z ignored), mutacja fallbacku czerwona | 1 | (ten commit) | 2026-10-08 |
+| 2.1 Lista mikrofonów, wybór z fallbackiem, `va-dev devices` + test 2.1 | ✅ | 23/0 (z ignored), mutacja fallbacku czerwona | 1 | cc5599a | 2026-10-08 |
+| 2.2 Nagrywanie do bufora → 16 kHz mono (rubato Fft) + test 2.2, strażnik „bez zapisu na dysk” | ✅ | 33/0 + 2 ignored (nagranie z mikrofonu zielone lokalnie), mutacja limitu czerwona | 1 | (ten commit) | 2026-10-08 |
 
 ## Historia zmian
 

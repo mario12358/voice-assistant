@@ -9,6 +9,7 @@ publish.workspace = true
 
 [dependencies]
 cpal.workspace = true
+rubato = "5"
 thiserror.workspace = true
 tracing.workspace = true
 
