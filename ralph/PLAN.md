@@ -97,11 +97,11 @@
 
 ### Faza 4: Rdzeń — stan nagrywania i schowek
 
-- [ ] Zadanie 4.1: Crate clipboard: trait `TextSink` + implementacja schowka systemowego (arboard); zapis zastępuje poprzednią zawartość; pusty tekst → schowek bez zmian (wymaga: 1.2) [VA-REC-3] (pr: #13)
+- [x] Zadanie 4.1: Crate clipboard: trait `TextSink` + implementacja schowka systemowego (arboard); zapis zastępuje poprzednią zawartość; pusty tekst → schowek bez zmian (wymaga: 1.2) [VA-REC-3] (pr: #13)
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
   - AC: schowek zawiera dokładnie tekst transkrypcji (z polskimi znakami)
   - AC: pusta transkrypcja nie zmienia schowka
-- [ ] Test: 4.1 — logika z mockiem schowka; test prawdziwego schowka `#[ignore]` (sesja graficzna) (pr: #13)
+- [x] Test: 4.1 — logika z mockiem schowka; test prawdziwego schowka `#[ignore]` (sesja graficzna) (pr: #13)
 - [ ] Zadanie 4.2: Automat stanów aplikacji Idle → Recording → Transcribing → Idle (oraz Error → Idle) z poleceniami Start/Stop niezależnymi od źródła (skrót, kliknięcie); Start w Recording/Transcribing i Stop w Idle są ignorowane z logiem (wymaga: 1.2) [VA-REC-1, VA-REC-2, VA-UI-2]
   - Specky: (req: 01M4EKHCQYDSN2280XE8DMXR08 v1 @5c4517a)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
