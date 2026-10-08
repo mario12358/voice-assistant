@@ -59,6 +59,7 @@ Konwencje:
 | 2026-10-08 | 📌 Specky nie czyta znaczników w Ruście (tylko .py/.js/.ts): pracujemy bez dowodów kryteriów z CI; znaczniki `// specky: crit <id>` w testach ZOSTAJĄ (nad `fn`, pod `#[test]`), kryteria właściciel odhacza ręcznie w komentarzu Specky na PR; „brak testu” w tym komentarzu nie jest błędem do naprawy | decyzja właściciela |
 | 2026-10-08 | Model z Hugging Face `ggerganov/whisper.cpp` `ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 1fc70f77…bc69 z API LFS); HTTP przez ureq 3 bez gzip (Range + kompresja się gryzą), `check()` liczy SHA-256 przy każdym starcie | VA-MODEL-1 |
 | 2026-10-09 | whisper-rs 0.16 z `tracing_backend` (logi whisper.cpp/ggml w tracing); `WhisperStt::load` wymaga `GpuReady` i ustawia `use_gpu(true)`; dowód Metal w teście = linie whisper.cpp `whisper_backend_init_gpu: device 0: Metal` i `Metal total size`, nie własny log | VA-STT-2 K1 |
+| 2026-10-09 | Schowek: reguła VA-REC-3 (pusta/białe znaki → bez zmian) w `ClipboardSink`, pod spodem wymienny `Clipboard` (arboard tworzony per zapis — bez trzymania obiektu NSPasteboard między wątkami) | testowalność + Send |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -94,6 +95,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: Faza 3 (transkrypcja na Metal, `va-dev transcribe`), tag `ralph/faza-3`
-- Następne zadanie: 4.1 (crate clipboard: TextSink + arboard)
+- Ostatnie ukończone: Faza 3, wersja v0.2.0; 4.1 (schowek) w PR #13
+- Następne zadanie: 4.2 (automat stanów)
 - Blokery: brak
