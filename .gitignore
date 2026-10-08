@@ -1,0 +1,13 @@
+.env
+.env.*
+*.log
+*.tmp
+.DS_Store
+*.sqlite
+artifacts/
+target/
+dist/
+models/
+ralph/PERMISSIONS.jsonl
+ralph/KONTROLE.jsonl
+.claude/settings.local.json
