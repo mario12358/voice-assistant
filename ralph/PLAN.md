@@ -67,9 +67,9 @@
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
   - AC: nagranie samej ciszy → brak wywołania STT, schowek bez zmian
 - [x] Test: 2.3 — fixtures WAV (cisza, mowa z ciszą, sama cisza) → oczekiwane granice segmentu (pr: #1)
-- [ ] Zadanie 2.4: Komenda `va-dev mic-test [--seconds N] [--save plik.wav]`: lista mikrofonów, nagranie N s, poziom sygnału w terminalu; zapis WAV tylko przy jawnym `--save` (wymaga: 2.2, 2.3) (pr: #2)
+- [x] Zadanie 2.4: Komenda `va-dev mic-test [--seconds N] [--save plik.wav]`: lista mikrofonów, nagranie N s, poziom sygnału w terminalu; zapis WAV tylko przy jawnym `--save` (wymaga: 2.2, 2.3) (pr: #2)
   - AC: wejście — komenda `va-dev mic-test`
-- [ ] Test: 2.4 — zapis WAV z bufora (hound) i odczyt z powrotem (pr: #2)
+- [x] Test: 2.4 — zapis WAV z bufora (hound) i odczyt z powrotem (pr: #2)
 
 ### Faza 3: Transkrypcja — Whisper large-v3-turbo na Metal
 

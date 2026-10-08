@@ -69,7 +69,10 @@ Konwencje:
 
 | Problem | Rozwiązanie |
 |---------|-------------|
-| | |
+| Specky contract check czerwony na PR zadania bez wymagania (narzędzia, stan fazy) | w commicie i w `--body` squasha linia `Specky-Req: none` |
+| `cargo` poza PATH w nowym shellu i w hooku kontroli (lint-typy „niedostępny”) | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; clippy/fmt uruchamiaj ręcznie przed commitem |
+| Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
+| Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
 ## Zależności między komponentami
 
@@ -86,6 +89,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone zadanie: 2.3 (przycinanie ciszy); 2.4 (`va-dev mic-test`) w PR #2
-- Następne: po merge #2 regresja Fazy 2 na main + tag; potem 3.1 (weryfikacja Metal)
+- Ostatnie ukończone: Faza 2 (2.4 `va-dev mic-test`), tag `ralph/faza-2`
+- Następne zadanie: 3.1 (weryfikacja GPU Metal)
 - Blokery: brak; VA-MODEL-1 czeka na akceptację w Specky (dotyczy 3.2, 5.6)
