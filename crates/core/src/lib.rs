@@ -3,5 +3,6 @@
 #[cfg(not(target_os = "macos"))]
 compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
+pub mod controller;
 pub mod logging;
 pub mod state;
