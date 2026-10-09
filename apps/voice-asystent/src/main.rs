@@ -4,7 +4,9 @@ compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 mod app;
 mod click;
 mod indicator;
+mod microphones;
 mod startup;
+mod tray_menu;
 
 use va_config::{Config, Paths};
 use va_core::logging::{self, LogOptions};
@@ -29,5 +31,5 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
     let controller_parts = startup::controller_parts(&config, &paths, gpu.as_ref(), model.as_ref());
-    app::run(controller_parts)
+    app::run(controller_parts, paths.config_file)
 }

@@ -1,0 +1,59 @@
+//! Menu pod prawym kliknięciem: podmenu „Mikrofon” i „Zakończ”.
+
+use std::path::PathBuf;
+
+use anyhow::Context;
+use tray_icon::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu};
+use va_audio::{AudioHost, CpalHost};
+use va_config::Config;
+
+use crate::microphones::{QUIT_ID, microphone_items};
+
+pub struct TrayMenu {
+    pub menu: Menu,
+    microphones: Submenu,
+    config_path: PathBuf,
+}
+
+impl TrayMenu {
+    pub fn new(config_path: PathBuf) -> anyhow::Result<Self> {
+        let microphones = Submenu::new("Mikrofon", true);
+        let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
+        let menu = Menu::new();
+        menu.append_items(&[&microphones, &PredefinedMenuItem::separator(), &quit])
+            .context("menu ikony")?;
+        let tray_menu = Self {
+            menu,
+            microphones,
+            config_path,
+        };
+        tray_menu.refresh_microphones();
+        Ok(tray_menu)
+    }
+
+    /// Lista urządzeń aktualna na chwilę otwarcia menu (mikrofon mógł zostać podłączony).
+    pub fn refresh_microphones(&self) {
+        while self.microphones.remove_at(0).is_some() {}
+        let devices = match CpalHost::new().input_devices() {
+            Ok(devices) => devices,
+            Err(error) => {
+                tracing::warn!(%error, "lista mikrofonów niedostępna");
+                Vec::new()
+            }
+        };
+        let (config, _) = Config::load_or_default(&self.config_path);
+        let items = microphone_items(&devices, config.microphone.as_deref());
+        if items.is_empty() {
+            let _ = self
+                .microphones
+                .append(&MenuItem::new("Brak mikrofonu", false, None));
+            return;
+        }
+        for item in items {
+            let entry = CheckMenuItem::with_id(item.id, item.label, true, item.checked, None);
+            if let Err(error) = self.microphones.append(&entry) {
+                tracing::error!(%error, "pozycja mikrofonu w menu");
+            }
+        }
+    }
+}
