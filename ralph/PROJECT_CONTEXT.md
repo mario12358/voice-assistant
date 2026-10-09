@@ -104,5 +104,5 @@ Konwencje:
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
-- Ostatnie ukończone: 6.2 (build-dmg.sh, PR #27); w toku: 6.3 (README + RUNBOOK, PR #28); potem ⛔ 6.4 (test ręczny właściciela — jedyne pozostałe zadanie)
+- Ostatnie ukończone: 6.3 (README + RUNBOOK, PR #28); jedyne pozostałe zadanie: ⛔ 6.4 (test ręczny właściciela: instalacja z .dmg, nagranie, wklejenie, zmiana mikrofonu) — Faza 6 bez tagu do czasu jego wyniku
 - Blokery: brak
