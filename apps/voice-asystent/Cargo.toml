@@ -19,6 +19,7 @@ tao = "0.37"
 va-audio.workspace = true
 va-clipboard.workspace = true
 global-hotkey = "0.8.0"
+mac-notification-sys = "0.6"
 
 [lints]
 workspace = true

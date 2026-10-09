@@ -28,6 +28,8 @@ pub enum ControllerEvent {
     StateChanged(State),
     /// Komunikat błędu dla użytkownika (po nim automat wraca do Idle).
     Failed(String),
+    /// Mikrofon nie dał żadnego sygnału (same zera) — zwykle brak zgody na mikrofon w macOS.
+    NoSignal,
     /// Transkrypcja dostarczona albo pominięta (pusta).
     Delivered(Delivery),
 }
@@ -150,6 +152,7 @@ impl Controller {
 
     fn stop_and_transcribe(&mut self) {
         match self.recorder.stop() {
+            Ok(samples) if has_no_signal(&samples) => self.no_signal(),
             Ok(samples) => {
                 let speech = trim_silence(&samples, TARGET_SAMPLE_RATE, &self.silence).to_vec();
                 self.worker.transcribe(speech);
@@ -175,6 +178,14 @@ impl Controller {
         }
     }
 
+    /// Bez zgody na mikrofon macOS oddaje ciszę cyfrową — to nie „sama cisza” do pominięcia.
+    fn no_signal(&mut self) {
+        tracing::error!("mikrofon nie dał sygnału — możliwy brak zgody na mikrofon");
+        self.apply(Input::Failed);
+        (self.publish)(ControllerEvent::NoSignal);
+        self.apply(Input::ErrorAcknowledged);
+    }
+
     /// Błąd jednego nagrania: komunikat dla UI, Error → Idle, aplikacja działa dalej.
     fn fail(&mut self, message: String) {
         tracing::error!(error = %message, "nagranie nieudane");
@@ -182,6 +193,11 @@ impl Controller {
         (self.publish)(ControllerEvent::Failed(message));
         self.apply(Input::ErrorAcknowledged);
     }
+}
+
+/// Same dokładne zera: prawdziwy mikrofon zawsze ma choć szum, a odmowa dostępu daje ciszę cyfrową.
+fn has_no_signal(samples: &[f32]) -> bool {
+    !samples.is_empty() && samples.iter().all(|sample| *sample == 0.0)
 }
 
 /// Wątek roboczy z modelem i schowkiem: nagranie → tekst → schowek.

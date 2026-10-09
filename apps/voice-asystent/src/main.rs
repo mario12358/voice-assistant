@@ -5,6 +5,7 @@ mod app;
 mod click;
 mod hotkeys;
 mod indicator;
+mod messages;
 mod microphones;
 mod startup;
 mod tray_menu;

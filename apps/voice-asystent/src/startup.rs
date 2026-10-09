@@ -1,5 +1,6 @@
 //! Sprawdzenia startowe i złożenie kontrolera z prawdziwych elementów.
 
+use crate::messages::Problem;
 use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
 use va_clipboard::system_sink;
 use va_config::{Config, Paths};
@@ -32,27 +33,25 @@ pub fn check_gpu() -> Option<GpuReady> {
     }
 }
 
-/// Kontroler powstaje tylko z GPU i gotowym modelem; inaczej ikona działa bez nagrywania (5.5, 5.6).
+/// Kontroler powstaje tylko z GPU i gotowym modelem; inaczej ikona działa bez nagrywania
+/// i pokazuje powód w menu (5.5), a brak modelu uruchomi pobieranie (5.6).
 pub fn controller_parts(
     config: &Config,
     paths: &Paths,
     gpu: Option<&GpuReady>,
     model: Option<&ModelState>,
-) -> Option<ControllerParts> {
-    let gpu = gpu?;
+) -> Result<ControllerParts, Problem> {
+    let gpu = gpu.ok_or(Problem::GpuMissing)?;
     let Some(ModelState::Ready(model_path)) = model else {
         tracing::warn!("brak gotowego modelu — nagrywanie niedostępne");
-        return None;
+        return Err(Problem::ModelUnavailable);
     };
-    let stt = match WhisperStt::load(model_path, gpu, config.language) {
-        Ok(stt) => stt,
-        Err(error) => {
-            tracing::error!(%error, "nie udało się załadować modelu");
-            return None;
-        }
-    };
+    let stt = WhisperStt::load(model_path, gpu, config.language).map_err(|error| {
+        tracing::error!(%error, "nie udało się załadować modelu");
+        Problem::ModelUnavailable
+    })?;
     let config_file = paths.config_file.clone();
-    Some(ControllerParts {
+    Ok(ControllerParts {
         recorder: Box::new(CpalRecorder::new(config.max_recording_secs)),
         stt: Box::new(stt),
         sink: Box::new(system_sink()),
