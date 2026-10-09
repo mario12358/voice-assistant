@@ -7,12 +7,16 @@ use tray_icon::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu
 use va_audio::{AudioHost, CpalHost};
 use va_config::Config;
 
+use crate::download::DownloadState;
 use crate::microphones::{QUIT_ID, microphone_items};
+
+pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
 
 pub struct TrayMenu {
     pub menu: Menu,
     microphones: Submenu,
     config_path: PathBuf,
+    download: Option<(MenuItem, MenuItem)>,
 }
 
 impl TrayMenu {
@@ -26,6 +30,7 @@ impl TrayMenu {
             menu,
             microphones,
             config_path,
+            download: None,
         };
         tray_menu.refresh_microphones();
         Ok(tray_menu)
@@ -39,6 +44,36 @@ impl TrayMenu {
             .insert_items(&[&notice, &PredefinedMenuItem::separator()], 0)
         {
             tracing::error!(%error, "komunikat w menu");
+        }
+    }
+
+    /// Status pobierania modelu na górze menu i „Ponów pobieranie” po błędzie; znika po pobraniu.
+    pub fn show_download(&mut self, state: &DownloadState) {
+        let status = state.menu_status();
+        match (&self.download, status) {
+            (None, Some(text)) => {
+                let status_item = MenuItem::new(&text, false, None);
+                let retry = MenuItem::with_id(
+                    RETRY_DOWNLOAD_ID,
+                    "Ponów pobieranie",
+                    state.can_retry(),
+                    None,
+                );
+                if let Err(error) = self.menu.insert_items(&[&status_item, &retry], 0) {
+                    tracing::error!(%error, "status pobierania w menu");
+                }
+                self.download = Some((status_item, retry));
+            }
+            (Some((status_item, retry)), Some(text)) => {
+                status_item.set_text(text);
+                retry.set_enabled(state.can_retry());
+            }
+            (Some((status_item, retry)), None) => {
+                let _ = self.menu.remove(status_item);
+                let _ = self.menu.remove(retry);
+                self.download = None;
+            }
+            (None, None) => {}
         }
     }
 

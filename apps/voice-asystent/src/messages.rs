@@ -9,6 +9,8 @@ pub enum Problem {
     GpuMissing,
     /// Model nie jest pobrany albo nie dał się załadować.
     ModelUnavailable,
+    /// Model w trakcie pobierania albo pobieranie nieudane (tekst ze stanu pobierania).
+    ModelNotReady(String),
     /// Inny błąd pojedynczego nagrania (tekst z kontrolera).
     RecordingFailed(String),
 }
@@ -33,6 +35,7 @@ pub fn message(problem: &Problem) -> (&'static str, String) {
              modelu."
                 .to_owned(),
         ),
+        Problem::ModelNotReady(text) => ("Model niedostępny", text.clone()),
         Problem::RecordingFailed(reason) => (
             "Nagranie nieudane",
             format!("Nagranie nie powiodło się: {reason}"),
@@ -45,7 +48,7 @@ pub fn menu_notice(problem: &Problem) -> Option<&'static str> {
     match problem {
         Problem::GpuMissing => Some("Wymagane GPU (Metal) — nagrywanie niedostępne"),
         Problem::ModelUnavailable => Some("Brak modelu — nagrywanie niedostępne"),
-        Problem::MicrophoneSilent | Problem::RecordingFailed(_) => None,
+        Problem::MicrophoneSilent | Problem::ModelNotReady(_) | Problem::RecordingFailed(_) => None,
     }
 }
 
