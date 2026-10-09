@@ -3,6 +3,7 @@ compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
 mod app;
 mod click;
+mod download;
 mod hotkeys;
 mod indicator;
 mod messages;
@@ -33,5 +34,6 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
     let controller_parts = startup::controller_parts(&config, &paths, gpu.as_ref(), model.as_ref());
-    app::run(controller_parts, paths.config_file)
+    let download = startup::ModelDownload::needed(&config, &paths, gpu.as_ref(), model.as_ref());
+    app::run(controller_parts, download, paths.config_file)
 }
