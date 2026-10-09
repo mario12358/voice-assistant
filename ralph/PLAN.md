@@ -150,15 +150,15 @@
 
 ### Faza 6: Instalator .dmg i weryfikacja
 
-- [ ] Zadanie 6.1: Bundle VoiceAsystent.app: Info.plist (CFBundleIdentifier, LSUIElement=true, NSMicrophoneUsageDescription po polsku, LSMinimumSystemVersion), ikona aplikacji, bez modelu (pobierany po instalacji — 5.6), podpis ad-hoc (`codesign -s -`); skrypt `scripts/build-app.sh` (release, `--features metal`) (wymaga: 5.6) [VA-PLAT-2, VA-MODEL-1] (pr: #26)
+- [x] Zadanie 6.1: Bundle VoiceAsystent.app: Info.plist (CFBundleIdentifier, LSUIElement=true, NSMicrophoneUsageDescription po polsku, LSMinimumSystemVersion), ikona aplikacji, bez modelu (pobierany po instalacji — 5.6), podpis ad-hoc (`codesign -s -`); skrypt `scripts/build-app.sh` (release, `--features metal`) (wymaga: 5.6) [VA-PLAT-2, VA-MODEL-1] (pr: #26)
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
   - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: `scripts/build-app.sh` tworzy `dist/VoiceAsystent.app`, która uruchamia się z Findera i pokazuje ikonę w pasku menu
-- [ ] Test: 6.1 — walidacja wygenerowanego Info.plist (`plutil -lint`) i struktury bundla w teście skryptu (pr: #26)
-- [ ] Zadanie 6.2: Skrypt `scripts/build-dmg.sh`: obraz `dist/VoiceAsystent-<wersja>.dmg` (hdiutil) z aplikacją i skrótem do /Applications; wersja z `git describe` (wymaga: 6.1) [VA-PLAT-2]
+- [x] Test: 6.1 — walidacja wygenerowanego Info.plist (`plutil -lint`) i struktury bundla w teście skryptu (pr: #26)
+- [ ] Zadanie 6.2: Skrypt `scripts/build-dmg.sh`: obraz `dist/VoiceAsystent-<wersja>.dmg` (hdiutil) z aplikacją i skrótem do /Applications; wersja z `git describe` (wymaga: 6.1) [VA-PLAT-2] (pr: #27)
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
   - AC: zamontowany .dmg zawiera VoiceAsystent.app i link do Applications, bez pliku modelu
-- [ ] Test: 6.2 — test skryptu: dmg powstaje, montuje się (`hdiutil attach -nobrowse`) i zawiera oczekiwane pliki
+- [ ] Test: 6.2 — test skryptu: dmg powstaje, montuje się (`hdiutil attach -nobrowse`) i zawiera oczekiwane pliki (pr: #27)
 - [ ] Zadanie 6.3: README + docs/RUNBOOK.md: wymagania (macOS na Apple Silicon), budowanie, instalacja z .dmg, pierwsze uruchomienie z pobraniem modelu (~1,6 GB, Gatekeeper dla aplikacji bez notaryzacji, zgoda na mikrofon), skróty (wymaga: 6.2)
 - [ ] ⛔ Zadanie 6.4: Test manualny właściciela: instalacja z .dmg, nagranie skrótami i kliknięciem ikony, wklejenie cmd+v w kilku aplikacjach, zmiana mikrofonu — wynik do REPORT.md (wymaga: 6.2)
 

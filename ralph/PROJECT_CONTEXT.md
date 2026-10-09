@@ -104,5 +104,5 @@ Konwencje:
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
-- W toku: 6.1 (bundle VoiceAsystent.app) — PR #26; następne: 6.2 (build-dmg.sh)
+- Ostatnie ukończone: 6.1 (bundle VoiceAsystent.app, PR #26); w toku: 6.2 (build-dmg.sh, PR #27); następne: 6.3 (README + RUNBOOK)
 - Blokery: brak
