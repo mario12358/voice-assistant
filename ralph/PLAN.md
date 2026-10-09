@@ -159,7 +159,7 @@
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
   - AC: zamontowany .dmg zawiera VoiceAsystent.app i link do Applications, bez pliku modelu
 - [x] Test: 6.2 — test skryptu: dmg powstaje, montuje się (`hdiutil attach -nobrowse`) i zawiera oczekiwane pliki (pr: #27)
-- [ ] Zadanie 6.3: README + docs/RUNBOOK.md: wymagania (macOS na Apple Silicon), budowanie, instalacja z .dmg, pierwsze uruchomienie z pobraniem modelu (~1,6 GB, Gatekeeper dla aplikacji bez notaryzacji, zgoda na mikrofon), skróty (wymaga: 6.2) (pr: #28)
+- [x] Zadanie 6.3: README + docs/RUNBOOK.md: wymagania (macOS na Apple Silicon), budowanie, instalacja z .dmg, pierwsze uruchomienie z pobraniem modelu (~1,6 GB, Gatekeeper dla aplikacji bez notaryzacji, zgoda na mikrofon), skróty (wymaga: 6.2) (pr: #28)
 - [ ] ⛔ Zadanie 6.4: Test manualny właściciela: instalacja z .dmg, nagranie skrótami i kliknięciem ikony, wklejenie cmd+v w kilku aplikacjach, zmiana mikrofonu — wynik do REPORT.md (wymaga: 6.2)
 
 ## Pokrycie spec
