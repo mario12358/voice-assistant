@@ -97,6 +97,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 4.2 (automat stanów); 4.3 (kontroler) w PR #16
-- Następne: po merge #16 regresja Fazy 4 na main + tag; potem 5.1 (aplikacja paska menu)
+- Ostatnie ukończone: Faza 4 (schowek, automat stanów, kontroler), tag `ralph/faza-4`
+- Następne zadanie: 5.1 (aplikacja paska menu, ikona stanu)
 - Blokery: brak

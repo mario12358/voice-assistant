@@ -15,9 +15,9 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 27/47 pozycji ukończonych
+- **Postęp**: 29/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: #16 (4.3). Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Faza 4 zmergowana i otagowana (`ralph/faza-4`). Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -34,6 +34,8 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Regresja po Fazie 4 (2026-10-09) — ZIELONA:** na main (96956d8) `cargo test --workspace -- --include-ignored` 88/0 (z mikrofonem, GPU Metal, modelem i prawdziwym schowkiem), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 70/0 po Fazie 3: +18 testów. Tag `ralph/faza-4`.
+
 **Regresja po Fazie 3 (2026-10-09) — ZIELONA:** na main (ec17148) `cargo test --workspace -- --include-ignored` 70/0 (z testami mikrofonu, GPU Metal i prawdziwego modelu), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 49/0 po Fazie 2: +21 testów. Tag `ralph/faza-3`.
 
 **Regresja po Fazie 2 (2026-10-08) — ZIELONA:** na main (1d996a2) `cargo test --workspace -- --include-ignored` 49/0 (z 3 testami mikrofonu), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 17/0 po Fazie 1: +32 testy. Tag `ralph/faza-2`.
@@ -43,10 +45,10 @@ na zawsze i rośnie w prompcie każdej sesji.
 | Metryka | Wartość |
 |---------|---------|
 | Łącznie testów | 88 |
-| Pass | 81 |
+| Pass | 88 |
 | Fail | 0 |
-| Skip | 7 (ignored: mikrofon, GPU, model, schowek) |
-| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 4.3) |
+| Skip | 0 (z --include-ignored) |
+| Ostatnie uruchomienie | 2026-10-08 (pełny suite na main po Fazie 4) |
 
 ## Historia realizacji
 
@@ -66,7 +68,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 3.4 `va-dev transcribe` (WAV dowolny → 16 kHz mono → cisza → Whisper) + test 3.4 | ✅ PR #10 | 64/0 + 6 ignored; prawdziwa transkrypcja WAV 44,1 kHz stereo zielona lokalnie; mutacja normalizacji czerwona | 1 | ec17148 | 2026-10-09 |
 | 4.1 Schowek: TextSink, ClipboardSink (reguła VA-REC-3), arboard + MemoryClipboard + test 4.1 | ✅ PR #13 | 68/0 + 7 ignored; prawdziwy schowek zielony lokalnie; mutacja reguły pustej transkrypcji czerwona | 1 | 45d1f38 | 2026-10-09 |
 | 4.2 Automat stanów (StateMachine, Input/Action/Transition) + test 4.2 (tablica przejść) | ✅ PR #15 | 75/0 + 7 ignored; mutacja Start w Recording czerwona | 1 | fc2852e | 2026-10-09 |
-| 4.3 Kontroler (wątek kontrolera + wątek transkrypcji, zdarzenia dla UI) + test 4.3 | ⏳ PR #16 | 81/0 + 7 ignored; 3× powtórzony bez flaków; mutacja pomijania ciszy czerwona | 1 | 31e48ea (gałąź) | 2026-10-09 |
+| 4.3 Kontroler (wątek kontrolera + wątek transkrypcji, zdarzenia dla UI) + test 4.3 | ✅ PR #16 | 81/0 + 7 ignored; 3× powtórzony bez flaków; mutacja pomijania ciszy czerwona | 1 | 96956d8 | 2026-10-09 |
 
 ## Historia zmian
 
