@@ -15,10 +15,10 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 43/47 pozycji ukończonych
+- **Postęp**: 45/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
-- Otwarte PR: #27 (6.2). 6.1 zmergowane jako b188bf1. Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: #28 (6.3). 6.1 (b188bf1) i 6.2 (3530198) zmergowane; VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -64,7 +64,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 5.5 Komunikaty: cisza cyfrowa → NoSignal + powiadomienie, brak GPU/modelu → menu + Start z powodem + test 5.5 | ✅ PR #22 | 106/0 + 7 ignored; mutacja wykrywania ciszy cyfrowej czerwona; start bez modelu lokalnie OK | 1 | 2607ff7 | 2026-10-09 |
 | 5.6 Pobieranie modelu w tle (DownloadState, status i „Ponów” w menu, kontroler po pobraniu) + test 5.6 | ✅ PR #23 | 112/0 + 7 ignored; mutacja blokady Startu czerwona; start bez modelu pobiera w tle (121 MB/8 s) | 1 | f76c960 | 2026-10-09 |
 | 6.1 Bundle VoiceAsystent.app (`scripts/build-app.sh`, Info.plist, ikona z `scripts/app-icon.py`, podpis ad-hoc) + test 6.1 | ✅ PR #26 | 116/0 + 8 ignored; build release + bundle 8,4 MB + start przez `open` z załadowaniem modelu na Metalu lokalnie OK; mutacja klucza NSMicrophoneUsageDescription czerwona | 1 | b188bf1 | 2026-10-09 |
-| 6.2 `scripts/build-dmg.sh` (hdiutil UDZO, aplikacja + skrót do Applications, wersja z git describe) + test 6.2 | PR #27 otwarty | 118/0 + 8 ignored; obraz release 3,9 MB montuje się z aplikacją i skrótem; mutacja usunięcia skrótu czerwona | 1 | — | 2026-10-09 |
+| 6.2 `scripts/build-dmg.sh` (hdiutil UDZO, aplikacja + skrót do Applications, wersja z git describe) + test 6.2 | ✅ PR #27 | 118/0 + 8 ignored; obraz release 3,9 MB montuje się z aplikacją i skrótem; mutacja usunięcia skrótu czerwona | 1 | 3530198 | 2026-10-09 |
+| 6.3 README.md + docs/RUNBOOK.md (wymagania, instalacja z .dmg i Gatekeeper, pierwsze uruchomienie, skróty, komendy, diagnostyka) | PR #28 otwarty | bez testów (dokumentacja); twierdzenia zweryfikowane w kodzie (limit nagrania, `.part`, SHA-256) | 1 | — | 2026-10-09 |
 
 ## Historia zmian
 
