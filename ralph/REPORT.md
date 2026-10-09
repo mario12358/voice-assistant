@@ -17,7 +17,7 @@
 - **Status**: W trakcie
 - **Postęp**: 25/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: brak. Pauza na prośbę właściciela po 4.1. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: #15 (4.2). Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -42,11 +42,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 75 |
-| Pass | 68 |
+| Łącznie testów | 82 |
+| Pass | 75 |
 | Fail | 0 |
 | Skip | 7 (ignored: mikrofon, GPU, model, schowek) |
-| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 4.1) |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 4.2) |
 
 ## Historia realizacji
 
@@ -65,6 +65,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 3.3 WhisperStt (whisper-rs 0.16, Metal), SpeechToText + ScriptedStt, nagrania PL/EN + test 3.3 | ✅ PR #9 | 59/0 + 5 ignored; model na Metal: PL i EN rozpoznane, 5 s; mutacja use_gpu(false) czerwona | 1 | ca267d6 | 2026-10-09 |
 | 3.4 `va-dev transcribe` (WAV dowolny → 16 kHz mono → cisza → Whisper) + test 3.4 | ✅ PR #10 | 64/0 + 6 ignored; prawdziwa transkrypcja WAV 44,1 kHz stereo zielona lokalnie; mutacja normalizacji czerwona | 1 | ec17148 | 2026-10-09 |
 | 4.1 Schowek: TextSink, ClipboardSink (reguła VA-REC-3), arboard + MemoryClipboard + test 4.1 | ✅ PR #13 | 68/0 + 7 ignored; prawdziwy schowek zielony lokalnie; mutacja reguły pustej transkrypcji czerwona | 1 | 45d1f38 | 2026-10-09 |
+| 4.2 Automat stanów (StateMachine, Input/Action/Transition) + test 4.2 (tablica przejść) | ⏳ PR #15 | 75/0 + 7 ignored; mutacja Start w Recording czerwona | 1 | 27bbbe9 (gałąź) | 2026-10-09 |
 
 ## Historia zmian
 

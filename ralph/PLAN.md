@@ -102,12 +102,12 @@
   - AC: schowek zawiera dokładnie tekst transkrypcji (z polskimi znakami)
   - AC: pusta transkrypcja nie zmienia schowka
 - [x] Test: 4.1 — logika z mockiem schowka; test prawdziwego schowka `#[ignore]` (sesja graficzna) (pr: #13)
-- [ ] Zadanie 4.2: Automat stanów aplikacji Idle → Recording → Transcribing → Idle (oraz Error → Idle) z poleceniami Start/Stop niezależnymi od źródła (skrót, kliknięcie); Start w Recording/Transcribing i Stop w Idle są ignorowane z logiem (wymaga: 1.2) [VA-REC-1, VA-REC-2, VA-UI-2]
+- [ ] Zadanie 4.2: Automat stanów aplikacji Idle → Recording → Transcribing → Idle (oraz Error → Idle) z poleceniami Start/Stop niezależnymi od źródła (skrót, kliknięcie); Start w Recording/Transcribing i Stop w Idle są ignorowane z logiem (wymaga: 1.2) [VA-REC-1, VA-REC-2, VA-UI-2] (pr: #15)
   - Specky: (req: 01M4EKHCQYDSN2280XE8DMXR08 v1 @5c4517a)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
   - Specky: (req: 01M4EKHD3Y6M9V9E01V27AH18Z v1 @a4fdb35)
   - AC: drugi Start w trakcie nagrywania nie tworzy drugiego nagrania; Stop bez nagrania nic nie robi
-- [ ] Test: 4.2 — tablica przejść stanów na wstrzykniętych poleceniach
+- [ ] Test: 4.2 — tablica przejść stanów na wstrzykniętych poleceniach (pr: #15)
 - [ ] Zadanie 4.3: Kontroler: Start → nagrywanie (2.2); Stop → przycięcie ciszy (2.3) → STT (3.3) w wątku roboczym → TextSink (4.1); zmiany stanu publikowane kanałem do UI; błąd jednej transkrypcji → Error → Idle bez zamykania aplikacji (wymaga: 2.3, 3.3, 4.1, 4.2) [VA-REC-2, VA-REC-3]
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
