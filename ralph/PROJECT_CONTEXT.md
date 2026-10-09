@@ -62,6 +62,7 @@ Konwencje:
 | 2026-10-09 | Schowek: reguła VA-REC-3 (pusta/białe znaki → bez zmian) w `ClipboardSink`, pod spodem wymienny `Clipboard` (arboard tworzony per zapis — bez trzymania obiektu NSPasteboard między wątkami) | testowalność + Send |
 | 2026-10-09 | Automat stanów `va_core::state`: wejścia Start/Stop/TranscriptionFinished/Failed/ErrorAcknowledged, wynik `Transition{action, ignored}`; kontroler wykonuje tylko `Action`, nie zgaduje stanu | jedno miejsce reguł VA-REC-1/2 |
 | 2026-10-09 | Kontroler: wątek `va-controller` (automat + nagrywarka) i wątek `va-transcription` (STT + schowek); wynik transkrypcji wraca do kontrolera jako wiadomość, więc Start w trakcie transkrypcji jest od razu ignorowany; zdarzenia przez `EventPublisher` (w UI: proxy pętli tao) | wątek główny nie blokuje się na modelu |
+| 2026-10-09 | Aplikacja: `main` → sprawdzenia startowe → `startup::controller_parts` (tylko z GPU i gotowym modelem) → `app::run` (pętla tao, `UserEvent::Controller`); `voice-asystent --self-check` kończy po sprawdzeniach — testy startu go używają | pętla zdarzeń nie kończy się sama |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -97,6 +98,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: Faza 4 (schowek, automat stanów, kontroler), tag `ralph/faza-4`
-- Następne zadanie: 5.1 (aplikacja paska menu, ikona stanu)
+- Ostatnie ukończone: Faza 4, tag `ralph/faza-4`; 5.1 (pasek menu) w PR #18
+- Następne zadanie: 5.2 (kliknięcie ikony → Start/Stop)
 - Blokery: brak
