@@ -117,16 +117,16 @@
 
 ### Faza 5: Interfejs macOS — pasek menu i skróty globalne
 
-- [ ] Zadanie 5.1: Binarka `voice-asystent` jako aplikacja paska menu (tao event loop, bez ikony w Docku — `ActivationPolicy::Accessory`): ikona szare kółko w Idle, czerwone w Recording (Transcribing — szare z podpowiedzią „Transkrypcja…"), ikony jako zasoby PNG @1x/@2x (wymaga: 4.3) [VA-UI-1] (pr: #18)
+- [x] Zadanie 5.1: Binarka `voice-asystent` jako aplikacja paska menu (tao event loop, bez ikony w Docku — `ActivationPolicy::Accessory`): ikona szare kółko w Idle, czerwone w Recording (Transcribing — szare z podpowiedzią „Transkrypcja…"), ikony jako zasoby PNG @1x/@2x (wymaga: 4.3) [VA-UI-1] (pr: #18)
   - Specky: (req: 01M4EKHD1BQYRNWBAVRA5FJTRC v1 @df8032b)
   - AC: po starcie szare kółko; zdarzenie Recording → czerwone; powrót do Idle → szare
   - AC: wejście — zdarzenia zmiany stanu z kontrolera 4.3
-- [ ] Test: 5.1 — mapowanie stanów kontrolera na ikonę i podpowiedź (bez GUI) (pr: #18)
-- [ ] Zadanie 5.2: Lewe kliknięcie ikony: szare → Start, czerwone → Stop (menu tylko pod prawym kliknięciem — `menu_on_left_click(false)`) (wymaga: 5.1) [VA-UI-2]
+- [x] Test: 5.1 — mapowanie stanów kontrolera na ikonę i podpowiedź (bez GUI) (pr: #18)
+- [ ] Zadanie 5.2: Lewe kliknięcie ikony: szare → Start, czerwone → Stop (menu tylko pod prawym kliknięciem — `menu_on_left_click(false)`) (wymaga: 5.1) [VA-UI-2] (pr: #19)
   - Specky: (req: 01M4EKHD3Y6M9V9E01V27AH18Z v1 @a4fdb35)
   - AC: wejście — kliknięcie ikony w pasku menu
   - AC: kliknięcie czerwonego kółka kończy nagranie i transkrypcja trafia do schowka
-- [ ] Test: 5.2 — obsługa zdarzeń kliknięcia → polecenia kontrolera (zdarzenia wstrzyknięte)
+- [ ] Test: 5.2 — obsługa zdarzeń kliknięcia → polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #19)
 - [ ] Zadanie 5.3: Menu pod prawym kliknięciem: podmenu „Mikrofon" z listą dostępnych urządzeń (zaznaczony wybrany, odświeżane przy otwarciu), „Zakończ"; wybór zapisuje konfigurację (1.3) i działa od następnego nagrania (wymaga: 2.1, 5.1) [VA-REC-4]
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: wejście — prawe kliknięcie ikony → Mikrofon → nazwa urządzenia
