@@ -4,3 +4,4 @@
 compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 
 pub mod logging;
+pub mod state;
