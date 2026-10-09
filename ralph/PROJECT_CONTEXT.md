@@ -102,6 +102,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 5.5 (komunikaty); 5.6 (pobieranie w tle) w PR #23
-- Następne: po merge #23 regresja Fazy 5 na main + tag + propozycja wydania; potem 6.1 (bundle .app)
+- Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
+- Następne zadanie: 6.1 (bundle VoiceAsystent.app)
 - Blokery: brak
