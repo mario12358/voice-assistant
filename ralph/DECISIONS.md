@@ -111,3 +111,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: W trakcie finalizacji 4.1 właściciel poprosił o dokończenie zadania i zatrzymanie pracy.
 **Ustalenie**: Zadanie 4.1 (schowek) zmergowane (PR #13) i odhaczone, praca zatrzymana. Następne do zrobienia jest 4.2 (automat stanów nagrywania).
 **Wpływ**: Faza 4
+
+## 2026-10-09 08:30 — Bez wydania po Fazie 4
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Propozycja wydania v0.3.0 po zielonej regresji Fazy 4 (zmiany bez widocznego efektu dla użytkownika).
+**Ustalenie**: Właściciel odrzucił wydanie zgodnie z rekomendacją — następna propozycja po Fazie 5 (ikona, skróty, schowek w działającej aplikacji). Praca idzie dalej od 5.1.
+**Wpływ**: Faza 5

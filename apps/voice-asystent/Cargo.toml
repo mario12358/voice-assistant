@@ -14,6 +14,10 @@ va-core.workspace = true
 va-model.workspace = true
 tracing.workspace = true
 va-stt = { workspace = true, features = ["metal"] }
+tray-icon = "0.26"
+tao = "0.37"
+va-audio.workspace = true
+va-clipboard.workspace = true
 
 [lints]
 workspace = true
