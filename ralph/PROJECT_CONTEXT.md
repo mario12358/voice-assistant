@@ -61,6 +61,7 @@ Konwencje:
 | 2026-10-09 | whisper-rs 0.16 z `tracing_backend` (logi whisper.cpp/ggml w tracing); `WhisperStt::load` wymaga `GpuReady` i ustawia `use_gpu(true)`; dowód Metal w teście = linie whisper.cpp `whisper_backend_init_gpu: device 0: Metal` i `Metal total size`, nie własny log | VA-STT-2 K1 |
 | 2026-10-09 | Schowek: reguła VA-REC-3 (pusta/białe znaki → bez zmian) w `ClipboardSink`, pod spodem wymienny `Clipboard` (arboard tworzony per zapis — bez trzymania obiektu NSPasteboard między wątkami) | testowalność + Send |
 | 2026-10-09 | Automat stanów `va_core::state`: wejścia Start/Stop/TranscriptionFinished/Failed/ErrorAcknowledged, wynik `Transition{action, ignored}`; kontroler wykonuje tylko `Action`, nie zgaduje stanu | jedno miejsce reguł VA-REC-1/2 |
+| 2026-10-09 | Kontroler: wątek `va-controller` (automat + nagrywarka) i wątek `va-transcription` (STT + schowek); wynik transkrypcji wraca do kontrolera jako wiadomość, więc Start w trakcie transkrypcji jest od razu ignorowany; zdarzenia przez `EventPublisher` (w UI: proxy pętli tao) | wątek główny nie blokuje się na modelu |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -96,6 +97,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 4.1 (schowek); 4.2 (automat stanów) w PR #15
-- Następne zadanie: 4.3 (kontroler)
+- Ostatnie ukończone: 4.2 (automat stanów); 4.3 (kontroler) w PR #16
+- Następne: po merge #16 regresja Fazy 4 na main + tag; potem 5.1 (aplikacja paska menu)
 - Blokery: brak

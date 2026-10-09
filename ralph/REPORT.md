@@ -15,9 +15,9 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 25/47 pozycji ukończonych
+- **Postęp**: 27/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: #15 (4.2). Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: #16 (4.3). Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -42,11 +42,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 82 |
-| Pass | 75 |
+| Łącznie testów | 88 |
+| Pass | 81 |
 | Fail | 0 |
 | Skip | 7 (ignored: mikrofon, GPU, model, schowek) |
-| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 4.2) |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 4.3) |
 
 ## Historia realizacji
 
@@ -65,7 +65,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 3.3 WhisperStt (whisper-rs 0.16, Metal), SpeechToText + ScriptedStt, nagrania PL/EN + test 3.3 | ✅ PR #9 | 59/0 + 5 ignored; model na Metal: PL i EN rozpoznane, 5 s; mutacja use_gpu(false) czerwona | 1 | ca267d6 | 2026-10-09 |
 | 3.4 `va-dev transcribe` (WAV dowolny → 16 kHz mono → cisza → Whisper) + test 3.4 | ✅ PR #10 | 64/0 + 6 ignored; prawdziwa transkrypcja WAV 44,1 kHz stereo zielona lokalnie; mutacja normalizacji czerwona | 1 | ec17148 | 2026-10-09 |
 | 4.1 Schowek: TextSink, ClipboardSink (reguła VA-REC-3), arboard + MemoryClipboard + test 4.1 | ✅ PR #13 | 68/0 + 7 ignored; prawdziwy schowek zielony lokalnie; mutacja reguły pustej transkrypcji czerwona | 1 | 45d1f38 | 2026-10-09 |
-| 4.2 Automat stanów (StateMachine, Input/Action/Transition) + test 4.2 (tablica przejść) | ⏳ PR #15 | 75/0 + 7 ignored; mutacja Start w Recording czerwona | 1 | 27bbbe9 (gałąź) | 2026-10-09 |
+| 4.2 Automat stanów (StateMachine, Input/Action/Transition) + test 4.2 (tablica przejść) | ✅ PR #15 | 75/0 + 7 ignored; mutacja Start w Recording czerwona | 1 | fc2852e | 2026-10-09 |
+| 4.3 Kontroler (wątek kontrolera + wątek transkrypcji, zdarzenia dla UI) + test 4.3 | ⏳ PR #16 | 81/0 + 7 ignored; 3× powtórzony bez flaków; mutacja pomijania ciszy czerwona | 1 | 31e48ea (gałąź) | 2026-10-09 |
 
 ## Historia zmian
 
@@ -118,6 +119,7 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 - [2026-10-08] Zadanie 2.4: kontrola lint-typy ostrzega „linter niedostępny (cargo)” — hook nie widzi `~/.cargo/bin` w PATH, więc commit przeszedł BEZ clippy/fmt w hooku. Clippy `-D warnings` i fmt uruchomione ręcznie — czysto. Do decyzji właściciela: PATH dla hooka albo pełna ścieżka w config.
 - [2026-10-08] [check] PR #2 — Specky contract check: brak trailera Specky-Req (zadanie narzędziowe bez wymagania) — dopisany `Specky-Req: none` w commicie i w treści squasha.
 - [2026-10-08] [check] PR #5 — Specky contract check: kryterium VA-STT-2 K2 «brak testu» mimo `// specky: crit` nad `#[test]` (Specky nie przeskakuje atrybutów Rusta?) — próba 1: znacznik między `#[test]` a `fn` — bez zmian (has_test=false). Podejrzenie: JUnit z nextest ma classname = nazwa crate'u, bez ścieżki pliku, więc Specky nie łączy testu z plikiem źródłowym. RALPH BLOCKED.
+- [2026-10-09] Zadanie 4.3: AC «wejście — polecenia Start/Stop z 5.2 i 5.4» — kontroler jeszcze bez wejścia w aplikacji; podpinają go 5.2 (klik ikony) i 5.4 (skróty). Do sprawdzenia przy 5.2.
 - [2026-10-09] [check] PR #9 — Ralph: kontrole (lokalnie): kontrola `zaleznosci` nie wykonała się (UnicodeDecodeError) — `ralph-kontrole/zaleznosci/run.py:311-315` czyta każdy zmieniony plik jako UTF-8 przed sprawdzeniem, czy to manifest, i łapie tylko OSError; binarne WAV z fixtures ją wywracają (też przy tagu ralph/faza-2 i v0.1.0). Błąd frameworka, nie kodu — RALPH BLOCKED; 2026-10-09 właściciel naprawił kontrolę (pomija pliki niebędące manifestem) i PATH hooka (~/.cargo/bin), blokada usunięta.
 - [2026-10-08] Blokada rozwiązana: Specky czyta znaczniki tylko w .py/.js/.ts — właściciel wybrał pracę bez dowodów z CI, znaczniki zostają, kryteria odhaczane ręcznie na PR. ralph/BLOCKED.md usunięty.
 - [2026-10-08] Zadanie 3.1: AC «wejście — va-dev transcribe» domknięte w 3.4 (`transcribe::run` woła `require_metal`; test transcribe_without_model_points_to_model_download).
