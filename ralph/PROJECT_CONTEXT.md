@@ -63,6 +63,7 @@ Konwencje:
 | 2026-10-09 | Automat stanów `va_core::state`: wejścia Start/Stop/TranscriptionFinished/Failed/ErrorAcknowledged, wynik `Transition{action, ignored}`; kontroler wykonuje tylko `Action`, nie zgaduje stanu | jedno miejsce reguł VA-REC-1/2 |
 | 2026-10-09 | Kontroler: wątek `va-controller` (automat + nagrywarka) i wątek `va-transcription` (STT + schowek); wynik transkrypcji wraca do kontrolera jako wiadomość, więc Start w trakcie transkrypcji jest od razu ignorowany; zdarzenia przez `EventPublisher` (w UI: proxy pętli tao) | wątek główny nie blokuje się na modelu |
 | 2026-10-09 | Aplikacja: `main` → sprawdzenia startowe → `startup::controller_parts` (tylko z GPU i gotowym modelem) → `app::run` (pętla tao, `UserEvent::Controller`); `voice-asystent --self-check` kończy po sprawdzeniach — testy startu go używają | pętla zdarzeń nie kończy się sama |
+| 2026-10-09 | Brak zgody na mikrofon wykrywany po ciszy cyfrowej (same zera) → `ControllerEvent::NoSignal`, nie przez AVFoundation (wymagałoby `unsafe`); teksty dla użytkownika tylko w `apps/voice-asystent/src/messages.rs`, powiadomienia mac-notification-sys w osobnym wątku | `unsafe_code = deny` |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -82,6 +83,7 @@ Konwencje:
 | Status kontroli PR czerwony dla commita SPRZED ostatniego (amend przelicza tylko HEAD) | `git reset --soft <baza gałęzi>` + ponowny commit przez hook, potem `push --force-with-lease` |
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola `testy/kod-bez-testu` nie widzi testów Rusta w `#[cfg(test)] mod tests` tego samego pliku | ostrzeżenie do odnotowania w REPORT, nie do „naprawy” przenoszeniem testów |
+| Mutacje budowane w osobnym `CARGO_TARGET_DIR` (scratchpad) zjadają GB dysku | po serii mutacji `cargo clean --target-dir <scratchpad>/target`; pilnuj `df -h` |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
 ## Zależności między komponentami
@@ -99,6 +101,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 5.3 (menu mikrofonu); 5.4 (skróty globalne) w PR #21
-- Następne zadanie: 5.5 (uprawnienie mikrofonu, komunikaty brak modelu/GPU)
+- Ostatnie ukończone: 5.4 (skróty); 5.5 (komunikaty) w PR #22
+- Następne zadanie: 5.6 (pobieranie modelu w tle z postępem w menu)
 - Blokery: brak
