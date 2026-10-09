@@ -15,9 +15,9 @@
 
 - **Start**: 2026-10-08
 - **Status**: W trakcie
-- **Postęp**: 35/47 pozycji ukończonych
+- **Postęp**: 37/47 pozycji ukończonych
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
-- Otwarte PR: #21 (5.4). VA-REC-4 `code_ready`. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: #22 (5.5). `code_ready`: VA-REC-1, VA-REC-2, VA-REC-3, VA-REC-4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -44,11 +44,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 107 |
-| Pass | 100 |
+| Łącznie testów | 113 |
+| Pass | 106 |
 | Fail | 0 |
 | Skip | 7 (ignored: mikrofon, GPU, model, schowek) |
-| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 5.4) |
+| Ostatnie uruchomienie | 2026-10-08 (cargo test --workspace po 5.5) |
 
 ## Historia realizacji
 
@@ -72,7 +72,8 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 5.1 Aplikacja paska menu (tao + tray-icon, Accessory), ikona stanu rysowana w kodzie + test 5.1 | ✅ PR #18 | 86/0 + 7 ignored; aplikacja startuje lokalnie (GPU, model, pętla zdarzeń); mutacja koloru Recording czerwona | 1 | 7559763 | 2026-10-09 |
 | 5.2 Kliknięcie ikony → Start/Stop (click::command_for, zdarzenia tray-icon w pętli tao) + test 5.2 | ✅ PR #19 | 91/0 + 7 ignored; mutacja czerwone→Start czerwona | 1 | 9a161ae | 2026-10-09 |
 | 5.3 Menu: podmenu Mikrofon (zaznaczony używany, zapis do konfiguracji), Zakończ + test 5.3 | ✅ PR #20 | 96/0 + 7 ignored; mutacja zaznaczenia czerwona; aplikacja z menu startuje lokalnie | 1 | d3a22a4 | 2026-10-09 |
-| 5.4 Skróty globalne ctrl+cmd+r / ctrl+cmd+s (global-hotkey), komunikat w menu przy konflikcie + test 5.4 | ⏳ PR #21 | 100/0 + 7 ignored; rejestracja skrótów lokalnie bez błędu; mutacja zamiany Start/Stop czerwona | 1 | 70ae93e (gałąź) | 2026-10-09 |
+| 5.4 Skróty globalne ctrl+cmd+r / ctrl+cmd+s (global-hotkey), komunikat w menu przy konflikcie + test 5.4 | ✅ PR #21 | 100/0 + 7 ignored; rejestracja skrótów lokalnie bez błędu; mutacja zamiany Start/Stop czerwona | 1 | b7458d8 | 2026-10-09 |
+| 5.5 Komunikaty: cisza cyfrowa → NoSignal + powiadomienie, brak GPU/modelu → menu + Start z powodem + test 5.5 | ⏳ PR #22 | 106/0 + 7 ignored; mutacja wykrywania ciszy cyfrowej czerwona; start bez modelu lokalnie OK | 1 | 7babbf6 (gałąź) | 2026-10-09 |
 
 ## Historia zmian
 
@@ -129,6 +130,8 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 - [2026-10-09] Zadanie 5.1: odstępstwo od planu — ikony nie jako pliki PNG @1x/@2x, tylko RGBA 36 px rysowane w kodzie (ten sam efekt na Retinie, bez binarnych zasobów, kolor sprawdzalny testem). Wygląd w pasku menu niezweryfikowany wizualnie (brak uprawnienia do nagrywania ekranu) — do testu ręcznego.
 - [2026-10-09] Zadanie 5.1: start aplikacji liczy SHA-256 modelu ~3,5 s przed pokazaniem ikony — do rozważenia przy 5.6 (np. sprawdzanie w tle).
 - [2026-10-09] Zadanie 4.3: AC «wejście — polecenia Start/Stop z 5.2 i 5.4» — wejście kliknięciem podpięte w 5.2 (`app.rs` → `controller.send`), skróty w 5.4.
+- [2026-10-09] Zadanie 5.5: odczyt statusu zgody na mikrofon (AVCaptureDevice.authorizationStatus) wymaga `unsafe` (metoda może rzucić NSException), a workspace ma `unsafe_code = deny` — zamiast tego wykrywanie ciszy cyfrowej (same zera po Stop), którą macOS podaje bez zgody. Uwaga: wirtualne wejście (np. BlackHole) bez dźwięku też da ten komunikat. Powiadomienia przez mac-notification-sys (bez bundla pokazują się jako aplikacja Terminal — do weryfikacji po 6.1).
+- [2026-10-09] Zadanie 5.5: brak miejsca na dysku w trakcie testów (256 MB wolnego) — wyczyszczone artefakty buildu (`cargo clean` dla katalogu mutacji w scratchpadzie i `--release`), wolne 8,3 GB; testy powtórzone, zielone.
 - [2026-10-09] Zadanie 5.4: naciśnięcie skrótu w innej aplikacji niezweryfikowane automatycznie (symulacja klawiszy wymagałaby uprawnienia Dostępność dla terminala) — do testu ręcznego; ostrzeżenie `kod-bez-testu` jak w 5.2.
 - [2026-10-09] Zadanie 5.3: lista mikrofonów odświeżana przy najechaniu na ikonę (TrayIconEvent::Enter) i prawym kliknięciu — obsługa idzie przez pętlę zdarzeń asynchronicznie, więc menu otwarte bez wcześniejszego najechania może pokazać listę sprzed chwili; do sprawdzenia ręcznie (podłączenie słuchawek). Ostrzeżenie `kod-bez-testu` jak w 5.2.
 - [2026-10-09] Zadanie 5.2: ostrzeżenie kontroli `testy/kod-bez-testu` — testy Rusta są w tym samym pliku (`#[cfg(test)] mod tests` w click.rs), czego kontrola nie widzi; podpięcie w app.rs (pętla tao) bez testu automatycznego — sprawdzi test ręczny (scenariusz po Fazie 5).

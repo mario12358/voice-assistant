@@ -132,16 +132,16 @@
   - AC: wejście — prawe kliknięcie ikony → Mikrofon → nazwa urządzenia
   - AC: wybór przetrwa restart aplikacji
 - [x] Test: 5.3 — budowanie modelu menu z listy urządzeń i obsługa wyboru (bez GUI) (pr: #20)
-- [ ] Zadanie 5.4: Skróty globalne (global-hotkey): ctrl+cmd+r → Start, ctrl+cmd+s → Stop, działające przy dowolnej aktywnej aplikacji; nieudana rejestracja (konflikt) → komunikat w menu i logu (wymaga: 4.3, 5.1) [VA-REC-1, VA-REC-2] (pr: #21)
+- [x] Zadanie 5.4: Skróty globalne (global-hotkey): ctrl+cmd+r → Start, ctrl+cmd+s → Stop, działające przy dowolnej aktywnej aplikacji; nieudana rejestracja (konflikt) → komunikat w menu i logu (wymaga: 4.3, 5.1) [VA-REC-1, VA-REC-2] (pr: #21)
   - Specky: (req: 01M4EKHCQYDSN2280XE8DMXR08 v1 @5c4517a)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
   - AC: wejście — naciśnięcie ctrl+cmd+r / ctrl+cmd+s w dowolnej aplikacji
-- [ ] Test: 5.4 — mapowanie zdarzeń skrótów na polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #21)
-- [ ] Zadanie 5.5: Uprawnienie mikrofonu: odmowa dostępu → powiadomienie z instrukcją (Ustawienia systemowe → Prywatność → Mikrofon), stan Error → Idle; brak modelu / brak Metal → stała pozycja z komunikatem w menu (wymaga: 3.1, 3.2, 5.3) [VA-PLAT-2, VA-STT-2]
+- [x] Test: 5.4 — mapowanie zdarzeń skrótów na polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #21)
+- [ ] Zadanie 5.5: Uprawnienie mikrofonu: odmowa dostępu → powiadomienie z instrukcją (Ustawienia systemowe → Prywatność → Mikrofon), stan Error → Idle; brak modelu / brak Metal → stała pozycja z komunikatem w menu (wymaga: 3.1, 3.2, 5.3) [VA-PLAT-2, VA-STT-2] (pr: #22)
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
   - Specky: (req: 01M4EKHCM2WDGKPH824D8532JD v1 @5e21e03)
   - AC: wejście — próba Start bez uprawnienia; start aplikacji bez modelu/GPU
-- [ ] Test: 5.5 — mapowanie błędów (brak uprawnienia, brak modelu, brak GPU) na komunikaty (bez GUI)
+- [ ] Test: 5.5 — mapowanie błędów (brak uprawnienia, brak modelu, brak GPU) na komunikaty (bez GUI) (pr: #22)
 - [ ] Zadanie 5.6: Pobieranie modelu po instalacji: przy starcie bez modelu aplikacja w tle pobiera go (3.2), postęp w menu („Pobieranie modelu… 42%”) i podpowiedzi ikony; Start w tym czasie → komunikat zamiast nagrania; błąd → pozycja menu „Ponów pobieranie”; po pobraniu ładowanie STT (wymaga: 3.2, 4.3, 5.5) [VA-MODEL-1]
   - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: wejście — pierwsze uruchomienie aplikacji bez modelu

@@ -271,3 +271,19 @@ fn stop_without_recording_publishes_nothing() {
             .is_err()
     );
 }
+
+#[test]
+fn digital_silence_reports_no_signal_instead_of_transcribing() {
+    let harness = Harness::new(
+        FakeRecorder::playing(vec![0.0; 16_000]),
+        ScriptedStt::answering([]),
+        MemoryClipboard::containing("bez zmian"),
+    );
+
+    let events = harness.record_and_stop();
+
+    assert!(events.contains(&ControllerEvent::NoSignal), "{events:?}");
+    assert!(events.contains(&ControllerEvent::StateChanged(State::Error)));
+    assert!(harness.stt.received().is_empty());
+    assert_eq!(harness.clipboard.contents().as_deref(), Some("bez zmian"));
+}

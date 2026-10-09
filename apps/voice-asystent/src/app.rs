@@ -15,6 +15,7 @@ use va_core::state::State;
 use crate::click::command_for;
 use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
+use crate::messages::{Problem, menu_notice, notify};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::tray_menu::TrayMenu;
 
@@ -26,7 +27,10 @@ enum UserEvent {
     Hotkey(GlobalHotKeyEvent),
 }
 
-pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> anyhow::Result<()> {
+pub fn run(
+    controller_parts: Result<ControllerParts, Problem>,
+    config_path: PathBuf,
+) -> anyhow::Result<()> {
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     event_loop.set_activation_policy(ActivationPolicy::Accessory);
     let proxy = event_loop.create_proxy();
@@ -45,6 +49,10 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
     let hotkeys = Hotkeys::default();
     let hotkey_manager = GlobalHotKeyManager::new().context("menedżer skrótów")?;
     let hotkeys_problem = hotkeys.register(&hotkey_manager).err();
+    let (controller_parts, unavailable) = match controller_parts {
+        Ok(parts) => (Some(parts), None),
+        Err(problem) => (None, Some(problem)),
+    };
     let controller: Option<ControllerHandle> = controller_parts.map(|parts| {
         controller::spawn(
             parts,
@@ -64,6 +72,9 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
                         tracing::error!(%problem, "rejestracja skrótów");
                         built.1.show_notice(problem);
                     }
+                    if let Some(notice) = unavailable.as_ref().and_then(menu_notice) {
+                        built.1.show_notice(notice);
+                    }
                     tray = Some(built);
                 }
                 Err(error) => {
@@ -72,11 +83,18 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
                 }
             },
             Event::UserEvent(UserEvent::Controller(event)) => {
-                if let ControllerEvent::StateChanged(state) = event {
-                    shown = state;
-                    if let Some((icon, _)) = &tray {
-                        show(icon, indicator_for(state));
+                match &event {
+                    ControllerEvent::StateChanged(state) => {
+                        shown = *state;
+                        if let Some((icon, _)) = &tray {
+                            show(icon, indicator_for(*state));
+                        }
                     }
+                    ControllerEvent::NoSignal => notify(&Problem::MicrophoneSilent),
+                    ControllerEvent::Failed(reason) => {
+                        notify(&Problem::RecordingFailed(reason.clone()))
+                    }
+                    ControllerEvent::Delivered(_) => {}
                 }
                 tracing::debug!(?event, "zdarzenie kontrolera");
             }
@@ -87,13 +105,13 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
                     menu.refresh_microphones();
                 }
                 if let Some(command) = command_for(&event, shown) {
-                    send(controller.as_ref(), command);
+                    send(controller.as_ref(), unavailable.as_ref(), command);
                 }
             }
             Event::UserEvent(UserEvent::Hotkey(event)) => {
                 let _keep_registered = &hotkey_manager;
                 if let Some(command) = hotkeys.command_for(&event) {
-                    send(controller.as_ref(), command);
+                    send(controller.as_ref(), unavailable.as_ref(), command);
                 }
             }
             Event::UserEvent(UserEvent::Menu(event)) => {
@@ -114,10 +132,12 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
     })
 }
 
-fn send(controller: Option<&ControllerHandle>, command: Command) {
-    match controller {
-        Some(controller) => controller.send(command),
-        None => tracing::warn!(?command, "nagrywanie niedostępne (brak GPU albo modelu)"),
+/// Bez kontrolera (brak GPU/modelu) Start pokazuje powód zamiast nagrywać.
+fn send(controller: Option<&ControllerHandle>, unavailable: Option<&Problem>, command: Command) {
+    match (controller, unavailable) {
+        (Some(controller), _) => controller.send(command),
+        (None, Some(problem)) if command == Command::Start => notify(problem),
+        (None, _) => tracing::warn!(?command, "nagrywanie niedostępne"),
     }
 }
 
