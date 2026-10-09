@@ -108,12 +108,12 @@
   - Specky: (req: 01M4EKHD3Y6M9V9E01V27AH18Z v1 @a4fdb35)
   - AC: drugi Start w trakcie nagrywania nie tworzy drugiego nagrania; Stop bez nagrania nic nie robi
 - [x] Test: 4.2 — tablica przejść stanów na wstrzykniętych poleceniach (pr: #15)
-- [ ] Zadanie 4.3: Kontroler: Start → nagrywanie (2.2); Stop → przycięcie ciszy (2.3) → STT (3.3) w wątku roboczym → TextSink (4.1); zmiany stanu publikowane kanałem do UI; błąd jednej transkrypcji → Error → Idle bez zamykania aplikacji (wymaga: 2.3, 3.3, 4.1, 4.2) [VA-REC-2, VA-REC-3] (pr: #16)
+- [x] Zadanie 4.3: Kontroler: Start → nagrywanie (2.2); Stop → przycięcie ciszy (2.3) → STT (3.3) w wątku roboczym → TextSink (4.1); zmiany stanu publikowane kanałem do UI; błąd jednej transkrypcji → Error → Idle bez zamykania aplikacji (wymaga: 2.3, 3.3, 4.1, 4.2) [VA-REC-2, VA-REC-3] (pr: #16)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
   - Specky: (req: 01M4EKHCXK9BETN4Q065X24ES9 v1 @523b4a6)
   - AC: wejście — polecenia Start/Stop z 5.2 i 5.4
   - AC: po Stop tekst transkrypcji trafia do schowka; UI dostaje zdarzenia zmiany stanu
-- [ ] Test: 4.3 — integracja z mockami (audio z fixture WAV, STT, schowek): tekst w schowku, błąd STT → Error → Idle (pr: #16)
+- [x] Test: 4.3 — integracja z mockami (audio z fixture WAV, STT, schowek): tekst w schowku, błąd STT → Error → Idle (pr: #16)
 
 ### Faza 5: Interfejs macOS — pasek menu i skróty globalne
 
