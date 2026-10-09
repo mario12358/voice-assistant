@@ -7,6 +7,7 @@ fn startup_reports_gpu_verdict() {
 
     let output = Command::new(env!("CARGO_BIN_EXE_voice-asystent"))
         .env("HOME", home.path())
+        .arg("--self-check")
         .output()
         .expect("voice-asystent uruchamia się");
 
@@ -26,6 +27,7 @@ fn startup_reports_missing_model() {
 
     let output = Command::new(env!("CARGO_BIN_EXE_voice-asystent"))
         .env("HOME", home.path())
+        .arg("--self-check")
         .output()
         .expect("voice-asystent uruchamia się");
 
