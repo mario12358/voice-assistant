@@ -117,3 +117,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Propozycja wydania v0.3.0 po zielonej regresji Fazy 4 (zmiany bez widocznego efektu dla użytkownika).
 **Ustalenie**: Właściciel odrzucił wydanie zgodnie z rekomendacją — następna propozycja po Fazie 5 (ikona, skróty, schowek w działającej aplikacji). Praca idzie dalej od 5.1.
 **Wpływ**: Faza 5
+
+## 2026-10-09 09:52 — Wydanie wersji v0.3.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonej regresji Fazy 5.
+**Ustalenie**: Utworzono wersję v0.3.0 (commit 23ec3de) obejmującą fazy 4–5: działający asystent w pasku menu (kliknięcie i skróty, schowek, menu mikrofonu, komunikaty, pobieranie modelu w tle). Scenariusze w docs/test-scenarios/v0.3.0.md, migawka Specky 01M4FTCC8WGF4QWM98D0CE7JEG. Wersja lokalnie do czasu git push origin v0.3.0.
+**Wpływ**: tag v0.3.0, Specky

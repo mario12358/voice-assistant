@@ -26,14 +26,12 @@ checks/oslabienia/run.py 1099978014-6322
 checks/red-team/KONTROLA.md 3700162066-3366
 checks/red-team/run.py 2036125378-7505
 checks/zaleznosci/KONTROLA.md 1103621853-1994
-checks/zaleznosci/run.py 3123903377-18937
 checks/_trasy.py 1710349939-26446
 checks/higiena/KONTROLA.md 3017522690-5127
 checks/higiena/run.py 426890030-23028
 checks/intencja/KONTROLA.md 3134847934-5251
 checks/intencja/run.py 2451449023-16335
 checks/intencja/MAPA_SZABLON.md 3502040852-2483
-checks/ralph-kontrole.py 610965433-46985
 checks/lint-typy/KONTROLA.md 3307124645-6777
 checks/lint-typy/run.py 3054831514-30907
 checks/_siec.py 1855446772-3822
@@ -45,3 +43,5 @@ checks/audyt-zaleznosci/KONTROLA.md 670526976-1696
 checks/audyt-zaleznosci/run.py 3517895437-11383
 checks/martwe-wejscie/KONTROLA.md 3741262955-5935
 checks/martwe-wejscie/run.py 1868591598-27601
+checks/zaleznosci/run.py 778863588-19134
+checks/ralph-kontrole.py 1230858524-47802
