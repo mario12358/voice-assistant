@@ -3,15 +3,17 @@
 use std::path::PathBuf;
 
 use anyhow::Context;
+use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
 use tao::event::{Event, StartCause};
 use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tao::platform::macos::{ActivationPolicy, EventLoopExtMacOS};
 use tray_icon::menu::MenuEvent;
 use tray_icon::{Icon, MouseButton, TrayIcon, TrayIconBuilder, TrayIconEvent};
-use va_core::controller::{self, ControllerEvent, ControllerHandle, ControllerParts};
+use va_core::controller::{self, Command, ControllerEvent, ControllerHandle, ControllerParts};
 use va_core::state::State;
 
 use crate::click::command_for;
+use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::tray_menu::TrayMenu;
@@ -21,6 +23,7 @@ enum UserEvent {
     Controller(ControllerEvent),
     Tray(TrayIconEvent),
     Menu(MenuEvent),
+    Hotkey(GlobalHotKeyEvent),
 }
 
 pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> anyhow::Result<()> {
@@ -35,6 +38,13 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
     MenuEvent::set_event_handler(Some(move |event| {
         let _ = menu_proxy.send_event(UserEvent::Menu(event));
     }));
+    let hotkey_proxy = event_loop.create_proxy();
+    GlobalHotKeyEvent::set_event_handler(Some(move |event| {
+        let _ = hotkey_proxy.send_event(UserEvent::Hotkey(event));
+    }));
+    let hotkeys = Hotkeys::default();
+    let hotkey_manager = GlobalHotKeyManager::new().context("menedżer skrótów")?;
+    let hotkeys_problem = hotkeys.register(&hotkey_manager).err();
     let controller: Option<ControllerHandle> = controller_parts.map(|parts| {
         controller::spawn(
             parts,
@@ -49,7 +59,13 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
         *control_flow = ControlFlow::Wait;
         match event {
             Event::NewEvents(StartCause::Init) => match build_tray(State::Idle, &config_path) {
-                Ok(built) => tray = Some(built),
+                Ok(built) => {
+                    if let Some(problem) = &hotkeys_problem {
+                        tracing::error!(%problem, "rejestracja skrótów");
+                        built.1.show_notice(problem);
+                    }
+                    tray = Some(built);
+                }
                 Err(error) => {
                     tracing::error!(%error, "nie udało się utworzyć ikony w pasku menu");
                     *control_flow = ControlFlow::Exit;
@@ -70,14 +86,14 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
                 {
                     menu.refresh_microphones();
                 }
-                let Some(command) = command_for(&event, shown) else {
-                    return;
-                };
-                match &controller {
-                    Some(controller) => controller.send(command),
-                    None => {
-                        tracing::warn!(?command, "nagrywanie niedostępne (brak GPU albo modelu)")
-                    }
+                if let Some(command) = command_for(&event, shown) {
+                    send(controller.as_ref(), command);
+                }
+            }
+            Event::UserEvent(UserEvent::Hotkey(event)) => {
+                let _keep_registered = &hotkey_manager;
+                if let Some(command) = hotkeys.command_for(&event) {
+                    send(controller.as_ref(), command);
                 }
             }
             Event::UserEvent(UserEvent::Menu(event)) => {
@@ -96,6 +112,13 @@ pub fn run(controller_parts: Option<ControllerParts>, config_path: PathBuf) -> a
             _ => {}
         }
     })
+}
+
+fn send(controller: Option<&ControllerHandle>, command: Command) {
+    match controller {
+        Some(controller) => controller.send(command),
+        None => tracing::warn!(?command, "nagrywanie niedostępne (brak GPU albo modelu)"),
+    }
 }
 
 /// Najechanie na ikonę albo prawe kliknięcie — odśwież listę, zanim użytkownik ją zobaczy.

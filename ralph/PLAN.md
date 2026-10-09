@@ -127,16 +127,16 @@
   - AC: wejście — kliknięcie ikony w pasku menu
   - AC: kliknięcie czerwonego kółka kończy nagranie i transkrypcja trafia do schowka
 - [x] Test: 5.2 — obsługa zdarzeń kliknięcia → polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #19)
-- [ ] Zadanie 5.3: Menu pod prawym kliknięciem: podmenu „Mikrofon" z listą dostępnych urządzeń (zaznaczony wybrany, odświeżane przy otwarciu), „Zakończ"; wybór zapisuje konfigurację (1.3) i działa od następnego nagrania (wymaga: 2.1, 5.1) [VA-REC-4] (pr: #20)
+- [x] Zadanie 5.3: Menu pod prawym kliknięciem: podmenu „Mikrofon" z listą dostępnych urządzeń (zaznaczony wybrany, odświeżane przy otwarciu), „Zakończ"; wybór zapisuje konfigurację (1.3) i działa od następnego nagrania (wymaga: 2.1, 5.1) [VA-REC-4] (pr: #20)
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: wejście — prawe kliknięcie ikony → Mikrofon → nazwa urządzenia
   - AC: wybór przetrwa restart aplikacji
-- [ ] Test: 5.3 — budowanie modelu menu z listy urządzeń i obsługa wyboru (bez GUI) (pr: #20)
-- [ ] Zadanie 5.4: Skróty globalne (global-hotkey): ctrl+cmd+r → Start, ctrl+cmd+s → Stop, działające przy dowolnej aktywnej aplikacji; nieudana rejestracja (konflikt) → komunikat w menu i logu (wymaga: 4.3, 5.1) [VA-REC-1, VA-REC-2]
+- [x] Test: 5.3 — budowanie modelu menu z listy urządzeń i obsługa wyboru (bez GUI) (pr: #20)
+- [ ] Zadanie 5.4: Skróty globalne (global-hotkey): ctrl+cmd+r → Start, ctrl+cmd+s → Stop, działające przy dowolnej aktywnej aplikacji; nieudana rejestracja (konflikt) → komunikat w menu i logu (wymaga: 4.3, 5.1) [VA-REC-1, VA-REC-2] (pr: #21)
   - Specky: (req: 01M4EKHCQYDSN2280XE8DMXR08 v1 @5c4517a)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)
   - AC: wejście — naciśnięcie ctrl+cmd+r / ctrl+cmd+s w dowolnej aplikacji
-- [ ] Test: 5.4 — mapowanie zdarzeń skrótów na polecenia kontrolera (zdarzenia wstrzyknięte)
+- [ ] Test: 5.4 — mapowanie zdarzeń skrótów na polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #21)
 - [ ] Zadanie 5.5: Uprawnienie mikrofonu: odmowa dostępu → powiadomienie z instrukcją (Ustawienia systemowe → Prywatność → Mikrofon), stan Error → Idle; brak modelu / brak Metal → stała pozycja z komunikatem w menu (wymaga: 3.1, 3.2, 5.3) [VA-PLAT-2, VA-STT-2]
   - Specky: (req: 01M4EKHC2HZ06DJWGX8EB7QCWD v1 @81be39b)
   - Specky: (req: 01M4EKHCM2WDGKPH824D8532JD v1 @5e21e03)
