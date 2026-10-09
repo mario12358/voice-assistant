@@ -122,16 +122,16 @@
   - AC: po starcie szare kółko; zdarzenie Recording → czerwone; powrót do Idle → szare
   - AC: wejście — zdarzenia zmiany stanu z kontrolera 4.3
 - [x] Test: 5.1 — mapowanie stanów kontrolera na ikonę i podpowiedź (bez GUI) (pr: #18)
-- [ ] Zadanie 5.2: Lewe kliknięcie ikony: szare → Start, czerwone → Stop (menu tylko pod prawym kliknięciem — `menu_on_left_click(false)`) (wymaga: 5.1) [VA-UI-2] (pr: #19)
+- [x] Zadanie 5.2: Lewe kliknięcie ikony: szare → Start, czerwone → Stop (menu tylko pod prawym kliknięciem — `menu_on_left_click(false)`) (wymaga: 5.1) [VA-UI-2] (pr: #19)
   - Specky: (req: 01M4EKHD3Y6M9V9E01V27AH18Z v1 @a4fdb35)
   - AC: wejście — kliknięcie ikony w pasku menu
   - AC: kliknięcie czerwonego kółka kończy nagranie i transkrypcja trafia do schowka
-- [ ] Test: 5.2 — obsługa zdarzeń kliknięcia → polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #19)
-- [ ] Zadanie 5.3: Menu pod prawym kliknięciem: podmenu „Mikrofon" z listą dostępnych urządzeń (zaznaczony wybrany, odświeżane przy otwarciu), „Zakończ"; wybór zapisuje konfigurację (1.3) i działa od następnego nagrania (wymaga: 2.1, 5.1) [VA-REC-4]
+- [x] Test: 5.2 — obsługa zdarzeń kliknięcia → polecenia kontrolera (zdarzenia wstrzyknięte) (pr: #19)
+- [ ] Zadanie 5.3: Menu pod prawym kliknięciem: podmenu „Mikrofon" z listą dostępnych urządzeń (zaznaczony wybrany, odświeżane przy otwarciu), „Zakończ"; wybór zapisuje konfigurację (1.3) i działa od następnego nagrania (wymaga: 2.1, 5.1) [VA-REC-4] (pr: #20)
   - Specky: (req: 01M4EKHCZDHBRC6DY70CRB55G3 v1 @956c038)
   - AC: wejście — prawe kliknięcie ikony → Mikrofon → nazwa urządzenia
   - AC: wybór przetrwa restart aplikacji
-- [ ] Test: 5.3 — budowanie modelu menu z listy urządzeń i obsługa wyboru (bez GUI)
+- [ ] Test: 5.3 — budowanie modelu menu z listy urządzeń i obsługa wyboru (bez GUI) (pr: #20)
 - [ ] Zadanie 5.4: Skróty globalne (global-hotkey): ctrl+cmd+r → Start, ctrl+cmd+s → Stop, działające przy dowolnej aktywnej aplikacji; nieudana rejestracja (konflikt) → komunikat w menu i logu (wymaga: 4.3, 5.1) [VA-REC-1, VA-REC-2]
   - Specky: (req: 01M4EKHCQYDSN2280XE8DMXR08 v1 @5c4517a)
   - Specky: (req: 01M4EKHCVH9GSS063H0MNZX2F9 v1 @1d726bc)

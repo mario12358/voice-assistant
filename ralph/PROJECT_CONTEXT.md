@@ -99,6 +99,6 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: 5.1 (pasek menu); 5.2 (kliknięcie ikony) w PR #19
-- Następne zadanie: 5.3 (menu: wybór mikrofonu, Zakończ)
+- Ostatnie ukończone: 5.2 (kliknięcie ikony); 5.3 (menu mikrofonu) w PR #20
+- Następne zadanie: 5.4 (skróty globalne ctrl+cmd+r / ctrl+cmd+s)
 - Blokery: brak
