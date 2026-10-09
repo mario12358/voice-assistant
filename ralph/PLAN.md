@@ -142,11 +142,11 @@
   - Specky: (req: 01M4EKHCM2WDGKPH824D8532JD v1 @5e21e03)
   - AC: wejście — próba Start bez uprawnienia; start aplikacji bez modelu/GPU
 - [x] Test: 5.5 — mapowanie błędów (brak uprawnienia, brak modelu, brak GPU) na komunikaty (bez GUI) (pr: #22)
-- [ ] Zadanie 5.6: Pobieranie modelu po instalacji: przy starcie bez modelu aplikacja w tle pobiera go (3.2), postęp w menu („Pobieranie modelu… 42%”) i podpowiedzi ikony; Start w tym czasie → komunikat zamiast nagrania; błąd → pozycja menu „Ponów pobieranie”; po pobraniu ładowanie STT (wymaga: 3.2, 4.3, 5.5) [VA-MODEL-1] (pr: #23)
+- [x] Zadanie 5.6: Pobieranie modelu po instalacji: przy starcie bez modelu aplikacja w tle pobiera go (3.2), postęp w menu („Pobieranie modelu… 42%”) i podpowiedzi ikony; Start w tym czasie → komunikat zamiast nagrania; błąd → pozycja menu „Ponów pobieranie”; po pobraniu ładowanie STT (wymaga: 3.2, 4.3, 5.5) [VA-MODEL-1] (pr: #23)
   - Specky: (req: 01M4EQH9D30871ZG5JMWK8VHFV v1 @5a6280e)
   - AC: wejście — pierwsze uruchomienie aplikacji bez modelu
   - AC: po pobraniu aplikacja nie wykonuje ruchu sieciowego
-- [ ] Test: 5.6 — automat stanów pobierania (brak → pobieranie → gotowy / błąd → ponów) z mockiem pobierania; Start podczas pobierania odrzucony (pr: #23)
+- [x] Test: 5.6 — automat stanów pobierania (brak → pobieranie → gotowy / błąd → ponów) z mockiem pobierania; Start podczas pobierania odrzucony (pr: #23)
 
 ### Faza 6: Instalator .dmg i weryfikacja
 
