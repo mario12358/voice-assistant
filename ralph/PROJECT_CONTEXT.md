@@ -65,6 +65,7 @@ Konwencje:
 | 2026-10-09 | Aplikacja: `main` → sprawdzenia startowe → `startup::controller_parts` (tylko z GPU i gotowym modelem) → `app::run` (pętla tao, `UserEvent::Controller`); `voice-asystent --self-check` kończy po sprawdzeniach — testy startu go używają | pętla zdarzeń nie kończy się sama |
 | 2026-10-09 | Brak zgody na mikrofon wykrywany po ciszy cyfrowej (same zera) → `ControllerEvent::NoSignal`, nie przez AVFoundation (wymagałoby `unsafe`); teksty dla użytkownika tylko w `apps/voice-asystent/src/messages.rs`, powiadomienia mac-notification-sys w osobnym wątku | `unsafe_code = deny` |
 | 2026-10-09 | Pobieranie modelu w aplikacji: `startup::ModelDownload` (tylko z GPU i brakującym/częściowym modelem) w wątku `va-model-download` → `UserEvent::Download`/`ModelLoaded`; automat `download::DownloadState` decyduje o menu, podpowiedzi i blokadzie Startu | VA-MODEL-1 |
+| 2026-10-09 | Bundle: `scripts/build-app.sh` (release → `dist/VoiceAsystent.app`, binarka `Contents/MacOS/VoiceAsystent`, CFBundleIdentifier `io.github.mario12358.voiceasystent`, LSMinimumSystemVersion 13.0, LSUIElement, wersja z `git describe --match 'v*'`), ikona generowana `scripts/app-icon.py` → icns, podpis ad-hoc bez notaryzacji; `--binary` składa bundle z dowolnej binarki (testy w CI bez builda release) | VA-PLAT-2; bez binarnych zasobów i bez konta deweloperskiego Apple |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -103,5 +104,5 @@ Konwencje:
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
-- Następne zadanie: 6.1 (bundle VoiceAsystent.app)
+- W toku: 6.1 (bundle VoiceAsystent.app) — PR #26; następne: 6.2 (build-dmg.sh)
 - Blokery: brak
