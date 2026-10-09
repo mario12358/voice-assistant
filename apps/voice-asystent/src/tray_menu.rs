@@ -31,6 +31,17 @@ impl TrayMenu {
         Ok(tray_menu)
     }
 
+    /// Stała, nieklikalna pozycja z komunikatem na górze menu (np. skróty niedostępne).
+    pub fn show_notice(&self, text: &str) {
+        let notice = MenuItem::new(text, false, None);
+        if let Err(error) = self
+            .menu
+            .insert_items(&[&notice, &PredefinedMenuItem::separator()], 0)
+        {
+            tracing::error!(%error, "komunikat w menu");
+        }
+    }
+
     /// Lista urządzeń aktualna na chwilę otwarcia menu (mikrofon mógł zostać podłączony).
     pub fn refresh_microphones(&self) {
         while self.microphones.remove_at(0).is_some() {}

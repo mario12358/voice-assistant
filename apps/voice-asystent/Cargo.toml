@@ -18,6 +18,7 @@ tray-icon = "0.26"
 tao = "0.37"
 va-audio.workspace = true
 va-clipboard.workspace = true
+global-hotkey = "0.8.0"
 
 [lints]
 workspace = true
