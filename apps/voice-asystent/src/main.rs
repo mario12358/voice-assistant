@@ -7,6 +7,7 @@ mod download;
 mod history_menu;
 mod hotkeys;
 mod indicator;
+mod login_item;
 mod messages;
 mod microphones;
 mod model_menu;
@@ -57,6 +58,10 @@ fn main() -> anyhow::Result<()> {
                 notify: config.notify_on_transcript,
                 sound: config.sound_on_transcript,
             },
+            login: login_item::LoginItem::new(
+                paths.launch_agents_dir.clone(),
+                &std::env::current_exe()?,
+            ),
         },
     )
 }

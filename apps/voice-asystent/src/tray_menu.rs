@@ -16,6 +16,7 @@ use crate::model_menu::{
     RemovePrompt, SHOW_MODEL_ID,
 };
 
+use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
 use crate::settings_menu::{SettingsMenu, settings_menu};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
@@ -28,20 +29,33 @@ pub struct TrayMenu {
     microphones: Submenu,
     languages: Submenu,
     limits: Submenu,
+    login_item: CheckMenuItem,
     config_path: PathBuf,
     download: Option<(MenuItem, MenuItem)>,
 }
 
 impl TrayMenu {
-    pub fn new(config_path: PathBuf) -> anyhow::Result<Self> {
+    pub fn new(config_path: PathBuf, login: &LoginItem) -> anyhow::Result<Self> {
         let history = Submenu::new("Historia", true);
         let model = Submenu::new("Model", true);
         let microphones = Submenu::new("Mikrofon", true);
         let languages = Submenu::new("Język", true);
         let limits = Submenu::new("Limit nagrania", true);
+        let login_item = CheckMenuItem::with_id(
+            LOGIN_ITEM_ID,
+            login.menu_label(),
+            login.available(),
+            login.is_enabled(),
+            None,
+        );
         let settings = Submenu::new("Ustawienia", true);
         settings
-            .append_items(&[&languages, &limits])
+            .append_items(&[
+                &languages,
+                &limits,
+                &PredefinedMenuItem::separator(),
+                &login_item,
+            ])
             .context("podmenu Ustawienia")?;
         let show_logs = MenuItem::with_id(SHOW_LOGS_ID, "Pokaż logi", true, None);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
@@ -63,6 +77,7 @@ impl TrayMenu {
             microphones,
             languages,
             limits,
+            login_item,
             config_path,
             download: None,
         };
@@ -72,6 +87,11 @@ impl TrayMenu {
             &Config::load_or_default(&tray_menu.config_path).0,
         ));
         Ok(tray_menu)
+    }
+
+    /// Zaznaczenie „Uruchamiaj przy logowaniu” zgodne ze stanem pliku LaunchAgent.
+    pub fn show_login(&self, login: &LoginItem) {
+        self.login_item.set_checked(login.is_enabled());
     }
 
     /// Podmenu „Ustawienia”: język i limit nagrania z zaznaczoną wartością z konfiguracji.
