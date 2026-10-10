@@ -11,7 +11,10 @@ use va_core::history::HistoryEntry;
 use crate::download::DownloadState;
 use crate::history_menu::{CLEAR_HISTORY_ID, history_items};
 use crate::microphones::{QUIT_ID, microphone_items};
-use crate::model_menu::{ModelMenu, REDOWNLOAD_MODEL_ID, REMOVE_MODEL_ID, SHOW_MODEL_ID};
+use crate::model_menu::{
+    CANCEL_REMOVE_ID, CONFIRM_REMOVE_ID, ModelMenu, REDOWNLOAD_MODEL_ID, REMOVE_MODEL_ID,
+    RemovePrompt, SHOW_MODEL_ID,
+};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
 
@@ -52,26 +55,44 @@ impl TrayMenu {
         Ok(tray_menu)
     }
 
-    /// Podmenu „Model”: linie informacyjne, „Pokaż w Finderze”, „Usuń model…”, „Pobierz ponownie”.
-    pub fn show_model(&self, menu: &ModelMenu) {
+    /// Podmenu „Model”: linie informacyjne, „Pokaż w Finderze”, „Usuń model…” (albo pytanie
+    /// o potwierdzenie z „Anuluj”), „Pobierz ponownie”.
+    pub fn show_model(&self, menu: &ModelMenu, prompt: RemovePrompt) {
         while self.model.remove_at(0).is_some() {}
         for line in &menu.lines {
             let _ = self.model.append(&MenuItem::new(line, false, None));
         }
         let show = MenuItem::with_id(SHOW_MODEL_ID, "Pokaż w Finderze", true, None);
-        let remove = MenuItem::with_id(REMOVE_MODEL_ID, "Usuń model…", menu.remove_enabled, None);
         let redownload = MenuItem::with_id(
             REDOWNLOAD_MODEL_ID,
             "Pobierz ponownie",
             menu.redownload_enabled,
             None,
         );
-        if let Err(error) = self.model.append_items(&[
-            &PredefinedMenuItem::separator(),
-            &show,
-            &remove,
-            &redownload,
-        ]) {
+        let result = match prompt {
+            RemovePrompt::Idle => {
+                let remove =
+                    MenuItem::with_id(REMOVE_MODEL_ID, "Usuń model…", menu.remove_enabled, None);
+                self.model.append_items(&[
+                    &PredefinedMenuItem::separator(),
+                    &show,
+                    &remove,
+                    &redownload,
+                ])
+            }
+            RemovePrompt::Confirming => {
+                let confirm = MenuItem::with_id(CONFIRM_REMOVE_ID, &menu.confirm_label, true, None);
+                let cancel = MenuItem::with_id(CANCEL_REMOVE_ID, "Anuluj", true, None);
+                self.model.append_items(&[
+                    &PredefinedMenuItem::separator(),
+                    &show,
+                    &confirm,
+                    &cancel,
+                    &redownload,
+                ])
+            }
+        };
+        if let Err(error) = result {
             tracing::error!(%error, "podmenu Model");
         }
     }

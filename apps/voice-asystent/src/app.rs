@@ -21,10 +21,12 @@ use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
 use crate::messages::{Problem, menu_notice, notify};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::model_menu::{
-    ModelInfo, REDOWNLOAD_MODEL_ID, SHOW_MODEL_ID, model_menu, state_with_percent,
+    ModelInfo, REDOWNLOAD_MODEL_ID, RemoveAction, RemovePrompt, SHOW_MODEL_ID, model_menu,
+    state_with_percent,
 };
 use crate::startup::ModelDownload;
 use crate::tray_menu::{RETRY_DOWNLOAD_ID, TrayMenu};
+use va_model::{LARGE_V3_TURBO, ModelStore};
 
 enum UserEvent {
     Controller(ControllerEvent),
@@ -35,9 +37,12 @@ enum UserEvent {
     ModelLoaded(ControllerParts),
 }
 
+/// `download` = zadanie pobierania, jeśli w ogóle możliwe (GPU, magazyn domyślny);
+/// `needs_download` = czy uruchomić je od razu (modelu brak przy starcie).
 pub fn run(
     controller_parts: Result<ControllerParts, Problem>,
     download: Option<ModelDownload>,
+    needs_download: bool,
     model_info: ModelInfo,
     config_path: PathBuf,
     recording_limit_secs: u32,
@@ -55,12 +60,13 @@ pub fn run(
     };
     let mut controller = controller_parts.map(|parts| spawn_controller(parts, proxy.clone()));
     let mut download_state = match &download {
-        Some(job) => {
+        Some(job) if needs_download => {
             spawn_download(job.clone(), proxy.clone());
             DownloadState::Downloading { percent: 0 }
         }
-        None => DownloadState::NotNeeded,
+        _ => DownloadState::NotNeeded,
     };
+    let mut remove_prompt = RemovePrompt::default();
     let mut tray: Option<(TrayIcon, TrayMenu)> = None;
     let mut shown = State::Idle;
     let mut history: Vec<HistoryEntry> = Vec::new();
@@ -80,7 +86,7 @@ pub fn run(
                     }
                     show_download(&mut built, &download_state, shown);
                     built.1.show_history(&history);
-                    show_model(&built.1, &model_info, &download_state, shown);
+                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
                     tray = Some(built);
                 }
                 Err(error) => {
@@ -93,7 +99,7 @@ pub fn run(
                     shown = *state;
                     if let Some((icon, menu)) = &tray {
                         show(icon, indicator_for(*state));
-                        show_model(menu, &model_info, &download_state, shown);
+                        show_model(menu, &model_info, &download_state, shown, remove_prompt);
                     }
                 }
                 if let ControllerEvent::HistoryChanged(entries) = &event {
@@ -135,6 +141,23 @@ pub fn run(
             }
             Event::UserEvent(UserEvent::Menu(event)) => {
                 let id = event.id.as_ref();
+                let remove_allowed = model_menu(&model_info, &download_state, shown).remove_enabled;
+                let (next_prompt, action) = remove_prompt.on_menu_click(id, remove_allowed);
+                remove_prompt = next_prompt;
+                if action == RemoveAction::Remove {
+                    controller = None;
+                    remove_model_files(&model_info);
+                    download_state = download_state.clone().next(DownloadEvent::Removed);
+                    unavailable = Some(Problem::ModelUnavailable);
+                    if let Some(built) = &mut tray {
+                        show_download(built, &download_state, shown);
+                    }
+                }
+                if action != RemoveAction::None
+                    && let Some((_, menu)) = &tray
+                {
+                    show_model(menu, &model_info, &download_state, shown, remove_prompt);
+                }
                 if id == QUIT_ID {
                     *control_flow = ControlFlow::Exit;
                 } else if id == RETRY_DOWNLOAD_ID || id == REDOWNLOAD_MODEL_ID {
@@ -147,7 +170,7 @@ pub fn run(
                     }
                     if let Some(built) = &mut tray {
                         show_download(built, &download_state, shown);
-                        show_model(&built.1, &model_info, &download_state, shown);
+                        show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
                     }
                 } else if id == SHOW_MODEL_ID {
                     reveal_in_finder(&model_info.path);
@@ -171,7 +194,7 @@ pub fn run(
                 download_state = download_state.clone().next(event);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
-                    show_model(&built.1, &model_info, &download_state, shown);
+                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
                 }
             }
             Event::UserEvent(UserEvent::ModelLoaded(parts)) => {
@@ -180,7 +203,7 @@ pub fn run(
                 download_state = download_state.clone().next(DownloadEvent::Ready);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
-                    show_model(&built.1, &model_info, &download_state, shown);
+                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
                 }
             }
             _ => {}
@@ -285,14 +308,32 @@ fn menu_may_open(event: &TrayIconEvent) -> bool {
 
 /// Podmenu „Model” odświeżane przy każdej zmianie stanu pobierania albo kontrolera; w trakcie
 /// pobierania linia stanu niesie procent.
-fn show_model(menu: &TrayMenu, info: &ModelInfo, download: &DownloadState, shown: State) {
+fn show_model(
+    menu: &TrayMenu,
+    info: &ModelInfo,
+    download: &DownloadState,
+    shown: State,
+    prompt: RemovePrompt,
+) {
     let mut model = model_menu(info, download, shown);
     if let Some(progress) = state_with_percent(download)
         && let Some(line) = model.lines.first_mut()
     {
         *line = line.replace("· pobieranie", &format!("· {progress}"));
     }
-    menu.show_model(&model);
+    menu.show_model(&model, prompt);
+}
+
+/// Usuwa plik modelu z magazynu domyślnego (i plik częściowy); kontroler jest już zamknięty,
+/// więc model nie siedzi w pamięci. Własna ścieżka nigdy tu nie trafia (pozycja nieaktywna).
+fn remove_model_files(info: &ModelInfo) {
+    let Some(dir) = info.path.parent() else {
+        return;
+    };
+    match ModelStore::new(dir, LARGE_V3_TURBO).remove() {
+        Ok(()) => tracing::info!(path = %info.path.display(), "model usunięty na życzenie"),
+        Err(error) => tracing::error!(%error, "usuwanie modelu"),
+    }
 }
 
 /// `open -R` zaznacza plik w Finderze; bez pliku otwiera jego katalog.

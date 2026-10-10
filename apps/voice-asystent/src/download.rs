@@ -25,8 +25,7 @@ pub enum DownloadEvent {
     Failed(String),
     Ready,
     Retry,
-    /// Użytkownik potwierdził usunięcie modelu (wysyłane z podmenu „Model” — zadanie 8.4).
-    #[allow(dead_code)]
+    /// Użytkownik potwierdził usunięcie modelu w podmenu „Model”.
     Removed,
 }
 

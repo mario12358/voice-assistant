@@ -105,7 +105,8 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Objaw | Przyczyna i co zrobić |
 |-------|----------------------|
 | Menu: „Wymagane GPU (Metal) — nagrywanie niedostępne" | brak urządzenia Metal (Intel/VM). Aplikacja celowo nie przełącza się na CPU. Sprawdź: `cargo run -p voice-asystent -- --self-check` i log `GPU Metal dostępne` / `Wymagane GPU (Metal)` |
-| Menu: „Brak modelu — nagrywanie niedostępne" / „Pobieranie modelu nieudane: …" | wybierz **Ponów pobieranie** w menu albo `cargo run -p va-dev -- model-download`. Uszkodzony plik (zła suma) jest usuwany automatycznie; ręcznie: usuń `models/ggml-large-v3-turbo.bin` i `.part` |
+| Menu: „Brak modelu — nagrywanie niedostępne" / „Pobieranie modelu nieudane: …" | wybierz **Pobierz ponownie** w podmenu **Model** (albo **Ponów pobieranie** na górze menu, albo `cargo run -p va-dev -- model-download`). Uszkodzony plik (zła suma) jest usuwany automatycznie; z menu: **Model → Usuń model…** |
+| Menu: „Brak modelu: /ścieżka/… — nagrywanie niedostępne" | `model_path` w `config.toml` wskazuje nieistniejący plik; aplikacja celowo nic nie pobiera. Popraw ścieżkę albo usuń pole (wraca model domyślny z pobieraniem) |
 | Powiadomienie „Brak dostępu do mikrofonu" | nagranie dało same zera: brak zgody (Ustawienia → Prywatność i ochrona → Mikrofon) albo wirtualne wejście bez sygnału. Diagnoza: `cargo run -p va-dev -- mic-test` |
 | Skrót nie działa, w menu komunikat o konflikcie | kombinacja `ctrl+cmd+r`/`ctrl+cmd+s` zajęta przez inną aplikację; zwolnij ją tam albo używaj kliknięcia ikony |
 | Nagranie skończyło się samo, powiadomienie „Osiągnięto limit długości nagrania" | limit `max_recording_secs` (domyślnie 600 s): materiał do limitu jest transkrybowany jak po Stop; dłuższe dyktowanie → podnieś wartość w `config.toml` |

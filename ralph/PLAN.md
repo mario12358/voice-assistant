@@ -208,17 +208,17 @@
   - Specky kryteria: (crit: 01M4K6M2ZYCYED1VTTXDC6R542) „Usuń model” nieaktywne przy pobieraniu i transkrypcji
   - AC: `remove()` kasuje oba pliki i zostawia `Missing`; automat: `Ready`/`NotNeeded` + `Removed` → `Missing`, `Missing` + `Retry` → `Downloading{0}` i `starts_download` = true; `can_remove` = false dla `Downloading` i stanu kontrolera `Transcribing`/`Recording`
 - [x] Test: 8.2 — testy magazynu (remove, size) i tablica przejść automatu pobierania; mutacja `can_remove` czerwona (pr: #43)
-- [ ] Zadanie 8.3: Podmenu „Model” (`model_menu.rs`): pozycja `large-v3-turbo · 1,6 GB · gotowy | pobieranie N% | brak` (własna ścieżka: plik i ścieżka), „Pokaż w Finderze” (`open -R`), „Usuń model…”, „Pobierz ponownie” z flagami; odświeżane przy zmianie stanu pobierania i kontrolera (wymaga: 8.1, 8.2) [VA-MODEL-2, VA-MODEL-3] (zmiana: 2026-10-10-specky-NFWQ1DA.md) (pr: #44)
+- [x] Zadanie 8.3: Podmenu „Model” (`model_menu.rs`): pozycja `large-v3-turbo · 1,6 GB · gotowy | pobieranie N% | brak` (własna ścieżka: plik i ścieżka), „Pokaż w Finderze” (`open -R`), „Usuń model…”, „Pobierz ponownie” z flagami; odświeżane przy zmianie stanu pobierania i kontrolera (wymaga: 8.1, 8.2) [VA-MODEL-2, VA-MODEL-3] (zmiana: 2026-10-10-specky-NFWQ1DA.md) (pr: #44)
   - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
   - Specky: (req: 01M4K6M32Y0MQ3JPWM4XJ4CRAZ v1 @9f73318)
   - Specky kryteria: (crit: 01M4K6M2ZYSP1Y9M0VD39GV7J8) pozycja z nazwą, rozmiarem, stanem, aktualizowana; (crit: 01M4K6M2ZY9XTRRVSGXYM05D1P) Pokaż w Finderze; (crit: 01M4K6M33CMHX4SQDRACYG60ZV) własna ścieżka: Usuń/Pobierz nieaktywne
   - AC: wejście — zdarzenia `Download(…)`, `ModelLoaded`, `StateChanged` w pętli tao przebudowują podmenu; kliknięcie „Pokaż w Finderze” w pętli tao uruchamia `open -R <plik>` (katalog, gdy pliku brak); funkcja budująca pozycje (`model_items(info, download_state, controller_state)`) testowana jednostkowo
-- [ ] Test: 8.3 — testy etykiet (GB z jednym miejscem, stany, własna ścieżka) i flag aktywności; mutacja (Usuń aktywne przy pobieraniu) czerwona (pr: #44)
-- [ ] Zadanie 8.4: „Usuń model” z potwierdzeniem w menu („Potwierdź usunięcie (1,6 GB)” + „Anuluj”): zamknięcie kontrolera, `remove()`, stan `Missing`, komunikat przy Start; „Pobierz ponownie” → `spawn_download` → `ModelLoaded` → nowy kontroler bez restartu; README/RUNBOOK (wymaga: 8.3) [VA-MODEL-2] (zmiana: 2026-10-10-specky-NFWQ1DA.md)
+- [x] Test: 8.3 — testy etykiet (GB z jednym miejscem, stany, własna ścieżka) i flag aktywności; mutacja (Usuń aktywne przy pobieraniu) czerwona (pr: #44)
+- [ ] Zadanie 8.4: „Usuń model” z potwierdzeniem w menu („Potwierdź usunięcie (1,6 GB)” + „Anuluj”): zamknięcie kontrolera, `remove()`, stan `Missing`, komunikat przy Start; „Pobierz ponownie” → `spawn_download` → `ModelLoaded` → nowy kontroler bez restartu; README/RUNBOOK (wymaga: 8.3) [VA-MODEL-2] (zmiana: 2026-10-10-specky-NFWQ1DA.md) (pr: #45)
   - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
   - Specky kryteria: (crit: 01M4K6M2ZYTC7D38NMHZJXF1FV) potwierdzenie, kasowanie, „brak”, komunikat, pobieranie z postępem; (crit: 01M4K6M2ZYHSYT6K38YWRG54RT) po pobraniu nagrywanie bez restartu
   - AC: wejście — kliknięcia pozycji podmenu w pętli tao (`UserEvent::Menu`): automat potwierdzenia (`ConfirmState`) testowany jednostkowo; test startu: po usunięciu plików modelu `--self-check` raportuje `Missing`; ścieżka Pobierz ponownie → ModelLoaded to istniejąca ścieżka 5.6
-- [ ] Test: 8.4 — testy automatu potwierdzenia (klik, potwierdź, anuluj, timeout przez inne zdarzenie) i mapowania id → akcja; mutacja (usunięcie bez potwierdzenia) czerwona
+- [ ] Test: 8.4 — testy automatu potwierdzenia (klik, potwierdź, anuluj, timeout przez inne zdarzenie) i mapowania id → akcja; mutacja (usunięcie bez potwierdzenia) czerwona (pr: #45)
 - [ ] ⛔ Zadanie 8.5: Test manualny właściciela: podmenu „Model” (stan, rozmiar, Pokaż w Finderze), Usuń model → potwierdzenie → „brak” i komunikat przy Start → Pobierz ponownie → nagranie bez restartu; `model_path` w config.toml na istniejący i nieistniejący plik — wynik do REPORT.md (wymaga: 8.4)
 
 ## Pokrycie spec
