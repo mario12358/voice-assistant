@@ -14,8 +14,8 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: Faza 7 (historia wypowiedzi, pauzy, limit nagrania) — cały kod zmergowany (PR #33–#38), czeka ⛔ 7.7 (test ręczny właściciela)
-- **Postęp**: 59/60 pozycji ukończonych (zostało ⛔ 7.7)
+- **Status**: W trakcie — Faza 8 (podmenu „Model”, własna ścieżka modelu) dopisana 2026-10-10 z wymagań Specky VA-MODEL-2 i VA-MODEL-3; Faza 7 czeka tylko na ⛔ 7.7
+- **Postęp**: 59/69 pozycji ukończonych (zostało ⛔ 7.7 i Faza 8: 0/9)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
 - Otwarte PR: brak. Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
@@ -99,6 +99,26 @@ Format wpisu (jeden ### na każdą zmianę):
 
 Plik źródłowy zmiany żyje w changes/processed/<nazwa-pliku>.md (audyt w gicie).
 -->
+
+### 2026-10-10 2026-10-10-specky-NFWQ1DA.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (nowe wymaganie Specky VA-MODEL-2; tray_menu.rs, download.rs, startup.rs, app.rs, crates/model)
+- **Streszczenie**: Podmenu „Model” z nazwą, rozmiarem i stanem modelu, „Pokaż w Finderze”, „Usuń model” z potwierdzeniem w menu i „Pobierz ponownie” bez restartu aplikacji; wariant bez przełączania modeli (VA-STT-1 bez zmian).
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 8.2, 8.3, 8.4, 8.5 (Faza 8)
+
+### 2026-10-10 2026-10-10-specky-XJ4CRAZ.md
+- **Rodzaj**: błąd
+- **Źródło błędu**: zadanie 5.1 (startup sprawdza model tylko w stałym katalogu; pole `model_path` z 1.3)
+- **Wykryte przez**: ralph
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (nowe wymaganie Specky VA-MODEL-3; startup.rs, README)
+- **Streszczenie**: Pole `model_path` z config.toml, opisane w README, honoruje tylko `va-dev transcribe`; aplikacja ma ładować wskazany plik bez pobierania, a przy braku pliku pokazać „Brak modelu” ze ścieżką.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 8.1 (Faza 8; 8.3 i 8.5 współdzielone z VA-MODEL-2)
 
 ### 2026-10-10 2026-10-10-specky-CY0SQA5.md
 - **Rodzaj**: rozwój
