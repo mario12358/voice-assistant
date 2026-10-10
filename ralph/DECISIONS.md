@@ -123,3 +123,63 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonej regresji Fazy 5.
 **Ustalenie**: Utworzono wersję v0.3.0 (commit 23ec3de) obejmującą fazy 4–5: działający asystent w pasku menu (kliknięcie i skróty, schowek, menu mikrofonu, komunikaty, pobieranie modelu w tle). Scenariusze w docs/test-scenarios/v0.3.0.md, migawka Specky 01M4FTCC8WGF4QWM98D0CE7JEG. Wersja lokalnie do czasu git push origin v0.3.0.
 **Wpływ**: tag v0.3.0, Specky
+
+## 2026-10-09 11:15 — Wydanie wersji v0.4.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonym pełnym suicie po zadaniach 6.1–6.3 (instalator).
+**Ustalenie**: Utworzono wersję v0.4.0 (commit 1ae141a): bundle VoiceAsystent.app z własną ikoną i polskim opisem uprawnienia mikrofonu, obraz .dmg z przeciąganiem do Applications, README i RUNBOOK. Scenariusze w docs/test-scenarios/v0.4.0.md, migawka Specky 01M4FZ5ZY6SRS6JTDZKJQNVK28. Wersja lokalnie do czasu git push origin v0.4.0. Test ręczny 6.4 nadal czeka na właściciela — Faza 6 bez tagu fazy.
+**Wpływ**: tag v0.4.0, Specky, zadanie 6.4
+
+## 2026-10-09 12:33 — Stan Specky po wydaniu v0.4.0
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel zapytał, co nowego w Specky.
+**Ustalenie**: Od kursora 709 jedyna nowa pozycja to migawka v0.4.0 (01M4FZ5ZY6SRS6JTDZKJQNVK28). Kolejka pracy pusta: 0 do poprawy, 0 do zbudowania, 8 wymagań code_ready, 4 done (jedno z ostatnio oznaczonych code_ready właściciel przeniósł na done). Brak dryfu, brak czekających propozycji, brak czerwonych PR-ów.
+**Wpływ**: brak
+
+## 2026-10-09 12:34 — Ponowne sprawdzenie nowości
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel zapytał, czy jest coś nowego (bez wskazania kanału).
+**Ustalenie**: Sprawdzone wszystkie kanały: Specky bez nowych pozycji od kursora 710, changes/ zawiera tylko szablon PRZYKLAD.md (bez zmian do przetworzenia), brak otwartych PR-ów, main równe z origin/main. Jedyne, co czeka: wersja v0.4.0 nie jest jeszcze wypchnięta (git push origin v0.4.0) i test ręczny 6.4.
+**Wpływ**: brak
+
+## 2026-10-09 12:35 — Nowe wymaganie: wsparcie Windows
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel dodał przez chat Specky wymaganie „Aplikacja ma wspierać również Windows” (01M4G3NMKKEBCK15MKCVXN4789, zaakceptowane, 3 kryteria) i zapytał o nie.
+**Ustalenie**: Wymaganie koliduje z VA-PLAT-1 (wyłącznie macOS, status done, kryterium „brak konfiguracji budowania dla Windows”), VA-STT-2 (tylko GPU Metal) i VA-PLAT-2 (tylko .dmg); kryterium 2 mówi o „rozmowie z LLM”, której w projekcie nie ma (decyzja 2026-10-08: bez LLM). Przedstawiono właścicielowi listę rozstrzygnięć do podjęcia w Specky (zastąpienie VA-PLAT-1, GPU na Windows: CUDA/Vulkan, skróty i schowek na Windows, LLM tak/nie, external_ref i sekcja) oraz szacunek: osobna faza, bez maszyny z Windows nieweryfikowalna. Bez zmian w planie do decyzji właściciela.
+**Wpływ**: VA-PLAT-1, VA-STT-2, VA-PLAT-2; przyszła Faza 7
+
+## 2026-10-09 22:34 — Cofnięcie wymagania o Windows w Specky
+**Rodzaj**: korekta
+**Pytanie/kontekst**: Właściciel polecił cofnąć w Specky obsługę Windows i Linux — projekt ma zostać wyłącznie na macOS.
+**Ustalenie**: Wymaganie 01M4G3NMKKEBCK15MKCVXN4789 („wspierać również Windows”) wycofane (deprecate bez następcy): propozycja 01M4H5YZBGV79B02KW3B4T66NJ zaakceptowana na wyraźną prośbę właściciela. VA-PLAT-1 (wyłącznie macOS) obowiązuje bez zmian; osobnego wymagania o Linux nigdy nie było. Plan bez zmian — Faza 7 nie powstaje.
+**Wpływ**: Specky; decyzja 📌 „wyłącznie macOS” w PROJECT_CONTEXT pozostaje
+
+## 2026-10-10 12:07 — Historia wypowiedzi (pomysł na nową funkcję)
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel chce mieć „schowek na wypowiedzi” — możliwość wrócenia do wcześniejszych transkrypcji i skopiowania ich ponownie; pyta, jak do tego podejść.
+**Ustalenie**: Rekomendacja: podmenu „Historia” pod prawym kliknięciem ikony (ostatnie N wpisów, skrót tekstu + godzina, kliknięcie kopiuje pełny tekst do schowka, pozycja „Wyczyść historię”); logika w va-core (bufor po zdarzeniu Delivered), zapis na dysk w katalogu danych aplikacji z limitem wpisów — wymaga decyzji właściciela, bo to pierwsze trwałe przechowywanie treści (dotąd tylko schowek). Ścieżka formalna: nowe wymaganie w Specky (np. VA-HIST-1) → changes/ → Faza 7 (ok. 4–5 zadań). Na razie bez zmian w planie.
+**Wpływ**: przyszła Faza 7; decyzja o trwałości i prywatności historii
+
+## 2026-10-10 15:24 — Historia wypowiedzi zapisywana na dysku; limit i pauzy w nagraniu
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel zdecydował, że historia wypowiedzi ma być zapisywana na dysku, i zapytał, jak długie mogą być nagrania oraz czy 5-minutowe nagranie z długimi przerwami w mówieniu zostanie obsłużone.
+**Ustalenie**: Zaproponowano w Specky wymaganie VA-HIST-1 (podmenu „Historia”, kliknięcie kopiuje tekst, limit 30 wpisów, zapis w katalogu danych aplikacji, „Wyczyść historię”, treść poza logami) — czeka na akceptację właściciela, potem changes/ → Faza 7. Nagrania: limit 5 min (max_recording_secs=300, zmienny w config.toml); dokładnie 5 min mieści się, nadwyżka jest po cichu odrzucana (tylko ostrzeżenie w logu, ikona dalej czerwona) — luka do naprawy. Cisza jest przycinana tylko na brzegach; długie pauzy w środku idą do Whispera i grożą halucynacjami w oknach 30 s bez mowy. Zaproponowano: kompresję pauz wewnętrznych przed transkrypcją i powiadomienie/auto-stop przy limicie — do decyzji właściciela.
+**Wpływ**: Specky VA-HIST-1; przyszła Faza 7; crates/audio (pauzy), recorder (limit)
+
+## 2026-10-10 15:29 — Propozycje VA-REC-5 i VA-REC-6 w Specky
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel polecił wystawić przez Specky dwa wymagania zaproponowane przy analizie długich nagrań.
+**Ustalenie**: Zaproponowano w tym samym wsadzie co VA-HIST-1: VA-REC-5 (skracanie pauz wewnętrznych > 1,5 s do 0,5 s przed transkrypcją, 4 kryteria) i VA-REC-6 (limit nagrania domyślnie 10 min, automatyczny Stop z transkrypcją i powiadomienie przy limicie, 4 kryteria). Wsad 01M4JZS73RFCBAXE91TSTJCG2V czeka na akceptację właściciela; po niej następny start Ralpha założy pliki w changes/ i Fazę 7.
+**Wpływ**: Specky; przyszła Faza 7 (crates/audio, recorder, kontroler, powiadomienia)
+
+## 2026-10-10 15:32 — Akceptacja VA-HIST-1, VA-REC-5, VA-REC-6; pytanie o test ręczny
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel potwierdził treść trzech propozycji i polecił je zaakceptować w Specky; push wersji v0.4.0 zostawia na później; zapytał, czym jest test ręczny.
+**Ustalenie**: Wsad 01M4JZS73RFCBAXE91TSTJCG2V zaakceptowany na wyraźną prośbę właściciela: VA-HIST-1 (01M4K06AGAV8G79RJMXCY0SQA5), VA-REC-5 (01M4K06AQB7B8055HQ21BY4F4Z), VA-REC-6 (01M4K06AXGNSZ9XEZ3E9VFYND0). Przegląd sprzeczności z resztą projektu: brak (VA-REC-6 uzupełnia VA-REC-2, VA-REC-5 zachowuje VA-REC-3). Mapa w ralph/SPECKY.md uzupełniona; następny start Ralpha założy changes/ i Fazę 7. Test ręczny = zadanie ⛔ 6.4 z planu wg docs/test-scenarios/v0.4.0.md.
+**Wpływ**: Specky; Faza 7; zadanie 6.4
+
+## 2026-10-10 15:34 — Wynik testu ręcznego 6.4: wszystko OK
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel zgłosił, że test ręczny 6.4 (instalacja z .dmg, nagrywanie, wklejanie, zmiana mikrofonu) wykonał 2026-10-09 i wszystko działa.
+**Ustalenie**: Zadanie 6.4 odhaczone, wyniki wpisane do docs/test-scenarios/v0.4.0.md (wszystkie scenariusze [x], 2.2 nie do sprawdzenia na dev, decyzja: gotowa do wdrożenia) i do REPORT.md. Plan 47/47. Regresja Fazy 6 na main uruchomiona; po zieleni tag ralph/faza-6 i PR stanu. Push wersji v0.4.0 nadal po stronie właściciela.
+**Wpływ**: Faza 6 zamknięta; tag ralph/faza-6

@@ -66,6 +66,7 @@ Konwencje:
 | 2026-10-09 | Brak zgody na mikrofon wykrywany po ciszy cyfrowej (same zera) → `ControllerEvent::NoSignal`, nie przez AVFoundation (wymagałoby `unsafe`); teksty dla użytkownika tylko w `apps/voice-asystent/src/messages.rs`, powiadomienia mac-notification-sys w osobnym wątku | `unsafe_code = deny` |
 | 2026-10-09 | Pobieranie modelu w aplikacji: `startup::ModelDownload` (tylko z GPU i brakującym/częściowym modelem) w wątku `va-model-download` → `UserEvent::Download`/`ModelLoaded`; automat `download::DownloadState` decyduje o menu, podpowiedzi i blokadzie Startu | VA-MODEL-1 |
 | 2026-10-09 | Bundle: `scripts/build-app.sh` (release → `dist/VoiceAsystent.app`, binarka `Contents/MacOS/VoiceAsystent`, CFBundleIdentifier `io.github.mario12358.voiceasystent`, LSMinimumSystemVersion 13.0, LSUIElement, wersja z `git describe --match 'v*'`), ikona generowana `scripts/app-icon.py` → icns, podpis ad-hoc bez notaryzacji; `--binary` składa bundle z dowolnej binarki (testy w CI bez builda release) | VA-PLAT-2; bez binarnych zasobów i bez konta deweloperskiego Apple |
+| 2026-10-10 | 📌 Historia wypowiedzi (VA-HIST-1, zaproponowane w Specky) ma być TRWAŁA: zapis w katalogu danych aplikacji (plik tylko dla użytkownika, limit 30 wpisów, „Wyczyść historię”); to jedyny dozwolony zapis treści transkrypcji na dysk — logi nadal bez treści | decyzja właściciela |
 | 2026-10-08 | Zakres: nagranie → transkrypcja → schowek; bez LLM, TTS, wpisywania do okna (wcześniejszy plan Linux/CUDA porzucony) | wymagania.md |
 
 ## Znane problemy i rozwiązania
@@ -104,5 +105,7 @@ Konwencje:
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
-- Ostatnie ukończone: 6.3 (README + RUNBOOK, PR #28); jedyne pozostałe zadanie: ⛔ 6.4 (test ręczny właściciela: instalacja z .dmg, nagranie, wklejenie, zmiana mikrofonu) — Faza 6 bez tagu do czasu jego wyniku
+- Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
+- Następne: Faza 7 do zaplanowania z kolejki Specky przy starcie sesji (18.1 → changes/ → 0.3): VA-HIST-1 historia wypowiedzi (trwała, podmenu „Historia”), VA-REC-5 skracanie pauz wewnętrznych, VA-REC-6 limit nagrania 10 min z auto-Stop i powiadomieniem
+- Blokery: brak
 - Blokery: brak
