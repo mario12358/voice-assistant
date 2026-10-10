@@ -9,7 +9,9 @@ use tao::event_loop::{ControlFlow, EventLoopBuilder, EventLoopProxy};
 use tao::platform::macos::{ActivationPolicy, EventLoopExtMacOS};
 use tray_icon::menu::MenuEvent;
 use tray_icon::{Icon, MouseButton, TrayIcon, TrayIconBuilder, TrayIconEvent};
-use va_core::controller::{self, Command, ControllerEvent, ControllerHandle, ControllerParts};
+use va_core::controller::{
+    self, Command, ControllerEvent, ControllerHandle, ControllerParts, TranscriptPreview,
+};
 use va_core::history::HistoryEntry;
 use va_core::state::State;
 
@@ -18,7 +20,7 @@ use crate::download::{DownloadEvent, DownloadState};
 use crate::history_menu::command_from_menu_id;
 use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
-use crate::messages::{Problem, menu_notice, notify};
+use crate::messages::{Problem, ReadySignal, menu_notice, notify, signal_ready};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::model_menu::{
     ModelInfo, REDOWNLOAD_MODEL_ID, RemoveAction, RemovePrompt, SHOW_MODEL_ID, model_menu,
@@ -37,6 +39,14 @@ enum UserEvent {
     ModelLoaded(ControllerParts),
 }
 
+/// Stałe ustawienia pętli zdarzeń, wyliczone przy starcie z konfiguracji i ścieżek.
+pub struct AppSettings {
+    pub config_path: PathBuf,
+    pub logs_dir: PathBuf,
+    pub recording_limit_secs: u32,
+    pub ready_signal: ReadySignal,
+}
+
 /// `download` = zadanie pobierania, jeśli w ogóle możliwe (GPU, magazyn domyślny);
 /// `needs_download` = czy uruchomić je od razu (modelu brak przy starcie).
 pub fn run(
@@ -44,10 +54,14 @@ pub fn run(
     download: Option<ModelDownload>,
     needs_download: bool,
     model_info: ModelInfo,
-    config_path: PathBuf,
-    logs_dir: PathBuf,
-    recording_limit_secs: u32,
+    settings: AppSettings,
 ) -> anyhow::Result<()> {
+    let AppSettings {
+        config_path,
+        logs_dir,
+        recording_limit_secs,
+        ready_signal,
+    } = settings;
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     event_loop.set_activation_policy(ActivationPolicy::Accessory);
     let proxy = event_loop.create_proxy();
@@ -112,7 +126,10 @@ pub fn run(
                 if let Some(problem) = problem_for(&event, recording_limit_secs) {
                     notify(&problem);
                 }
-                tracing::debug!(?event, "zdarzenie kontrolera");
+                if let Some(preview) = ready_preview(&event, ready_signal) {
+                    signal_ready(ready_signal, preview.text());
+                }
+                tracing::debug!(event = event_kind(&event), "zdarzenie kontrolera");
             }
             Event::UserEvent(UserEvent::Tray(event)) => {
                 if let Some((_, menu)) = &tray
@@ -224,7 +241,30 @@ fn problem_for(event: &ControllerEvent, recording_limit_secs: u32) -> Option<Pro
         }),
         ControllerEvent::StateChanged(_)
         | ControllerEvent::Delivered(_)
-        | ControllerEvent::HistoryChanged(_) => None,
+        | ControllerEvent::HistoryChanged(_)
+        | ControllerEvent::TranscriptReady(_) => None,
+    }
+}
+
+/// Podgląd do sygnału „gotowe” (VA-UX-1), gdy zdarzenie to zapisana transkrypcja i użytkownik
+/// nie wyłączył obu form sygnału.
+fn ready_preview(event: &ControllerEvent, signal: ReadySignal) -> Option<&TranscriptPreview> {
+    match event {
+        ControllerEvent::TranscriptReady(preview) if signal.notify || signal.sound => Some(preview),
+        _ => None,
+    }
+}
+
+/// Rodzaj zdarzenia do logu — bez treści (transkrypcja i historia to dane użytkownika).
+fn event_kind(event: &ControllerEvent) -> &'static str {
+    match event {
+        ControllerEvent::StateChanged(_) => "StateChanged",
+        ControllerEvent::Failed(_) => "Failed",
+        ControllerEvent::NoSignal => "NoSignal",
+        ControllerEvent::Delivered(_) => "Delivered",
+        ControllerEvent::LimitReached => "LimitReached",
+        ControllerEvent::HistoryChanged(_) => "HistoryChanged",
+        ControllerEvent::TranscriptReady(_) => "TranscriptReady",
     }
 }
 
@@ -403,6 +443,54 @@ mod tests {
         assert_eq!(
             problem_for(&ControllerEvent::LimitReached, 600),
             Some(Problem::RecordingLimitReached { limit_secs: 600 })
+        );
+    }
+
+    const NOTIFY_ONLY: ReadySignal = ReadySignal {
+        notify: true,
+        sound: false,
+    };
+
+    #[test]
+    // specky: crit 01M4KD152NZM9VP8S1V8VX1E6R
+    fn transcript_ready_event_triggers_the_ready_signal_with_preview() {
+        let event = ControllerEvent::TranscriptReady(TranscriptPreview::of("Gotowy tekst."));
+
+        let preview = ready_preview(&event, NOTIFY_ONLY).expect("sygnał gotowe");
+
+        assert_eq!(preview.text(), "Gotowy tekst.");
+        assert_eq!(problem_for(&event, 600), None, "to nie jest problem");
+    }
+
+    #[test]
+    // specky: crit 01M4KD152NK6764Z8AMZPSHQQN
+    fn ready_signal_respects_configuration() {
+        let event = ControllerEvent::TranscriptReady(TranscriptPreview::of("x"));
+        let off = ReadySignal {
+            notify: false,
+            sound: false,
+        };
+        let sound_only = ReadySignal {
+            notify: false,
+            sound: true,
+        };
+
+        assert!(ready_preview(&event, off).is_none());
+        assert!(ready_preview(&event, sound_only).is_some());
+        assert!(
+            ready_preview(&ControllerEvent::Delivered(Delivery::Written), NOTIFY_ONLY).is_none()
+        );
+    }
+
+    #[test]
+    // specky: crit 01M4KD152NR0QTPMC1RHSY5D6P
+    fn event_log_names_the_kind_without_content() {
+        let event = ControllerEvent::TranscriptReady(TranscriptPreview::of("sekret"));
+
+        assert_eq!(event_kind(&event), "TranscriptReady");
+        assert_eq!(
+            event_kind(&ControllerEvent::HistoryChanged(vec![])),
+            "HistoryChanged"
         );
     }
 

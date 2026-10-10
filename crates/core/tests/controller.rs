@@ -8,7 +8,9 @@ use std::time::Duration;
 use va_audio::{LimitNotifier, Recorder, SilenceParams};
 use va_clipboard::testing::MemoryClipboard;
 use va_clipboard::{ClipboardSink, Delivery};
-use va_core::controller::{Command, ControllerEvent, ControllerHandle, ControllerParts, spawn};
+use va_core::controller::{
+    Command, ControllerEvent, ControllerHandle, ControllerParts, TranscriptPreview, spawn,
+};
 use va_core::history::{FileHistoryStore, History, HistoryEntry};
 use va_core::state::State;
 use va_stt::testing::ScriptedStt;
@@ -201,6 +203,9 @@ fn stop_puts_transcript_in_clipboard_and_reports_states_to_ui() {
             ControllerEvent::StateChanged(State::Recording),
             ControllerEvent::StateChanged(State::Transcribing),
             ControllerEvent::Delivered(Delivery::Written),
+            ControllerEvent::TranscriptReady(TranscriptPreview::of(
+                "Dzień dobry, test przycinania ciszy."
+            )),
             ControllerEvent::HistoryChanged(history.to_vec()),
             ControllerEvent::StateChanged(State::Idle),
         ]
@@ -356,7 +361,12 @@ fn limit_reached_stops_recording_and_transcribes_without_stop_command() {
 
     let without_history: Vec<_> = events
         .iter()
-        .filter(|event| !matches!(event, ControllerEvent::HistoryChanged(_)))
+        .filter(|event| {
+            !matches!(
+                event,
+                ControllerEvent::HistoryChanged(_) | ControllerEvent::TranscriptReady(_)
+            )
+        })
         .cloned()
         .collect();
     assert_eq!(
@@ -425,6 +435,32 @@ fn silence_adds_nothing_to_history_but_speech_does() {
     let history = Harness::history_in(&spoken).expect("wpis po mowie");
     assert_eq!(history.len(), 1);
     assert_eq!(history[0].text, "po ciszy");
+}
+
+#[test]
+// specky: crit 01M4KD152NN5K9FT1BPAY3Y250
+fn ready_signal_follows_only_a_written_transcript() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("silence_only.wav")),
+        ScriptedStt::answering([Ok("po ciszy".into()), Err(())]),
+        MemoryClipboard::default(),
+    );
+    let is_ready = |event: &ControllerEvent| matches!(event, ControllerEvent::TranscriptReady(_));
+
+    let silent = harness.record_and_stop();
+    assert!(!silent.iter().any(is_ready), "{silent:?}");
+
+    *harness.recorder.recording.lock().unwrap() = fixture("speech_with_silence.wav");
+    let spoken = harness.record_and_stop();
+    assert!(
+        spoken.contains(&ControllerEvent::TranscriptReady(TranscriptPreview::of(
+            "po ciszy"
+        ))),
+        "{spoken:?}"
+    );
+
+    let failed = harness.record_and_stop();
+    assert!(!failed.iter().any(is_ready), "{failed:?}");
 }
 
 #[test]

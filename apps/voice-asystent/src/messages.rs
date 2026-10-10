@@ -89,6 +89,38 @@ pub fn menu_notice(problem: &Problem) -> Option<String> {
 /// Powiadomienie systemowe w osobnym wątku — wysyłka nie może blokować pętli zdarzeń.
 pub fn notify(problem: &Problem) {
     let (title, body) = message(problem);
+    send_in_background(title, body);
+}
+
+pub const TRANSCRIPT_READY_TITLE: &str = "Transkrypcja w schowku";
+/// Krótki dźwięk systemowy macOS po zapisie transkrypcji (VA-UX-1).
+const READY_SOUND: &str = "/System/Library/Sounds/Glass.aiff";
+
+/// Jak użytkownik dowiaduje się, że tekst jest w schowku (z `config.toml`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ReadySignal {
+    pub notify: bool,
+    pub sound: bool,
+}
+
+/// Sygnał „gotowe” (VA-UX-1): powiadomienie z podglądem i/lub dźwięk; treść poza logami.
+pub fn signal_ready(signal: ReadySignal, preview: &str) {
+    if signal.notify {
+        send_in_background(TRANSCRIPT_READY_TITLE, preview.to_owned());
+    }
+    if signal.sound {
+        std::thread::spawn(|| {
+            if let Err(error) = std::process::Command::new("afplay")
+                .arg(READY_SOUND)
+                .status()
+            {
+                tracing::warn!(%error, "dźwięk „gotowe” nie został odtworzony");
+            }
+        });
+    }
+}
+
+fn send_in_background(title: &'static str, body: String) {
     std::thread::spawn(move || {
         if let Err(error) = mac_notification_sys::send_notification(title, None, &body, None) {
             tracing::warn!(%error, "powiadomienie systemowe nie zostało wysłane");

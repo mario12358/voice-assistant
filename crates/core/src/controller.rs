@@ -42,6 +42,39 @@ pub enum ControllerEvent {
     LimitReached,
     /// Aktualna lista wpisów historii, najnowszy pierwszy (także raz po starcie).
     HistoryChanged(Vec<HistoryEntry>),
+    /// Niepusta transkrypcja trafiła do schowka (VA-UX-1): podgląd do powiadomienia.
+    TranscriptReady(TranscriptPreview),
+}
+
+/// Początek transkrypcji do powiadomienia „gotowe”; `Debug` nie pokazuje treści, żeby
+/// wypisanie zdarzenia w logu nie wyniosło tekstu użytkownika.
+#[derive(Clone, PartialEq, Eq)]
+pub struct TranscriptPreview(String);
+
+/// Tyle znaków transkrypcji pokazuje powiadomienie; dłuższy tekst dostaje wielokropek.
+pub const PREVIEW_CHARS: usize = 60;
+
+impl TranscriptPreview {
+    /// Jedna linia (białe znaki zwinięte), najwyżej [`PREVIEW_CHARS`] znaków + „…”.
+    pub fn of(text: &str) -> Self {
+        let single_line = text.split_whitespace().collect::<Vec<_>>().join(" ");
+        let mut preview: String = single_line.chars().take(PREVIEW_CHARS).collect();
+        if single_line.chars().count() > PREVIEW_CHARS {
+            preview = preview.trim_end().to_owned();
+            preview.push('…');
+        }
+        Self(preview)
+    }
+
+    pub fn text(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for TranscriptPreview {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "TranscriptPreview({} znaków)", self.0.chars().count())
+    }
 }
 
 /// Wybór mikrofonu w chwili startu nagrania (konfiguracja może się zmienić w trakcie pracy).
@@ -247,10 +280,13 @@ impl Controller {
                     None => Delivery::SkippedEmpty,
                 };
                 (self.publish)(ControllerEvent::Delivered(delivery));
-                if let Some(transcript) = transcript
-                    && self.history.push(&transcript.text, chrono::Local::now())
-                {
-                    self.publish_history();
+                if let Some(transcript) = transcript {
+                    (self.publish)(ControllerEvent::TranscriptReady(TranscriptPreview::of(
+                        &transcript.text,
+                    )));
+                    if self.history.push(&transcript.text, chrono::Local::now()) {
+                        self.publish_history();
+                    }
                 }
                 self.apply(Input::TranscriptionFinished);
             }
@@ -346,5 +382,32 @@ fn transcribe_and_deliver(
     {
         Delivery::Written => Ok(Some(transcript)),
         Delivery::SkippedEmpty => Ok(None),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    // specky: crit 01M4KD152NZM9VP8S1V8VX1E6R
+    fn preview_keeps_sixty_characters_and_adds_ellipsis() {
+        let short = TranscriptPreview::of("  Krótkie\nzdanie.  ");
+        assert_eq!(short.text(), "Krótkie zdanie.");
+
+        let long = TranscriptPreview::of(&"ąbc ".repeat(30));
+        assert!(long.text().ends_with('…'), "{}", long.text());
+        assert!(long.text().chars().count() <= PREVIEW_CHARS + 1);
+    }
+
+    #[test]
+    // specky: crit 01M4KD152NR0QTPMC1RHSY5D6P
+    fn preview_debug_output_hides_the_text() {
+        let preview = TranscriptPreview::of("sekretna treść");
+
+        let debug = format!("{:?}", ControllerEvent::TranscriptReady(preview));
+
+        assert!(!debug.contains("sekretna"), "{debug}");
+        assert!(debug.contains("14 znaków"), "{debug}");
     }
 }
