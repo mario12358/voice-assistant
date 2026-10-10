@@ -101,6 +101,26 @@ fn startup_reports_missing_custom_model_with_its_path() {
 }
 
 #[test]
+// specky: crit 01M4KD15M6BESGW2M37ZY4WV7S
+fn startup_uses_quantized_variant_from_config() {
+    let home = tempfile::tempdir().expect("katalog tymczasowy");
+    write_config(home.path(), "model_variant = \"q5_0\"\n");
+
+    let output = Command::new(env!("CARGO_BIN_EXE_voice-asystent"))
+        .env("HOME", home.path())
+        .arg("--self-check")
+        .output()
+        .expect("voice-asystent uruchamia się");
+
+    assert!(output.status.success(), "{output:?}");
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(
+        stderr.contains("wariant z magazynu") && stderr.contains("ggml-large-v3-turbo-q5_0.bin"),
+        "{stderr}"
+    );
+}
+
+#[test]
 fn startup_reports_missing_model() {
     let home = tempfile::tempdir().expect("katalog tymczasowy");
 

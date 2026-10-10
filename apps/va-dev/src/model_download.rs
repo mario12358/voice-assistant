@@ -3,16 +3,17 @@
 use std::io::Write;
 use std::path::PathBuf;
 
-use va_config::Paths;
-use va_model::{LARGE_V3_TURBO, ModelStore, Progress};
+use va_config::{ModelVariant, Paths};
+use va_model::{ModelStore, Progress, spec_for};
 
-pub fn run(url: Option<String>, dir: Option<PathBuf>) -> anyhow::Result<()> {
+pub fn run(url: Option<String>, dir: Option<PathBuf>, variant: ModelVariant) -> anyhow::Result<()> {
     let dir = match dir {
         Some(dir) => dir,
         None => Paths::for_current_user()?.models_dir,
     };
-    let url = url.unwrap_or_else(|| LARGE_V3_TURBO.url.to_owned());
-    let store = ModelStore::new(dir, LARGE_V3_TURBO);
+    let spec = spec_for(variant);
+    let url = url.unwrap_or_else(|| spec.url.to_owned());
+    let store = ModelStore::new(dir, spec);
     println!("Model: {}", store.model_path().display());
     let mut last_percent = None;
     let path = store.download(&url, &mut |progress| {

@@ -261,6 +261,27 @@ fn download_writes_the_marker_and_remove_deletes_it() {
 }
 
 #[test]
+// specky: crit 01M4KD15M64AGF6T592KW5WQS7
+fn both_variants_come_from_whisper_cpp_on_hugging_face_with_checksums() {
+    use va_config::ModelVariant;
+    let full = va_model::spec_for(ModelVariant::Full);
+    let quantized = va_model::spec_for(ModelVariant::Q5_0);
+
+    for spec in [full, quantized] {
+        assert!(
+            spec.url
+                .starts_with("https://huggingface.co/ggerganov/whisper.cpp/resolve/main/"),
+            "{}",
+            spec.url
+        );
+        assert!(spec.url.ends_with(spec.file_name));
+        assert_eq!(spec.sha256.len(), 64);
+    }
+    assert_eq!(quantized.display_name(), "large-v3-turbo-q5_0");
+    assert!(quantized.size < full.size / 2);
+}
+
+#[test]
 fn display_name_strips_ggml_prefix_and_extension() {
     assert_eq!(va_model::LARGE_V3_TURBO.display_name(), "large-v3-turbo");
     assert_eq!(spec_for(&[1, 2, 3]).display_name(), "test");

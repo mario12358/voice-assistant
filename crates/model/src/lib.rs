@@ -16,7 +16,7 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(30);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// Opis pliku modelu: skąd go wziąć i jak sprawdzić, że jest cały.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ModelSpec {
     pub file_name: &'static str,
     pub url: &'static str,
@@ -41,6 +41,22 @@ pub const LARGE_V3_TURBO: ModelSpec = ModelSpec {
     sha256: "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69",
     size: 1_624_555_275,
 };
+
+/// Skwantyzowany large-v3-turbo (VA-MODEL-4); suma i rozmiar z metadanych LFS Hugging Face.
+pub const LARGE_V3_TURBO_Q5_0: ModelSpec = ModelSpec {
+    file_name: "ggml-large-v3-turbo-q5_0.bin",
+    url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin",
+    sha256: "394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2",
+    size: 574_041_195,
+};
+
+/// Specyfikacja pliku dla wariantu z konfiguracji.
+pub fn spec_for(variant: va_config::ModelVariant) -> ModelSpec {
+    match variant {
+        va_config::ModelVariant::Full => LARGE_V3_TURBO,
+        va_config::ModelVariant::Q5_0 => LARGE_V3_TURBO_Q5_0,
+    }
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

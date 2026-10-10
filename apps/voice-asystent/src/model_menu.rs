@@ -55,6 +55,8 @@ pub struct ModelInfo {
     pub custom: bool,
     /// Czy własny plik istniał przy starcie (dla magazynu stan niesie `DownloadState`).
     pub custom_present: bool,
+    /// Wariant z magazynu aplikacji; `None` dla własnej ścieżki (VA-MODEL-4).
+    pub variant: Option<va_config::ModelVariant>,
 }
 
 /// Co pokazać w podmenu: linie informacyjne (nieklikalne) i aktywność poleceń.
@@ -131,6 +133,7 @@ mod tests {
             bytes: 1_624_555_275,
             custom: false,
             custom_present: false,
+            variant: Some(va_config::ModelVariant::Full),
         }
     }
 
@@ -141,6 +144,7 @@ mod tests {
             bytes: if present { 500_000_000 } else { 0 },
             custom: true,
             custom_present: present,
+            variant: None,
         }
     }
 
