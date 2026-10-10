@@ -196,6 +196,31 @@
 - [x] Test: 7.6 — testy etykiet (skrót 40 znaków, godzina, kolejność, pusta lista) i mapowania id menu → polecenie; mutacja kolejności czerwona (pr: #38)
 - [ ] ⛔ Zadanie 7.7: Test manualny właściciela: historia (wpisy po nagraniach, kopiowanie starszego wpisu, restart, „Wyczyść historię”), nagranie z pauzami po 30–40 s bez śmieci w tekście, limit (tymczasowo `max_recording_secs = 20`: auto-Stop, powiadomienie, tekst w schowku) — wynik do REPORT.md (wymaga: 7.2, 7.4, 7.6)
 
+### Faza 8: Podmenu „Model” i własna ścieżka modelu
+
+- [ ] Zadanie 8.1: `startup`: źródło modelu z konfiguracji — `ModelSource::{Store(ModelStore), Custom(PathBuf)}`; własna ścieżka: istnieje → `Ready(path)` bez SHA-256 i bez pobierania, brak pliku → `Missing` + komunikat w menu „Brak modelu: <ścieżka>” i brak pobierania; bez `model_path` jak dotąd [VA-MODEL-3] (zmiana: 2026-10-10-specky-XJ4CRAZ.md)
+  - Specky: (req: 01M4K6M32Y0MQ3JPWM4XJ4CRAZ v1 @9f73318)
+  - Specky kryteria: (crit: 01M4K6M33C1BCHBQ7DEG4GER2W) własny plik ładowany, bez pobierania; (crit: 01M4K6M33CWKR54XAT4JVG3HWG) brak pliku → „Brak modelu” ze ścieżką, bez pobierania; (crit: 01M4K6M33CGTMKF9VPRYQXKE1C) bez pola jak dotąd
+  - AC: wejście — start aplikacji (`main` → `startup::check_model`) z `config.toml` zawierającym `model_path`; test startu (`--self-check`) z HOME tymczasowym: log pokazuje `Ready(<własna ścieżka>)` i żadnego pobierania; z nieistniejącą ścieżką log pokazuje brak modelu z tą ścieżką
+- [ ] Test: 8.1 — testy `ModelSource` (jednostkowe) + testy startu z własną ścieżką istniejącą/nieistniejącą; mutacja (ignorowanie model_path) czerwona
+- [ ] Zadanie 8.2: `va-model`: `ModelStore::remove()` (plik + `.part`), `ModelStore::size()`; `download.rs`: stany `Missing` (po usunięciu) i zdarzenia `Removed`/`Retry` → `Downloading`, `can_remove(state, controller_state)`, `ModelDownload::available(config, paths, gpu)` niezależnie od obecności modelu [VA-MODEL-2] (zmiana: 2026-10-10-specky-NFWQ1DA.md)
+  - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
+  - Specky kryteria: (crit: 01M4K6M2ZYCYED1VTTXDC6R542) „Usuń model” nieaktywne przy pobieraniu i transkrypcji
+  - AC: `remove()` kasuje oba pliki i zostawia `Missing`; automat: `Ready`/`NotNeeded` + `Removed` → `Missing`, `Missing` + `Retry` → `Downloading{0}` i `starts_download` = true; `can_remove` = false dla `Downloading` i stanu kontrolera `Transcribing`/`Recording`
+- [ ] Test: 8.2 — testy magazynu (remove, size) i tablica przejść automatu pobierania; mutacja `can_remove` czerwona
+- [ ] Zadanie 8.3: Podmenu „Model” (`model_menu.rs`): pozycja `large-v3-turbo · 1,6 GB · gotowy | pobieranie N% | brak` (własna ścieżka: plik i ścieżka), „Pokaż w Finderze” (`open -R`), „Usuń model…”, „Pobierz ponownie” z flagami; odświeżane przy zmianie stanu pobierania i kontrolera (wymaga: 8.1, 8.2) [VA-MODEL-2, VA-MODEL-3] (zmiana: 2026-10-10-specky-NFWQ1DA.md)
+  - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
+  - Specky: (req: 01M4K6M32Y0MQ3JPWM4XJ4CRAZ v1 @9f73318)
+  - Specky kryteria: (crit: 01M4K6M2ZYSP1Y9M0VD39GV7J8) pozycja z nazwą, rozmiarem, stanem, aktualizowana; (crit: 01M4K6M2ZY9XTRRVSGXYM05D1P) Pokaż w Finderze; (crit: 01M4K6M33CMHX4SQDRACYG60ZV) własna ścieżka: Usuń/Pobierz nieaktywne
+  - AC: wejście — zdarzenia `Download(…)`, `ModelLoaded`, `StateChanged` w pętli tao przebudowują podmenu; kliknięcie „Pokaż w Finderze” w pętli tao uruchamia `open -R <plik>` (katalog, gdy pliku brak); funkcja budująca pozycje (`model_items(info, download_state, controller_state)`) testowana jednostkowo
+- [ ] Test: 8.3 — testy etykiet (GB z jednym miejscem, stany, własna ścieżka) i flag aktywności; mutacja (Usuń aktywne przy pobieraniu) czerwona
+- [ ] Zadanie 8.4: „Usuń model” z potwierdzeniem w menu („Potwierdź usunięcie (1,6 GB)” + „Anuluj”): zamknięcie kontrolera, `remove()`, stan `Missing`, komunikat przy Start; „Pobierz ponownie” → `spawn_download` → `ModelLoaded` → nowy kontroler bez restartu; README/RUNBOOK (wymaga: 8.3) [VA-MODEL-2] (zmiana: 2026-10-10-specky-NFWQ1DA.md)
+  - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
+  - Specky kryteria: (crit: 01M4K6M2ZYTC7D38NMHZJXF1FV) potwierdzenie, kasowanie, „brak”, komunikat, pobieranie z postępem; (crit: 01M4K6M2ZYHSYT6K38YWRG54RT) po pobraniu nagrywanie bez restartu
+  - AC: wejście — kliknięcia pozycji podmenu w pętli tao (`UserEvent::Menu`): automat potwierdzenia (`ConfirmState`) testowany jednostkowo; test startu: po usunięciu plików modelu `--self-check` raportuje `Missing`; ścieżka Pobierz ponownie → ModelLoaded to istniejąca ścieżka 5.6
+- [ ] Test: 8.4 — testy automatu potwierdzenia (klik, potwierdź, anuluj, timeout przez inne zdarzenie) i mapowania id → akcja; mutacja (usunięcie bez potwierdzenia) czerwona
+- [ ] ⛔ Zadanie 8.5: Test manualny właściciela: podmenu „Model” (stan, rozmiar, Pokaż w Finderze), Usuń model → potwierdzenie → „brak” i komunikat przy Start → Pobierz ponownie → nagranie bez restartu; `model_path` w config.toml na istniejący i nieistniejący plik — wynik do REPORT.md (wymaga: 8.4)
+
 ## Pokrycie spec
 
 Źródłem wymagań jest Specky (projekt 01M4EJNFTHDZ3ECMHT7425APR0). `spec/` zawiera tylko WYTYCZNE_TECHNICZNE.md (Rust, large-v3-turbo, tylko GPU) i niewypełnione szablony.
@@ -217,6 +242,8 @@
 | VA-HIST-1 | historia wypowiedzi: podmenu „Historia”, kopiowanie, zapis na dysku, wyczyść | 7.5, 7.6, 7.7 |
 | VA-REC-5 | skracanie pauz wewnętrznych > 1,5 s do 0,5 s przed transkrypcją | 7.1, 7.2, 7.7 |
 | VA-REC-6 | limit nagrania 600 s, auto-Stop z transkrypcją, powiadomienie | 7.3, 7.4, 7.7 |
+| VA-MODEL-2 | podmenu „Model”: stan, Pokaż w Finderze, Usuń z potwierdzeniem, Pobierz ponownie | 8.2, 8.3, 8.4, 8.5 |
+| VA-MODEL-3 | aplikacja honoruje model_path z config.toml (naprawa błędu z 5.1) | 8.1, 8.3, 8.5 |
 | spec/APP_FLOW.md, spec/ux_ui/LINKS.md | niewypełnione szablony | poza zakresem |
 
 ## Notatki

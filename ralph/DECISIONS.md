@@ -183,3 +183,35 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel zgłosił, że test ręczny 6.4 (instalacja z .dmg, nagrywanie, wklejanie, zmiana mikrofonu) wykonał 2026-10-09 i wszystko działa.
 **Ustalenie**: Zadanie 6.4 odhaczone, wyniki wpisane do docs/test-scenarios/v0.4.0.md (wszystkie scenariusze [x], 2.2 nie do sprawdzenia na dev, decyzja: gotowa do wdrożenia) i do REPORT.md. Plan 47/47. Regresja Fazy 6 na main uruchomiona; po zieleni tag ralph/faza-6 i PR stanu. Push wersji v0.4.0 nadal po stronie właściciela.
 **Wpływ**: Faza 6 zamknięta; tag ralph/faza-6
+
+## 2026-10-10 17:08 — Wydanie wersji v0.5.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonym pełnym suicie po zadaniach 7.1–7.6 (test ręczny 7.7 jeszcze czeka).
+**Ustalenie**: Utworzono wersję v0.5.0 (commit bf8ad85): historia wypowiedzi w podmenu z kopiowaniem i czyszczeniem (plik history.json), skracanie długich pauz przed transkrypcją, limit nagrania 10 min z auto-Stop i powiadomieniem. Scenariusze w docs/test-scenarios/v0.5.0.md (pokrywają zadanie 7.7), migawka Specky 01M4K5RCDQ42FW1W9DW3S41FHW. Wersja lokalnie do czasu git push origin v0.5.0; v0.4.0 również nadal niewypchnięta.
+**Wpływ**: tag v0.5.0, Specky, zadanie 7.7
+
+## 2026-10-10 17:17 — Zarządzanie modelem: co już jest
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel chciałby widzieć, jaki model jest wybrany, wgrywać inne z listy, usuwać je i czyścić historię; prosi o sprawdzenie, co już istnieje.
+**Ustalenie**: Jest: jeden model large-v3-turbo w stałej lokalizacji, pobieranie z postępem w menu, „Ponów pobieranie”, czyszczenie historii (7.6). Nie ma: informacji o modelu w menu, listy modeli, przełączania ani usuwania (tylko ręcznie z katalogu). Wybór innego modelu koliduje z VA-STT-1 i wytyczną techniczną (narzucony large-v3-turbo) — wymaga decyzji właściciela w Specky. Zaproponowano dwa warianty: (a) podmenu „Model” informacyjne z usuwaniem/ponownym pobraniem, (b) katalog modeli GGML z przełączaniem (osobna faza, zmiana VA-STT-1). Czeka na wybór właściciela.
+**Wpływ**: przyszłe wymaganie VA-MODEL-2; VA-STT-1
+
+## 2026-10-10 17:17 — Ustawienie model_path ignorowane przez aplikację
+**Rodzaj**: błąd
+**Źródło błędu**: zadanie 5.1 (startup.rs sprawdza model tylko w stałym katalogu; pole z 1.3)
+**Wykryte przez**: ralph
+**Pytanie/kontekst**: Przy przeglądzie obsługi modelu okazało się, że pole `model_path` z config.toml (opisane w README) honoruje tylko `va-dev transcribe`, a aplikacja paska menu zawsze używa ~/Library/Application Support/VoiceAsystent/models/ggml-large-v3-turbo.bin.
+**Ustalenie**: Zgłoszone właścicielowi; do naprawy razem z zarządzaniem modelem (albo honorować pole w startup.rs, albo usunąć je z konfiguracji i README). Bez zmian w kodzie do decyzji.
+**Wpływ**: apps/voice-asystent/src/startup.rs, README (sekcja Konfiguracja)
+
+## 2026-10-10 17:23 — Propozycje VA-MODEL-2 i VA-MODEL-3 w Specky
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel przyjął rekomendację (wariant informacyjny podmenu „Model” bez przełączania modeli) i polecił działać.
+**Ustalenie**: Wystawiono wsad 01M4K6JNNT5ZPGGVCXY8D7AMAP: VA-MODEL-2 (podmenu „Model”: nazwa, rozmiar, stan; „Pokaż w Finderze”, „Usuń model” z potwierdzeniem, „Pobierz ponownie”; 5 kryteriów) i VA-MODEL-3 (aplikacja honoruje model_path z config.toml — naprawa błędu z 5.1; 4 kryteria). Czeka na akceptację właściciela; po niej następny start Ralpha założy Fazę 8. VA-STT-1 bez zmian.
+**Wpływ**: Specky; przyszła Faza 8 (startup.rs, tray_menu.rs, download.rs, va-model)
+
+## 2026-10-10 17:24 — Akceptacja VA-MODEL-2 i VA-MODEL-3
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel zaakceptował wsad 01M4K6JNNT5ZPGGVCXY8D7AMAP.
+**Ustalenie**: VA-MODEL-2 (01M4K6M2ZC8PQ1AE9FQNFWQ1DA) i VA-MODEL-3 (01M4K6M32Y0MQ3JPWM4XJ4CRAZ) zaakceptowane na wyraźną prośbę właściciela. Przegląd sprzeczności: VA-MODEL-3 uzupełnia VA-MODEL-1 (bez model_path zachowanie bez zmian), VA-MODEL-2 nie zmienia VA-STT-1. Mapa w ralph/SPECKY.md uzupełniona; następny start Ralpha w trybie 1 założy pliki w changes/ i Fazę 8.
+**Wpływ**: Specky; Faza 8

@@ -1,9 +1,9 @@
 # ralph/SPECKY.md — stan synchronizacji z Specky
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
-- **since_seq**: 718
-- **Ostatnia synchronizacja**: 2026-10-10 (pozycje 711–718: kolizje/pytania wymagania o Windows zgaszone jego wycofaniem, akceptacja wsadu VA-HIST-1/VA-REC-5/VA-REC-6 → changes/ → Faza 7)
-- **Stan projektu w Specky**: 15 zaakceptowanych wymagań (12 z 2026-10-08 + VA-HIST-1, VA-REC-5, VA-REC-6 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela.
+- **since_seq**: 721
+- **Ostatnia synchronizacja**: 2026-10-10 (pozycje 719–721: migawka v0.5.0, akceptacja wsadu VA-MODEL-2/VA-MODEL-3 → changes/ → Faza 8)
+- **Stan projektu w Specky**: 17 zaakceptowanych wymagań (12 z 2026-10-08 + VA-HIST-1, VA-REC-5, VA-REC-6, VA-MODEL-2, VA-MODEL-3 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela. Migawki: v0.1.0–v0.5.0.
 
 ## Mapa wymagań → zadania
 
@@ -24,3 +24,5 @@
 | VA-HIST-1 | 01M4K06AGAV8G79RJMXCY0SQA5 | v1 @d3eecdb | 7.5, 7.6, 7.7 |
 | VA-REC-5 | 01M4K06AQB7B8055HQ21BY4F4Z | v1 @04c88f7 | 7.1, 7.2, 7.7 |
 | VA-REC-6 | 01M4K06AXGNSZ9XEZ3E9VFYND0 | v1 @97b27f2 | 7.3, 7.4, 7.7 |
+| VA-MODEL-2 | 01M4K6M2ZC8PQ1AE9FQNFWQ1DA | v1 @b18086a | 8.2, 8.3, 8.4, 8.5 |
+| VA-MODEL-3 | 01M4K6M32Y0MQ3JPWM4XJ4CRAZ | v1 @9f73318 | 8.1, 8.3, 8.5 (błąd z 5.1: model_path ignorowane) |

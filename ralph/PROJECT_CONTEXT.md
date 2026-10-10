@@ -109,6 +109,7 @@ Konwencje:
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
 - Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
-- Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
+- Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`, wersja v0.5.0; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
+- Faza 8 w planie (2026-10-10, z changes/processed/2026-10-10-specky-{NFWQ1DA,XJ4CRAZ}.md): 8.1 własna ścieżka modelu (VA-MODEL-3, błąd z 5.1), 8.2 remove/automat pobierania, 8.3 podmenu „Model”, 8.4 Usuń z potwierdzeniem + Pobierz ponownie, ⛔ 8.5 test ręczny; następne zadanie: 8.1
 - Blokery: brak
 - Blokery: brak
