@@ -111,6 +111,7 @@ Konwencje:
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
 - Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
 - Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`, wersja v0.5.0; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
-- Faza 8 (własna ścieżka modelu VA-MODEL-3, podmenu „Model” VA-MODEL-2): kod zmergowany 2026-10-10 (PR #42–#45), wymagania `code_ready`; zostało ⛔ 8.5 (test ręczny) — tag `ralph/faza-8` po jego wyniku
+- Faza 8 (własna ścieżka modelu VA-MODEL-3, podmenu „Model” VA-MODEL-2): kod zmergowany 2026-10-10 (PR #42–#45), wymagania `code_ready`, wersja v0.6.0; zostało ⛔ 8.5 (test ręczny) — tag `ralph/faza-8` po jego wyniku
+- Faza 9 w planie (2026-10-10, 8 plików changes/processed/2026-10-10-specky-*.md): 9.1 logi, 9.2 znacznik SHA-256, 9.3 sygnał gotowe, 9.4 parametry STT + set_language, 9.5 Ustawienia, 9.6 autostart, 9.7–9.8 wariant q5_0, 9.9 wydanie w CI, ⛔ 9.10 test ręczny; następne zadanie: 9.1
 - Blokery: brak
 - Blokery: brak

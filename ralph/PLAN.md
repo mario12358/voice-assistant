@@ -208,7 +208,7 @@
   - Specky kryteria: (crit: 01M4K6M2ZYCYED1VTTXDC6R542) „Usuń model” nieaktywne przy pobieraniu i transkrypcji
   - AC: `remove()` kasuje oba pliki i zostawia `Missing`; automat: `Ready`/`NotNeeded` + `Removed` → `Missing`, `Missing` + `Retry` → `Downloading{0}` i `starts_download` = true; `can_remove` = false dla `Downloading` i stanu kontrolera `Transcribing`/`Recording`
 - [x] Test: 8.2 — testy magazynu (remove, size) i tablica przejść automatu pobierania; mutacja `can_remove` czerwona (pr: #43)
-- [x] Zadanie 8.3: Podmenu „Model” (`model_menu.rs`): pozycja `large-v3-turbo · 1,6 GB · gotowy | pobieranie N% | brak` (własna ścieżka: plik i ścieżka), „Pokaż w Finderze” (`open -R`), „Usuń model…”, „Pobierz ponownie” z flagami; odświeżane przy zmianie stanu pobierania i kontrolera (wymaga: 8.1, 8.2) [VA-MODEL-2, VA-MODEL-3] (zmiana: 2026-10-10-specky-NFWQ1DA.md) (pr: #44)
+- [x] Zadanie 8.3: Podmenu „Model” (`model_menu.rs`): pozycja `large-v3-turbo · 1,6 GB · gotowy | pobieranie N% | brak` (własna ścieżka: plik i ścieżka), „Pokaż w Finderze”, „Usuń model…”, „Pobierz ponownie” z flagami; odświeżane przy zmianie stanu (wymaga: 8.1, 8.2) [VA-MODEL-2, VA-MODEL-3] (zmiana: 2026-10-10-specky-NFWQ1DA.md) (pr: #44)
   - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
   - Specky: (req: 01M4K6M32Y0MQ3JPWM4XJ4CRAZ v1 @9f73318)
   - Specky kryteria: (crit: 01M4K6M2ZYSP1Y9M0VD39GV7J8) pozycja z nazwą, rozmiarem, stanem, aktualizowana; (crit: 01M4K6M2ZY9XTRRVSGXYM05D1P) Pokaż w Finderze; (crit: 01M4K6M33CMHX4SQDRACYG60ZV) własna ścieżka: Usuń/Pobierz nieaktywne
@@ -220,6 +220,55 @@
   - AC: wejście — kliknięcia pozycji podmenu w pętli tao (`UserEvent::Menu`): automat potwierdzenia (`ConfirmState`) testowany jednostkowo; test startu: po usunięciu plików modelu `--self-check` raportuje `Missing`; ścieżka Pobierz ponownie → ModelLoaded to istniejąca ścieżka 5.6
 - [x] Test: 8.4 — testy automatu potwierdzenia (klik, potwierdź, anuluj, timeout przez inne zdarzenie) i mapowania id → akcja; mutacja (usunięcie bez potwierdzenia) czerwona (pr: #45)
 - [ ] ⛔ Zadanie 8.5: Test manualny właściciela: podmenu „Model” (stan, rozmiar, Pokaż w Finderze), Usuń model → potwierdzenie → „brak” i komunikat przy Start → Pobierz ponownie → nagranie bez restartu; `model_path` w config.toml na istniejący i nieistniejący plik — wynik do REPORT.md (wymaga: 8.4)
+
+### Faza 9: Sygnał gotowe, szybki start, ustawienia, autostart, logi, jakość STT, wariant q5_0, wydanie w CI
+
+- [ ] Zadanie 9.1: Logi: `va_core::logging::prune_old_logs(dir, 7 dni)` (tylko `voice-asystent.log.*`, zwraca liczbę, loguje ją) wołane przy starcie w `main`; pozycja „Pokaż logi” w menu ikony (`open <katalog logów>`) [VA-OPS-1] (zmiana: 2026-10-10-specky-PV3NVAC.md)
+  - Specky: (req: 01M4KD15FGKP1T46QXWPV3NVAC v1 @bb6317e)
+  - Specky kryteria: (crit: 01M4KD15FXQ488KDR36QPHD62D) Pokaż logi; (crit: 01M4KD15FXMVKSVBYXV6QS4ED6) usuwanie > 7 dni z logiem; (crit: 01M4KD15FXMYC7NHSDBX6BGCTJ) inne pliki nieruszane
+  - AC: wejście — start aplikacji (`main` przed `app::run`) i kliknięcie pozycji w pętli tao; test z katalogiem tymczasowym: plik 8-dniowy usunięty, 6-dniowy i obcy plik zostają, zwrócona liczba 1
+- [ ] Test: 9.1 — test `prune_old_logs` (granica 7 dni, obce pliki, pusty katalog) + test startu `--self-check` z HOME tymczasowym (log „usunięto N plików”); mutacja progu 7 dni czerwona
+- [ ] Zadanie 9.2: `va-model`: znacznik `ggml-large-v3-turbo.bin.verified.json` {size, mtime, sha256} zapisywany po udanej weryfikacji (check i download); `check()` pomija SHA-256, gdy rozmiar i data się zgadzają (log „suma pominięta — znacznik aktualny”), liczy ponownie przy zmianie; `va-dev model-download` bez zmian korzysta z magazynu [VA-PERF-1] (zmiana: 2026-10-10-specky-2QWNE2N.md)
+  - Specky: (req: 01M4KD155TWYHX07DQC2QWNE2N v1 @159765b)
+  - Specky kryteria: (crit: 01M4KD15697ZGFE288GDZGAZF6) znacznik i pominięcie; (crit: 01M4KD1569JT903G56F1TTX1VH) zmiana → ponowne liczenie, uszkodzony usuwany; (crit: 01M4KD15698XHWP7W8FXSF3DB7) va-dev ten sam mechanizm
+  - AC: wejście — `startup::check_model` przy starcie aplikacji (log z pominięciem przy drugim starcie) i `va-dev model-download`; testy magazynu: drugi `check()` nie czyta całego pliku (licznik przez czas/`Instant` nie — przez brak wpisu „liczę sumę” w logu albo przez atrapę hashera), zmiana mtime → liczenie, podmiana treści z inną datą → usunięcie
+- [ ] Test: 9.2 — testy magazynu ze znacznikiem (pominięcie, wymuszenie, uszkodzenie, brak znacznika) + test `va-dev model-download` na gotowym pliku; mutacja (ignorowanie daty) czerwona
+- [ ] Zadanie 9.3: Sygnał gotowe: pola `notify_on_transcript` (true) i `sound_on_transcript` (false) w konfiguracji; kontroler publikuje `TranscriptReady { preview }` (60 znaków + „…”) po `Written`; aplikacja: powiadomienie „Transkrypcja w schowku” i/lub dźwięk (`afplay`); treść poza logami [VA-UX-1] (zmiana: 2026-10-10-specky-TGDZ530.md)
+  - Specky: (req: 01M4KD151ZKD1RNYJNVTGDZ530 v1 @d87c04f)
+  - Specky kryteria: (crit: 01M4KD152NZM9VP8S1V8VX1E6R) powiadomienie z 60 znakami; (crit: 01M4KD152NN5K9FT1BPAY3Y250) cisza i błędy bez niego; (crit: 01M4KD152NK6764Z8AMZPSHQQN) pola konfiguracji i domyślne; (crit: 01M4KD152NR0QTPMC1RHSY5D6P) treść poza logami
+  - AC: wejście — zdarzenie kontrolera w pętli tao po zapisie do schowka (`problem_for`/`signal_for`); test kontrolera: po Written zdarzenie z podglądem, po SkippedEmpty brak; test mapowania z konfiguracją; test logów bez treści
+- [ ] Test: 9.3 — testy podglądu (60 znaków, wielokropek, białe znaki), konfiguracji (domyślne, odczyt), kontrolera (zdarzenie tylko po Written), mapowania (wyłączone → brak); mutacja (podgląd przy SkippedEmpty) czerwona
+- [ ] Zadanie 9.4: `va-stt`: parametry przeciw halucynacjom w jednym miejscu (`decoding_params()`: `no_speech_thold`, `suppress_blank`, `suppress_nst`, temperatura 0), `SpeechToText::set_language` w działającym `WhisperStt`; fixtures `noise_only.wav` i `speech_pl_mixed.wav` przez generator [VA-STT-3] (zmiana: 2026-10-10-specky-F01XRR5.md)
+  - Specky: (req: 01M4KD15HQPAC5CEN25F01XRR5 v1 @d66f0c5)
+  - Specky kryteria: (crit: 01M4KD15J53HQD32A2N55TWF2R) szum → pusto; (crit: 01M4KD15J5A523398FWNFTBTT1) dotychczasowe fixtures bez regresji; (crit: 01M4KD15J5D855VXXS167FCEPD) polski przy mieszanym zdaniu; (crit: 01M4KD15J5VKASK15NWEJCGJYS) parametry w jednym miejscu
+  - AC: wejście — ścieżka Stop w kontrolerze i `va-dev transcribe` (te same parametry); testy `#[ignore]` na prawdziwym modelu: noise_only → pusty tekst i schowek bez zmian (kontroler), long_pause/pl/en jak dotąd, mixed z językiem pl → polski tekst
+- [ ] Test: 9.4 — testy `decoding_params` (wartości), `set_language` (ScriptedStt + whisper ignorowany), prawdziwe fixtures; mutacja (brak progu no-speech) sprawdzana testem noise_only (ignorowanym, lokalnie)
+- [ ] Zadanie 9.5: Podmenu „Ustawienia” (`settings_menu.rs`: Język auto/pl/en, Limit 5/10/20/30 min + „inne: N s”, zaznaczenia z konfiguracji), zapis do config.toml; `Command::SetLanguage` → STT w wątku roboczym, `Command::SetRecordingLimit` → `Recorder::set_limit`; odświeżanie po zmianie (wymaga: 9.4) [VA-SET-1] (zmiana: 2026-10-10-specky-ZW632WW.md)
+  - Specky: (req: 01M4KD159NWCD0T5HW2ZW632WW v1 @dd1f8aa)
+  - Specky kryteria: (crit: 01M4KD15A2F54BF8ASK6CVDBEW) podmenu z zaznaczeniem; (crit: 01M4KD15A2V2GZ00PWDJ2RSFZV) język bez restartu; (crit: 01M4KD15A2ZRGP0QWYMMJVVSY6) limit bez restartu; (crit: 01M4KD15A22K5XNV2DMD3KEBHK) „inne: 90 s”
+  - AC: wejście — kliknięcie pozycji podmenu w pętli tao → zapis konfiguracji + polecenie do kontrolera; testy kontrolera: po `SetLanguage` STT dostaje nowy język przy następnej transkrypcji, po `SetRecordingLimit` fałszywa nagrywarka ma nowy limit; testy pozycji i mapowania id
+- [ ] Test: 9.5 — testy pozycji (zaznaczenie, „inne”), mapowania id → polecenie/zapis, kontrolera (język i limit od następnego nagrania); mutacja (limit nie przekazany do nagrywarki) czerwona
+- [ ] Zadanie 9.6: „Uruchamiaj przy logowaniu”: `login_item.rs` — plist LaunchAgent `io.github.mario12358.voiceasystent.plist` (binarka bundla, RunAtLoad), `is_enabled`/`enable`/`disable`, wykrycie bundla z `current_exe()`; pozycja z zaznaczeniem, nieaktywna poza bundlem „(tylko z VoiceAsystent.app)” [VA-SET-2] (zmiana: 2026-10-10-specky-S3WPKBD.md)
+  - Specky: (req: 01M4KD15CZM8DT7A5CRS3WPKBD v1 @621aaf5)
+  - Specky kryteria: (crit: 01M4KD15DB7W591JT9P5FYP7Q9) zaznaczenie = plik wskazuje tę aplikację; (crit: 01M4KD15DB3BM58PTSR1008YN8) włącz/wyłącz tworzy/usuwa, od razu w menu; (crit: 01M4KD15DBAF4A3ATNKW62GVV1) nieaktywne poza bundlem
+  - AC: wejście — kliknięcie pozycji w pętli tao; testy z katalogiem tymczasowym LaunchAgents: enable tworzy poprawny plist (`plutil -lint`) z ścieżką bundla, is_enabled true, disable usuwa, plist innej aplikacji → false; wykrycie bundla po ścieżce
+- [ ] Test: 9.6 — testy plist/wykrycia bundla/toggle w katalogu tymczasowym; mutacja (zaznaczenie bez sprawdzania ścieżki) czerwona
+- [ ] Zadanie 9.7: `va-model`: `ModelVariant::{Full, Q5_0}` ze `spec()` (q5_0: `ggml-large-v3-turbo-q5_0.bin`, URL HF, rozmiar i SHA-256 z API LFS); `va-config` pole `model_variant` (domyślnie `full`); `ModelSource`/`ModelInfo`/`ModelDownload` per wariant; `ModelStore::other_variant_on_disk()` [VA-MODEL-4] (zmiana: 2026-10-10-specky-1JBKCWR.md)
+  - Specky: (req: 01M4KD15KW259CT135K1JBKCWR v1 @e7c6470)
+  - Specky kryteria: (crit: 01M4KD15M64AGF6T592KW5WQS7) oba z HF, SHA-256, wznawianie; (crit: 01M4KD15M64RDY5XTBQV6MK4FK) speech_pl q5_0 te same słowa
+  - AC: wejście — start aplikacji z `model_variant = "q5_0"` w config.toml ładuje/pobiera wariant q5_0 (test startu `--self-check`: log ze ścieżką q5_0); test `#[ignore]` prawdziwej transkrypcji `speech_pl.wav` modelem q5_0 (pobranie ~0,6 GB lokalnie) ze słowami kluczowymi
+- [ ] Test: 9.7 — testy spec wariantów (nazwy, URL), konfiguracji, ModelSource per wariant, start z q5_0; mutacja (wariant ignorowany przy budowie ścieżki) czerwona
+- [ ] Zadanie 9.8: Podmenu „Model”: „Pełny (1,6 GB)” / „Skwantyzowany q5_0 (0,6 GB)” z zaznaczeniem i nazwą wariantu w stanie; wybór → zapis `model_variant` → przeładowanie (plik jest) albo pobieranie (brak) → `ModelLoaded`; „Usuń drugi wariant” gdy na dysku; README/RUNBOOK fazy (wymaga: 9.7, 9.5) [VA-MODEL-4] (zmiana: 2026-10-10-specky-1JBKCWR.md)
+  - Specky: (req: 01M4KD15KW259CT135K1JBKCWR v1 @e7c6470)
+  - Specky kryteria: (crit: 01M4KD15M5E90XXM60PPS2S33J) pozycje z zaznaczeniem i nazwa wariantu; (crit: 01M4KD15M6BESGW2M37ZY4WV7S) wybór → pobieranie/przeładowanie bez restartu, zapis; (crit: 01M4KD15M63SWHPZAMN9BYDK0W) usuwanie per wariant
+  - AC: wejście — kliknięcie pozycji wariantu w pętli tao; automat wyboru wariantu (`VariantSwitch`: wybrany/na dysku/pobierany → akcja) testowany jednostkowo; etykiety i flagi testowane; przeładowanie modelu używa istniejącej ścieżki `ModelLoaded`
+- [ ] Test: 9.8 — testy etykiet i automatu wyboru wariantu, flag „Usuń drugi wariant”; mutacja (przełączenie bez zapisu do konfiguracji) czerwona
+- [ ] Zadanie 9.9: `.github/workflows/release.yml` na tag `v*`: testy (bez ignorowanych) → `scripts/build-dmg.sh` → sprawdzenie rozmiaru < 20 MB i braku `.bin` w obrazie → `gh release create <tag> --notes-from-tag` z załącznikiem `VoiceAsystent-X.Y.Z.dmg`; RUNBOOK sekcja wydania [VA-CI-1] (zmiana: 2026-10-10-specky-47S54D5.md)
+  - Specky: (req: 01M4KD15NQGKTSWZCH647S54D5 v1 @9ee4f05)
+  - Specky kryteria: (crit: 01M4KD15NZAN4ZGGRTDR8327Z1) build na macOS, dmg skryptem; (crit: 01M4KD15NZMG0684CZTN5614X4) wydanie z opisem z tagu; (crit: 01M4KD15NZCFGE5HQME8HXCGJX) < 20 MB, bez modelu; (crit: 01M4KD15NZYVAV8WJAC6D217TD) czerwony build → brak wydania
+  - AC: wejście — push tagu `v*` na GitHub (weryfikacja przy następnym wydaniu, które właściciel wypchnie); skrypt `scripts/check-dmg.sh` (rozmiar, brak modelu) testowany lokalnie na obrazie z binarki debug; workflow sprawdzony `actionlint` jeśli dostępny, inaczej `python3 -c yaml.safe_load`
+- [ ] Test: 9.9 — test `scripts/check-dmg.sh` (obraz poprawny → 0, obraz z plikiem `.bin` → 1, obraz > 20 MB → 1); składnia workflow
+- [ ] ⛔ Zadanie 9.10: Test manualny właściciela: powiadomienie po transkrypcji (i dźwięk po włączeniu), czas start → ikona ≤ 1,5 s, Ustawienia (język, limit, „inne”), Uruchamiaj przy logowaniu (wylogowanie/zalogowanie), Pokaż logi, przełączenie na q5_0 i z powrotem, wydanie z CI po wypchnięciu tagu — wynik do REPORT.md (wymaga: 9.3, 9.6, 9.8, 9.9)
 
 ## Pokrycie spec
 
@@ -244,6 +293,14 @@
 | VA-REC-6 | limit nagrania 600 s, auto-Stop z transkrypcją, powiadomienie | 7.3, 7.4, 7.7 |
 | VA-MODEL-2 | podmenu „Model”: stan, Pokaż w Finderze, Usuń z potwierdzeniem, Pobierz ponownie | 8.2, 8.3, 8.4, 8.5 |
 | VA-MODEL-3 | aplikacja honoruje model_path z config.toml (naprawa błędu z 5.1) | 8.1, 8.3, 8.5 |
+| VA-OPS-1 | Pokaż logi, retencja logów 7 dni | 9.1, 9.10 |
+| VA-PERF-1 | znacznik SHA-256 modelu, szybki start | 9.2, 9.10 |
+| VA-UX-1 | sygnał „transkrypcja gotowa”: powiadomienie z podglądem, dźwięk | 9.3, 9.10 |
+| VA-STT-3 | parametry Whispera przeciw halucynacjom, język z ustawień | 9.4, 9.10 |
+| VA-SET-1 | podmenu Ustawienia: język, limit nagrania bez restartu | 9.5, 9.10 |
+| VA-SET-2 | Uruchamiaj przy logowaniu (LaunchAgent) | 9.6, 9.10 |
+| VA-MODEL-4 | wariant q5_0 do wyboru w podmenu Model | 9.7, 9.8, 9.10 |
+| VA-CI-1 | tag v* → .dmg w wydaniu GitHub | 9.9, 9.10 |
 | spec/APP_FLOW.md, spec/ux_ui/LINKS.md | niewypełnione szablony | poza zakresem |
 
 ## Notatki
