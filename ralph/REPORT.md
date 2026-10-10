@@ -14,11 +14,11 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: W trakcie — Faza 8 (podmenu „Model”, własna ścieżka modelu) dopisana 2026-10-10 z wymagań Specky VA-MODEL-2 i VA-MODEL-3; Faza 7 czeka tylko na ⛔ 7.7
-- **Postęp**: 59/69 pozycji ukończonych (zostało ⛔ 7.7 i Faza 8: 0/9)
+- **Status**: Fazy 7 i 8 — cały kod zmergowany (PR #33–#38, #42–#45); czekają tylko testy ręczne właściciela ⛔ 7.7 i ⛔ 8.5
+- **Postęp**: 67/69 pozycji ukończonych (zostały ⛔ 7.7 i ⛔ 8.5)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
-- Otwarte PR: brak. Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -35,6 +35,8 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Przebieg po zadaniach 8.1–8.4 (2026-10-10) — ZIELONY (main c7cd4d6, nie regresja fazy — czekają ⛔ 7.7 i ⛔ 8.5):** `cargo test --workspace -- --include-ignored` 171/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 156/0 po 7.6: +15 testów (model_path, remove/size w va-model, automat pobierania, podmenu Model, potwierdzenie). Bez tagów `ralph/faza-7` i `ralph/faza-8` do wyników testów ręcznych.
+
 **Przebieg po zadaniach 7.1–7.6 (2026-10-10) — ZIELONY (main 6627cc3, nie regresja fazy — czeka ⛔ 7.7):** `cargo test --workspace -- --include-ignored` 156/0 (w tym prawdziwa transkrypcja fixture z 40 s pauzy, limit z prawdziwego mikrofonu, historia z plikiem, build release i .dmg), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 126/0 po Fazie 6: +30 testów. Bez tagu `ralph/faza-7` do wyniku testu ręcznego 7.7.
 
 **Regresja po Fazie 6 (2026-10-10) — ZIELONA:** na main (1ae141a) `cargo test --workspace -- --include-ignored` 126/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; test ręczny 6.4 właściciela (2026-10-09) bez uwag. Bez zmian liczby testów od przebiegu po 6.3. Tag `ralph/faza-6`.
@@ -49,11 +51,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 156 |
-| Pass | 156 |
+| Łącznie testów | 171 |
+| Pass | 171 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 7.6) |
+| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 8.4) |
 
 ## Historia realizacji
 
@@ -81,7 +83,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 8.1 `ModelSource::{Store, Custom}` z `config.model_path`: własny plik bez SHA-256 i pobierania, brak pliku → `Problem::CustomModelMissing` ze ścieżką w menu; `ModelDownload::needed` pomija własną ścieżkę + test 8.1 | ✅ PR #42 | 152/0 + 10 ignored; testy startu z HOME tymczasowym (własna ścieżka istniejąca/nieistniejąca); mutacja (ignorowanie model_path) czerwona | 1 | f8a4c80 | 2026-10-10 |
 | 8.2 `ModelStore::remove/size_on_disk/spec`, `ModelSpec::display_name`; `DownloadState::Missing`, zdarzenie `Removed`, `Retry` z `Missing`, `can_remove`; `ModelDownload::available` + test 8.2 | ✅ PR #43 | 156/0 + 10 ignored; mutacja (`can_remove` prawdziwe przy pobieraniu) czerwona | 1 | 17eba66 | 2026-10-10 |
 | 8.3 Podmenu „Model” (model_menu.rs: linie stanu z rozmiarem w GB, własna ścieżka, flagi Usuń/Pobierz; TrayMenu::show_model; odświeżanie w pętli tao; Pokaż w Finderze przez `open -R`) + test 8.3 | ✅ PR #44 | 160/0 + 10 ignored; mutacja (Usuń aktywne przy pobieraniu) czerwona | 1 | efd85e8 | 2026-10-10 |
-| 8.4 „Usuń model…” z potwierdzeniem w menu (RemovePrompt), usunięcie = zamknięcie kontrolera + `ModelStore::remove` + stan Missing, „Pobierz ponownie” → pobieranie → nowy kontroler; README/RUNBOOK + test 8.4 | PR #45 otwarty | 161/0 + 10 ignored; mutacja (usunięcie bez potwierdzenia) czerwona | 1 | — | 2026-10-10 |
+| 8.4 „Usuń model…” z potwierdzeniem w menu (RemovePrompt), usunięcie = zamknięcie kontrolera + `ModelStore::remove` + stan Missing, „Pobierz ponownie” → pobieranie → nowy kontroler; README/RUNBOOK + test 8.4 | ✅ PR #45 | 161/0 + 10 ignored; mutacja (usunięcie bez potwierdzenia) czerwona | 1 | c7cd4d6 | 2026-10-10 |
 | 7.6 Podmenu „Historia” (history_menu.rs: etykiety `HH:MM · tekst…`, id → `CopyHistoryEntry`/`ClearHistory`; TrayMenu::show_history, wpięcie w pętli tao), README/RUNBOOK + test 7.6 | ✅ PR #38 | 146/0 + 10 ignored; mutacja odwrócenia kolejności czerwona; aplikacja z podmenu startuje lokalnie | 1 | 6627cc3 | 2026-10-10 |
 
 ## Historia zmian
