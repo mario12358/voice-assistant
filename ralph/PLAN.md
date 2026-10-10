@@ -258,16 +258,16 @@
   - Specky kryteria: (crit: 01M4KD15M64AGF6T592KW5WQS7) oba z HF, SHA-256, wznawianie; (crit: 01M4KD15M64RDY5XTBQV6MK4FK) speech_pl q5_0 te same słowa
   - AC: wejście — start aplikacji z `model_variant = "q5_0"` w config.toml ładuje/pobiera wariant q5_0 (test startu `--self-check`: log ze ścieżką q5_0); test `#[ignore]` prawdziwej transkrypcji `speech_pl.wav` modelem q5_0 (pobranie ~0,6 GB lokalnie) ze słowami kluczowymi
 - [x] Test: 9.7 — testy spec wariantów (nazwy, URL), konfiguracji, ModelSource per wariant, start z q5_0; mutacja (wariant ignorowany przy budowie ścieżki) czerwona (pr: #55)
-- [ ] Zadanie 9.8: Podmenu „Model”: „Pełny (1,6 GB)” / „Skwantyzowany q5_0 (0,6 GB)” z zaznaczeniem i nazwą wariantu w stanie; wybór → zapis `model_variant` → przeładowanie (plik jest) albo pobieranie (brak) → `ModelLoaded`; „Usuń drugi wariant” gdy na dysku; README/RUNBOOK fazy (wymaga: 9.7, 9.5) [VA-MODEL-4] (zmiana: 2026-10-10-specky-1JBKCWR.md) (pr: #56)
+- [x] Zadanie 9.8: Podmenu „Model”: „Pełny (1,6 GB)” / „Skwantyzowany q5_0 (0,6 GB)” z zaznaczeniem i nazwą wariantu w stanie; wybór → zapis `model_variant` → przeładowanie (plik jest) albo pobieranie (brak) → `ModelLoaded`; „Usuń drugi wariant” gdy na dysku; README/RUNBOOK fazy (wymaga: 9.7, 9.5) [VA-MODEL-4] (zmiana: 2026-10-10-specky-1JBKCWR.md) (pr: #56)
   - Specky: (req: 01M4KD15KW259CT135K1JBKCWR v1 @e7c6470)
   - Specky kryteria: (crit: 01M4KD15M5E90XXM60PPS2S33J) pozycje z zaznaczeniem i nazwa wariantu; (crit: 01M4KD15M6BESGW2M37ZY4WV7S) wybór → pobieranie/przeładowanie bez restartu, zapis; (crit: 01M4KD15M63SWHPZAMN9BYDK0W) usuwanie per wariant
   - AC: wejście — kliknięcie pozycji wariantu w pętli tao; automat wyboru wariantu (`VariantSwitch`: wybrany/na dysku/pobierany → akcja) testowany jednostkowo; etykiety i flagi testowane; przeładowanie modelu używa istniejącej ścieżki `ModelLoaded`
-- [ ] Test: 9.8 — testy etykiet i automatu wyboru wariantu, flag „Usuń drugi wariant”; mutacja (przełączenie bez zapisu do konfiguracji) czerwona (pr: #56)
-- [ ] Zadanie 9.9: `.github/workflows/release.yml` na tag `v*`: testy (bez ignorowanych) → `scripts/build-dmg.sh` → sprawdzenie rozmiaru < 20 MB i braku `.bin` w obrazie → `gh release create <tag> --notes-from-tag` z załącznikiem `VoiceAsystent-X.Y.Z.dmg`; RUNBOOK sekcja wydania [VA-CI-1] (zmiana: 2026-10-10-specky-47S54D5.md)
+- [x] Test: 9.8 — testy etykiet i automatu wyboru wariantu, flag „Usuń drugi wariant”; mutacja (przełączenie bez zapisu do konfiguracji) czerwona (pr: #56)
+- [ ] Zadanie 9.9: `.github/workflows/release.yml` na tag `v*`: testy (bez ignorowanych) → `scripts/build-dmg.sh` → sprawdzenie rozmiaru < 20 MB i braku `.bin` w obrazie → `gh release create <tag> --notes-from-tag` z załącznikiem `VoiceAsystent-X.Y.Z.dmg`; RUNBOOK sekcja wydania [VA-CI-1] (zmiana: 2026-10-10-specky-47S54D5.md) (pr: #57)
   - Specky: (req: 01M4KD15NQGKTSWZCH647S54D5 v1 @9ee4f05)
   - Specky kryteria: (crit: 01M4KD15NZAN4ZGGRTDR8327Z1) build na macOS, dmg skryptem; (crit: 01M4KD15NZMG0684CZTN5614X4) wydanie z opisem z tagu; (crit: 01M4KD15NZCFGE5HQME8HXCGJX) < 20 MB, bez modelu; (crit: 01M4KD15NZYVAV8WJAC6D217TD) czerwony build → brak wydania
   - AC: wejście — push tagu `v*` na GitHub (weryfikacja przy następnym wydaniu, które właściciel wypchnie); skrypt `scripts/check-dmg.sh` (rozmiar, brak modelu) testowany lokalnie na obrazie z binarki debug; workflow sprawdzony `actionlint` jeśli dostępny, inaczej `python3 -c yaml.safe_load`
-- [ ] Test: 9.9 — test `scripts/check-dmg.sh` (obraz poprawny → 0, obraz z plikiem `.bin` → 1, obraz > 20 MB → 1); składnia workflow
+- [ ] Test: 9.9 — test `scripts/check-dmg.sh` (obraz poprawny → 0, obraz z plikiem `.bin` → 1, obraz > 20 MB → 1); składnia workflow (pr: #57)
 - [ ] ⛔ Zadanie 9.10: Test manualny właściciela: powiadomienie po transkrypcji (i dźwięk po włączeniu), czas start → ikona ≤ 1,5 s, Ustawienia (język, limit, „inne”), Uruchamiaj przy logowaniu (wylogowanie/zalogowanie), Pokaż logi, przełączenie na q5_0 i z powrotem, wydanie z CI po wypchnięciu tagu — wynik do REPORT.md (wymaga: 9.3, 9.6, 9.8, 9.9)
 
 ## Pokrycie spec

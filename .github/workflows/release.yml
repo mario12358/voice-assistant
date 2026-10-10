@@ -1,0 +1,43 @@
+# Wydanie (VA-CI-1): wypchnięty tag vX.Y.Z → testy → obraz .dmg → sprawdzenie obrazu → wydanie
+# GitHub o nazwie tagu z komunikatem tagu jako opisem i obrazem jako załącznikiem.
+# Czerwony krok przerywa job, więc wydanie bez obrazu nie powstaje.
+
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest          # projekt buduje się wyłącznie na macOS (compile_error! poza nim)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0           # pełna historia i adnotowane tagi: git describe i --notes-from-tag
+      - run: git fetch --force --tags origin
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # Testy bez #[ignore] — runner nie ma mikrofonu ani GPU z modelem.
+      - run: cargo test --workspace
+
+      - name: Obraz .dmg
+        run: scripts/build-dmg.sh --version "$GITHUB_REF_NAME"
+
+      - name: Sprawdzenie obrazu (rozmiar < 20 MB, bez modelu)
+        run: scripts/check-dmg.sh "dist/VoiceAsystent-${GITHUB_REF_NAME#v}.dmg" --max-mb 20
+
+      - name: Wydanie GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/VoiceAsystent-${GITHUB_REF_NAME#v}.dmg" \
+            --title "VoiceAsystent $GITHUB_REF_NAME" \
+            --notes-from-tag \
+            --verify-tag
