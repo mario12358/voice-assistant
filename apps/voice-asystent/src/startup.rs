@@ -138,11 +138,22 @@ impl ModelDownload {
         gpu: Option<&GpuReady>,
         model: Option<&ModelState>,
     ) -> Option<Self> {
+        let missing = matches!(model, Some(ModelState::Missing | ModelState::Partial(_)));
+        Self::available(config, paths, source, gpu).filter(|_| missing)
+    }
+
+    /// Pobieranie możliwe w ogóle (do „Pobierz ponownie” po usunięciu modelu): GPU jest,
+    /// a model pochodzi z magazynu domyślnego — nie z własnej ścieżki użytkownika.
+    pub fn available(
+        config: &Config,
+        paths: &Paths,
+        source: &ModelSource,
+        gpu: Option<&GpuReady>,
+    ) -> Option<Self> {
         if source.custom_path().is_some() {
             return None;
         }
-        let missing = matches!(model, Some(ModelState::Missing | ModelState::Partial(_)));
-        gpu.filter(|_| missing).map(|gpu| Self {
+        gpu.map(|gpu| Self {
             config: config.clone(),
             paths: paths.clone(),
             gpu: gpu.clone(),

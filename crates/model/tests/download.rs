@@ -169,6 +169,31 @@ fn model_with_wrong_checksum_on_disk_is_removed_at_check() {
 }
 
 #[test]
+// specky: crit 01M4K6M2ZYTC7D38NMHZJXF1FV
+fn remove_deletes_model_and_partial_file_and_tolerates_their_absence() {
+    let content = model_content();
+    let dir = tempfile::tempdir().unwrap();
+    let store = ModelStore::new(dir.path(), spec_for(&content));
+    std::fs::write(store.model_path(), &content).unwrap();
+    std::fs::write(dir.path().join("ggml-test.bin.part"), b"czesc").unwrap();
+    assert_eq!(store.size_on_disk(), Some(content.len() as u64));
+
+    store.remove().unwrap();
+
+    assert!(!store.model_path().exists());
+    assert!(!dir.path().join("ggml-test.bin.part").exists());
+    assert_eq!(store.check().unwrap(), ModelState::Missing);
+    assert_eq!(store.size_on_disk(), None);
+    store.remove().unwrap();
+}
+
+#[test]
+fn display_name_strips_ggml_prefix_and_extension() {
+    assert_eq!(va_model::LARGE_V3_TURBO.display_name(), "large-v3-turbo");
+    assert_eq!(spec_for(&[1, 2, 3]).display_name(), "test");
+}
+
+#[test]
 fn server_error_status_is_reported() {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let url = format!("http://{}/model.bin", listener.local_addr().unwrap());
