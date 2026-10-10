@@ -20,6 +20,7 @@ use crate::download::{DownloadEvent, DownloadState};
 use crate::history_menu::command_from_menu_id;
 use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
+use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
 use crate::messages::{Problem, ReadySignal, menu_notice, notify, signal_ready};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::model_menu::{
@@ -46,6 +47,7 @@ pub struct AppSettings {
     pub logs_dir: PathBuf,
     pub recording_limit_secs: u32,
     pub ready_signal: ReadySignal,
+    pub login: LoginItem,
 }
 
 /// `download` = zadanie pobierania, jeśli w ogóle możliwe (GPU, magazyn domyślny);
@@ -62,6 +64,7 @@ pub fn run(
         logs_dir,
         mut recording_limit_secs,
         ready_signal,
+        login,
     } = settings;
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     event_loop.set_activation_policy(ActivationPolicy::Accessory);
@@ -89,27 +92,29 @@ pub fn run(
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
         match event {
-            Event::NewEvents(StartCause::Init) => match build_tray(State::Idle, &config_path) {
-                Ok(mut built) => {
-                    if let Some(problem) = &hotkeys_problem {
-                        tracing::error!(%problem, "rejestracja skrótów");
-                        built.1.show_notice(problem);
+            Event::NewEvents(StartCause::Init) => {
+                match build_tray(State::Idle, &config_path, &login) {
+                    Ok(mut built) => {
+                        if let Some(problem) = &hotkeys_problem {
+                            tracing::error!(%problem, "rejestracja skrótów");
+                            built.1.show_notice(problem);
+                        }
+                        if download_state == DownloadState::NotNeeded
+                            && let Some(notice) = unavailable.as_ref().and_then(menu_notice)
+                        {
+                            built.1.show_notice(&notice);
+                        }
+                        show_download(&mut built, &download_state, shown);
+                        built.1.show_history(&history);
+                        show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
+                        tray = Some(built);
                     }
-                    if download_state == DownloadState::NotNeeded
-                        && let Some(notice) = unavailable.as_ref().and_then(menu_notice)
-                    {
-                        built.1.show_notice(&notice);
+                    Err(error) => {
+                        tracing::error!(%error, "nie udało się utworzyć ikony w pasku menu");
+                        *control_flow = ControlFlow::Exit;
                     }
-                    show_download(&mut built, &download_state, shown);
-                    built.1.show_history(&history);
-                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
-                    tray = Some(built);
                 }
-                Err(error) => {
-                    tracing::error!(%error, "nie udało się utworzyć ikony w pasku menu");
-                    *control_flow = ControlFlow::Exit;
-                }
-            },
+            }
             Event::UserEvent(UserEvent::Controller(event)) => {
                 if let ControllerEvent::StateChanged(state) = &event {
                     shown = *state;
@@ -195,6 +200,13 @@ pub fn run(
                     reveal_in_finder(&model_info.path);
                 } else if id == SHOW_LOGS_ID {
                     reveal_in_finder(&logs_dir);
+                } else if id == LOGIN_ITEM_ID {
+                    if let Err(error) = login.toggle() {
+                        tracing::error!(%error, "uruchamianie przy logowaniu");
+                    }
+                    if let Some((_, menu)) = &tray {
+                        menu.show_login(&login);
+                    }
                 } else if let Some(name) = microphone_from_menu_id(id) {
                     if let Err(error) = select_microphone(&config_path, name) {
                         tracing::error!(%error, "zapis wyboru mikrofonu");
@@ -422,9 +434,13 @@ fn show_download(tray: &mut (TrayIcon, TrayMenu), state: &DownloadState, shown: 
     let _ = tray.0.set_tooltip(Some(tooltip));
 }
 
-fn build_tray(state: State, config_path: &Path) -> anyhow::Result<(TrayIcon, TrayMenu)> {
+fn build_tray(
+    state: State,
+    config_path: &Path,
+    login: &LoginItem,
+) -> anyhow::Result<(TrayIcon, TrayMenu)> {
     let indicator = indicator_for(state);
-    let menu = TrayMenu::new(config_path.to_owned())?;
+    let menu = TrayMenu::new(config_path.to_owned(), login)?;
     let icon = TrayIconBuilder::new()
         .with_icon(icon(indicator)?)
         .with_tooltip(indicator.tooltip)
