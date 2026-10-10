@@ -109,6 +109,6 @@ Konwencje:
 
 - Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
 - Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
-- Faza 7 w planie (2026-10-10, z changes/processed/2026-10-10-specky-*.md): 7.1–7.2 pauzy (VA-REC-5), 7.3–7.4 limit nagrania (VA-REC-6), 7.5–7.6 historia (VA-HIST-1), ⛔ 7.7 test ręczny; następne zadanie: 7.1
+- Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
 - Blokery: brak
 - Blokery: brak
