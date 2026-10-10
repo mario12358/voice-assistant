@@ -71,6 +71,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 6.2 `scripts/build-dmg.sh` (hdiutil UDZO, aplikacja + skrót do Applications, wersja z git describe) + test 6.2 | ✅ PR #27 | 118/0 + 8 ignored; obraz release 3,9 MB montuje się z aplikacją i skrótem; mutacja usunięcia skrótu czerwona | 1 | 3530198 | 2026-10-09 |
 | 6.3 README.md + docs/RUNBOOK.md (wymagania, instalacja z .dmg i Gatekeeper, pierwsze uruchomienie, skróty, komendy, diagnostyka) | ✅ PR #28 | bez testów (dokumentacja); twierdzenia zweryfikowane w kodzie (limit nagrania, `.part`, SHA-256) | 1 | 5f13dab | 2026-10-09 |
 | 6.4 Test manualny właściciela (instalacja z .dmg, nagranie skrótami i kliknięciem, cmd+v w kilku aplikacjach, zmiana mikrofonu) | ✅ ręcznie | właściciel 2026-10-09 wg docs/test-scenarios/v0.4.0.md: wszystkie scenariusze zgodne z oczekiwaniami, bariery odrzucone; 2.2 (macOS 13–14) nie do sprawdzenia | 1 | — | 2026-10-10 |
+| 7.1 `compress_pauses` w va-audio (pauzy > 1,5 s → 0,5 s, mowa i brzegi bez zmian) + test 7.1 | PR #33 otwarty | 124/0 + 8 ignored; mutacja progu 1,5 s → 0,5 s czerwona (2 testy) | 1 | — | 2026-10-10 |
 
 ## Historia zmian
 
@@ -143,6 +144,7 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 
 <!-- Format: [data] Zadanie X.X: opis problemu - rozwiązanie/status -->
 <!-- Listy zmienionych plików NIE prowadzimy — git zna ją lepiej: git log --stat -->
+- [2026-10-10] Start Fazy 7: pełny suite po przetworzeniu changes/ nie powtórzony — kod (crates/apps/scripts/Cargo) bajt w bajt ten sam, co w regresji Fazy 6 z 2026-10-10 (126/0); zmiany dotyczyły tylko ralph/, docs/ i changes/.
 - [2026-10-09] Zadanie 6.1: odstępstwo od planu — skrypt nie przekazuje `--features metal`: feature `metal` jest włączony na stałe w zależności `va-stt` binarki, więc `cargo build --release -p voice-asystent` daje build z Metalem (potwierdzone logiem `ggml_metal_library_init: using embedded metal library` po starcie z bundla).
 - [2026-10-09] Zadanie 6.1: ostrzeżenie kontroli `testy/skip-z-powodem` — test `release_build_creates_dist_app` ma `#[ignore]` (build release trwa minuty), uruchamiany w pełnym suicie `--include-ignored`; zielony lokalnie (40 s przy ciepłym cache). Pozostałe 4 testy bundla biegną w CI z binarki debug (`--binary`).
 - [2026-10-09] Zadanie 6.1: wygląd ikony aplikacji w Finderze i nazwa aplikacji w powiadomieniach niezweryfikowane wizualnie — test ręczny 6.4. LSMinimumSystemVersion ustawione na 13.0 (brak wymagania w spec; whisper.cpp Metal i tao wymagają nowoczesnego macOS).
