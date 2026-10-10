@@ -14,8 +14,8 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: Plan ukończony (Fazy 1–6); nowe wymagania VA-HIST-1, VA-REC-5, VA-REC-6 zaakceptowane w Specky 2026-10-10 — do zaplanowania jako Faza 7 przy następnym starcie
-- **Postęp**: 47/47 pozycji ukończonych
+- **Status**: W trakcie — Faza 7 (historia wypowiedzi, pauzy, limit nagrania) dopisana 2026-10-10 z wymagań Specky VA-HIST-1, VA-REC-5, VA-REC-6
+- **Postęp**: 47/60 pozycji ukończonych (Fazy 1–6 kompletne; Faza 7: 0/13)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
 - Otwarte PR: brak. 6.1 (b188bf1), 6.2 (3530198) i 6.3 (5f13dab) zmergowane; VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
@@ -91,6 +91,33 @@ Format wpisu (jeden ### na każdą zmianę):
 
 Plik źródłowy zmiany żyje w changes/processed/<nazwa-pliku>.md (audyt w gicie).
 -->
+
+### 2026-10-10 2026-10-10-specky-CY0SQA5.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (nowe wymaganie Specky VA-HIST-1, sekcja „Nagrywanie i schowek”)
+- **Streszczenie**: Historia wypowiedzi: każda niepusta transkrypcja trafia do trwałej listy (30 wpisów, plik w katalogu danych aplikacji), podmenu „Historia” pozwala skopiować wcześniejszy tekst do schowka i wyczyścić listę; decyzja właściciela 2026-10-10.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 7.5, 7.6, 7.7 (Faza 7)
+
+### 2026-10-10 2026-10-10-specky-1BY4F4Z.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (nowe wymaganie Specky VA-REC-5; crates/audio/src/silence.rs, kontroler)
+- **Streszczenie**: Pauzy wewnątrz nagrania dłuższe niż 1,5 s są skracane do 0,5 s przed transkrypcją, żeby Whisper nie halucynował w oknach bez mowy; brzegi jak dotąd.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 7.1, 7.2 (Faza 7)
+
+### 2026-10-10 2026-10-10-specky-9VFYND0.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (nowe wymaganie Specky VA-REC-6; recorder, va-config, kontroler, messages.rs)
+- **Streszczenie**: Limit nagrania domyślnie 600 s; po jego osiągnięciu nagrywarka zgłasza limit, kontroler kończy nagranie jak po ctrl+cmd+s (transkrypcja do schowka), a użytkownik dostaje powiadomienie — dziś nadwyżka ginęła po cichu.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 7.3, 7.4 (Faza 7)
 
 ## Artefakty wizualne
 

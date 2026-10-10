@@ -1,9 +1,9 @@
 # ralph/SPECKY.md — stan synchronizacji z Specky
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
-- **since_seq**: 709
-- **Ostatnia synchronizacja**: 2026-10-09 (pozycje 706–709: akceptacja VA-MODEL-1 i migawki v0.2.0/v0.3.0 — bez wpływu na plan)
-- **Stan projektu w Specky**: 11 zaakceptowanych wymagań (wsad 01M4EK43A6GBPR63H0FV0VBCV0, 25 kryteriów). VA-MODEL-1 zaakceptowane 2026-10-08 przez właściciela (12 wymagań).
+- **since_seq**: 718
+- **Ostatnia synchronizacja**: 2026-10-10 (pozycje 711–718: kolizje/pytania wymagania o Windows zgaszone jego wycofaniem, akceptacja wsadu VA-HIST-1/VA-REC-5/VA-REC-6 → changes/ → Faza 7)
+- **Stan projektu w Specky**: 15 zaakceptowanych wymagań (12 z 2026-10-08 + VA-HIST-1, VA-REC-5, VA-REC-6 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela.
 
 ## Mapa wymagań → zadania
 
@@ -21,6 +21,6 @@
 | VA-UI-1 | 01M4EKHD1BQYRNWBAVRA5FJTRC | v1 @df8032b | 5.1 |
 | VA-UI-2 | 01M4EKHD3Y6M9V9E01V27AH18Z | v1 @a4fdb35 | 4.2, 5.2 |
 | VA-MODEL-1 | 01M4EQH9D30871ZG5JMWK8VHFV | v1 @5a6280e | 3.2, 5.6, 6.1, 6.2 |
-| VA-HIST-1 | 01M4K06AGAV8G79RJMXCY0SQA5 | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
-| VA-REC-5 | 01M4K06AQB7B8055HQ21BY4F4Z | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
-| VA-REC-6 | 01M4K06AXGNSZ9XEZ3E9VFYND0 | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
+| VA-HIST-1 | 01M4K06AGAV8G79RJMXCY0SQA5 | v1 @d3eecdb | 7.5, 7.6, 7.7 |
+| VA-REC-5 | 01M4K06AQB7B8055HQ21BY4F4Z | v1 @04c88f7 | 7.1, 7.2, 7.7 |
+| VA-REC-6 | 01M4K06AXGNSZ9XEZ3E9VFYND0 | v1 @97b27f2 | 7.3, 7.4, 7.7 |
