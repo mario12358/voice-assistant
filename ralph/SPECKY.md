@@ -21,3 +21,6 @@
 | VA-UI-1 | 01M4EKHD1BQYRNWBAVRA5FJTRC | v1 @df8032b | 5.1 |
 | VA-UI-2 | 01M4EKHD3Y6M9V9E01V27AH18Z | v1 @a4fdb35 | 4.2, 5.2 |
 | VA-MODEL-1 | 01M4EQH9D30871ZG5JMWK8VHFV | v1 @5a6280e | 3.2, 5.6, 6.1, 6.2 |
+| VA-HIST-1 | 01M4K06AGAV8G79RJMXCY0SQA5 | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
+| VA-REC-5 | 01M4K06AQB7B8055HQ21BY4F4Z | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
+| VA-REC-6 | 01M4K06AXGNSZ9XEZ3E9VFYND0 | v1 (hash z get_requirement przy planowaniu) | Faza 7 — do zaplanowania (zaakceptowane 2026-10-10) |
