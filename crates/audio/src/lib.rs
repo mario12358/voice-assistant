@@ -7,7 +7,7 @@ pub mod silence;
 
 pub use convert::TARGET_SAMPLE_RATE;
 pub use devices::{AudioHost, CpalHost, DeviceChoice, InputDevice, choose_device};
-pub use recorder::{CpalRecorder, Recorder};
+pub use recorder::{CpalRecorder, LimitNotifier, Recorder};
 pub use silence::{SilenceParams, compress_pauses, speech_bounds, trim_silence};
 
 #[derive(Debug, thiserror::Error)]

@@ -8,7 +8,9 @@
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread::JoinHandle;
 
-use va_audio::{Recorder, SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, trim_silence};
+use va_audio::{
+    LimitNotifier, Recorder, SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, trim_silence,
+};
 use va_clipboard::{Delivery, TextSink};
 use va_stt::{SpeechToText, Transcript};
 
@@ -32,6 +34,8 @@ pub enum ControllerEvent {
     NoSignal,
     /// Transkrypcja dostarczona albo pominięta (pusta).
     Delivered(Delivery),
+    /// Nagranie osiągnęło limit długości i zostało zakończone automatycznie (VA-REC-6).
+    LimitReached,
 }
 
 /// Wybór mikrofonu w chwili startu nagrania (konfiguracja może się zmienić w trakcie pracy).
@@ -51,6 +55,8 @@ pub struct ControllerParts {
 enum Message {
     Command(Command),
     Transcribed(Result<Option<Transcript>, String>),
+    /// Nagrywarka zapełniła bufor; numer nagrania chroni przed spóźnionym sygnałem z poprzedniego.
+    LimitReached(u64),
     Shutdown,
 }
 
@@ -96,6 +102,8 @@ pub fn spawn(parts: ControllerParts, publish: EventPublisher) -> ControllerHandl
         silence: parts.silence,
         worker,
         publish,
+        messages: messages.clone(),
+        recording_number: 0,
     };
     let thread = std::thread::Builder::new()
         .name("va-controller".into())
@@ -114,6 +122,8 @@ struct Controller {
     silence: SilenceParams,
     worker: TranscriptionWorker,
     publish: EventPublisher,
+    messages: Sender<Message>,
+    recording_number: u64,
 }
 
 impl Controller {
@@ -124,9 +134,21 @@ impl Controller {
                 Message::Command(Command::Start) => self.apply(Input::Start),
                 Message::Command(Command::Stop) => self.apply(Input::Stop),
                 Message::Transcribed(result) => self.on_transcribed(result),
+                Message::LimitReached(number) => self.on_limit_reached(number),
                 Message::Shutdown => break,
             }
         }
+    }
+
+    /// Limit długości: to samo co Stop od użytkownika, plus zdarzenie dla UI (powiadomienie).
+    fn on_limit_reached(&mut self, number: u64) {
+        if number != self.recording_number || self.machine.state() != State::Recording {
+            tracing::debug!(number, "spóźniony sygnał limitu — pominięty");
+            return;
+        }
+        tracing::info!("osiągnięto limit długości nagrania — kończę nagranie");
+        (self.publish)(ControllerEvent::LimitReached);
+        self.apply(Input::Stop);
     }
 
     fn apply(&mut self, input: Input) {
@@ -143,8 +165,17 @@ impl Controller {
     }
 
     fn start_recording(&mut self) {
-        let started = (self.select_device)()
-            .and_then(|device| self.recorder.start(&device).map_err(|e| e.to_string()));
+        self.recording_number += 1;
+        let number = self.recording_number;
+        let messages = self.messages.clone();
+        let on_limit: LimitNotifier = Box::new(move || {
+            let _ = messages.send(Message::LimitReached(number));
+        });
+        let started = (self.select_device)().and_then(|device| {
+            self.recorder
+                .start(&device, on_limit)
+                .map_err(|e| e.to_string())
+        });
         if let Err(message) = started {
             self.fail(message);
         }

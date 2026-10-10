@@ -19,7 +19,7 @@ fn config_without_file_prints_defaults() {
     assert!(output.status.success());
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("language = \"auto\""), "{stdout}");
-    assert!(stdout.contains("max_recording_secs = 300"), "{stdout}");
+    assert!(stdout.contains("max_recording_secs = 600"), "{stdout}");
 }
 
 #[test]
