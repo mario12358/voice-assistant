@@ -88,6 +88,8 @@ Konwencje:
 | Specky contract check czerwony na PR zadania bez wymagania (narzędzia, stan fazy) | w commicie i w `--body` squasha linia `Specky-Req: none` |
 | `cargo` poza PATH w nowym shellu agenta | w Bash `export PATH="$HOME/.cargo/bin:$PATH"`; hook kontroli dokłada ~/.cargo/bin sam (naprawione 2026-10-09) |
 | Status kontroli PR czerwony dla commita SPRZED ostatniego (amend przelicza tylko HEAD) | `git reset --soft <baza gałęzi>` + ponowny commit przez hook, potem `push --force-with-lease` |
+| Testy z prawdziwym modelem, które przechwytują logi `tracing` (subskrybent na wątku), giną przy równoległych testach modelu w tym samym procesie | taki test w osobnym pliku `tests/*.rs` (osobny proces), pomocniki w `tests/common/mod.rs` (9.11) |
+| `hdiutil create/attach` równolegle → „Resource temporarily unavailable”, a `-quiet` przy `set -e` ukrywa przyczynę | testy obrazów szeregowane (mutex w dmg.rs + grupa nextest `obrazy-dysku`), skrypty ponawiają 3× z błędem na stderr (9.11) |
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola `testy/kod-bez-testu` nie widzi testów Rusta w `#[cfg(test)] mod tests` tego samego pliku | ostrzeżenie do odnotowania w REPORT, nie do „naprawy” przenoszeniem testów |
 | Mutacje budowane w osobnym `CARGO_TARGET_DIR` (scratchpad) zjadają GB dysku | po serii mutacji `cargo clean --target-dir <scratchpad>/target`; pilnuj `df -h` |
@@ -112,6 +114,6 @@ Konwencje:
 - Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
 - Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`, wersja v0.5.0; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
 - Faza 8 (własna ścieżka modelu VA-MODEL-3, podmenu „Model” VA-MODEL-2): kod zmergowany 2026-10-10 (PR #42–#45), wymagania `code_ready`, wersja v0.6.0; zostało ⛔ 8.5 (test ręczny) — tag `ralph/faza-8` po jego wyniku
-- Faza 9 w planie (2026-10-10, 8 plików changes/processed/2026-10-10-specky-*.md): 9.1 logi, 9.2 znacznik SHA-256, 9.3 sygnał gotowe, 9.4 parametry STT + set_language, 9.5 Ustawienia, 9.6 autostart, 9.7–9.8 wariant q5_0, 9.9 wydanie w CI, ⛔ 9.10 test ręczny; następne zadanie: 9.1
-- Blokery: brak
+- Faza 9 (logi VA-OPS-1, szybki start VA-PERF-1, sygnał gotowe VA-UX-1, jakość STT VA-STT-3, Ustawienia VA-SET-1, autostart VA-SET-2, wariant q5_0 VA-MODEL-4, wydanie w CI VA-CI-1): kod zmergowany 2026-10-10 (PR #49–#58), wymagania `code_ready`; zostało ⛔ 9.10 (test ręczny) — tag `ralph/faza-9` po jego wyniku
+- Następne: tylko testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10; propozycja wersji v0.7.0; tagi v0.4.0–v0.6.0 tylko lokalnie (workflow wydania ruszy dopiero po wypchnięciu tagu)
 - Blokery: brak
