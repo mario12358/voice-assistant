@@ -239,3 +239,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel zaakceptował wsad 01M4KC9EX5DBY9R1XYWNVHGX4Z.
 **Ustalenie**: VA-UX-1, VA-PERF-1, VA-SET-1, VA-SET-2, VA-OPS-1, VA-STT-3, VA-MODEL-4, VA-CI-1 zaakceptowane na wyraźną prośbę właściciela. Przegląd sprzeczności: brak; jedna uwaga — pamiętanie sumy SHA-256 (VA-PERF-1) nie wykryje uszkodzenia pliku bez zmiany rozmiaru i daty, co jest świadomym kompromisem (uszkodzenie przy zapisie zmienia datę). Mapa w ralph/SPECKY.md uzupełniona; następny start Ralpha w trybie 1 założy pliki w changes/ i Fazę 9.
 **Wpływ**: Specky; Faza 9
+
+## 2026-10-10 21:45 — Wydanie wersji v0.7.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania („Tak”) po zielonym pełnym suicie po zadaniach 9.1–9.11 (testy ręczne 7.7, 8.5 i 9.10 jeszcze czekają).
+**Ustalenie**: Utworzono wersję v0.7.0 (tag z opisem na commicie 2dbd1db). Zakres: sygnał „transkrypcja gotowa”, szybki start, Ustawienia (język, limit, autostart), Pokaż logi i retencja, parametry Whispera, wariant q5_0, wydanie z CI. Scenariusze w docs/test-scenarios/v0.7.0.md (pokrywają zadanie 9.10), migawka Specky 01M4KNBCV4MJQ3SRSPZDH1MGGK. Tag tylko lokalnie do czasu git push origin v0.7.0; na GitHubie nie ma żadnego tagu v*, więc workflow wydania jeszcze się nie uruchomił.
+**Wpływ**: tag v0.7.0, Specky, zadanie 9.10
