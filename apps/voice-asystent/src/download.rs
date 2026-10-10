@@ -64,9 +64,7 @@ impl DownloadState {
         matches!(self, Self::Failed(_) | Self::Missing)
     }
 
-    /// „Usuń model” tylko z modelem na dysku i gdy kontroler nie nagrywa ani nie transkrybuje
-    /// (flaga pozycji w podmenu „Model” — zadanie 8.3).
-    #[allow(dead_code)]
+    /// „Usuń model” tylko z modelem na dysku i gdy kontroler nie nagrywa ani nie transkrybuje.
     pub fn can_remove(&self, controller: State) -> bool {
         matches!(self, Self::NotNeeded | Self::Ready)
             && matches!(controller, State::Idle | State::Error)

@@ -20,6 +20,9 @@ use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
 use crate::messages::{Problem, menu_notice, notify};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
+use crate::model_menu::{
+    ModelInfo, REDOWNLOAD_MODEL_ID, SHOW_MODEL_ID, model_menu, state_with_percent,
+};
 use crate::startup::ModelDownload;
 use crate::tray_menu::{RETRY_DOWNLOAD_ID, TrayMenu};
 
@@ -35,6 +38,7 @@ enum UserEvent {
 pub fn run(
     controller_parts: Result<ControllerParts, Problem>,
     download: Option<ModelDownload>,
+    model_info: ModelInfo,
     config_path: PathBuf,
     recording_limit_secs: u32,
 ) -> anyhow::Result<()> {
@@ -76,6 +80,7 @@ pub fn run(
                     }
                     show_download(&mut built, &download_state, shown);
                     built.1.show_history(&history);
+                    show_model(&built.1, &model_info, &download_state, shown);
                     tray = Some(built);
                 }
                 Err(error) => {
@@ -86,8 +91,9 @@ pub fn run(
             Event::UserEvent(UserEvent::Controller(event)) => {
                 if let ControllerEvent::StateChanged(state) = &event {
                     shown = *state;
-                    if let Some((icon, _)) = &tray {
+                    if let Some((icon, menu)) = &tray {
                         show(icon, indicator_for(*state));
+                        show_model(menu, &model_info, &download_state, shown);
                     }
                 }
                 if let ControllerEvent::HistoryChanged(entries) = &event {
@@ -131,7 +137,7 @@ pub fn run(
                 let id = event.id.as_ref();
                 if id == QUIT_ID {
                     *control_flow = ControlFlow::Exit;
-                } else if id == RETRY_DOWNLOAD_ID {
+                } else if id == RETRY_DOWNLOAD_ID || id == REDOWNLOAD_MODEL_ID {
                     let before = download_state.clone();
                     download_state = before.clone().next(DownloadEvent::Retry);
                     if DownloadState::starts_download(&before, &download_state)
@@ -141,7 +147,10 @@ pub fn run(
                     }
                     if let Some(built) = &mut tray {
                         show_download(built, &download_state, shown);
+                        show_model(&built.1, &model_info, &download_state, shown);
                     }
+                } else if id == SHOW_MODEL_ID {
+                    reveal_in_finder(&model_info.path);
                 } else if let Some(name) = microphone_from_menu_id(id) {
                     if let Err(error) = select_microphone(&config_path, name) {
                         tracing::error!(%error, "zapis wyboru mikrofonu");
@@ -162,6 +171,7 @@ pub fn run(
                 download_state = download_state.clone().next(event);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
+                    show_model(&built.1, &model_info, &download_state, shown);
                 }
             }
             Event::UserEvent(UserEvent::ModelLoaded(parts)) => {
@@ -170,6 +180,7 @@ pub fn run(
                 download_state = download_state.clone().next(DownloadEvent::Ready);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
+                    show_model(&built.1, &model_info, &download_state, shown);
                 }
             }
             _ => {}
@@ -270,6 +281,31 @@ fn menu_may_open(event: &TrayIconEvent) -> bool {
                 ..
             }
     )
+}
+
+/// Podmenu „Model” odświeżane przy każdej zmianie stanu pobierania albo kontrolera; w trakcie
+/// pobierania linia stanu niesie procent.
+fn show_model(menu: &TrayMenu, info: &ModelInfo, download: &DownloadState, shown: State) {
+    let mut model = model_menu(info, download, shown);
+    if let Some(progress) = state_with_percent(download)
+        && let Some(line) = model.lines.first_mut()
+    {
+        *line = line.replace("· pobieranie", &format!("· {progress}"));
+    }
+    menu.show_model(&model);
+}
+
+/// `open -R` zaznacza plik w Finderze; bez pliku otwiera jego katalog.
+fn reveal_in_finder(path: &Path) {
+    let mut command = std::process::Command::new("open");
+    if path.is_file() {
+        command.arg("-R").arg(path);
+    } else {
+        command.arg(path.parent().unwrap_or(path));
+    }
+    if let Err(error) = command.spawn() {
+        tracing::error!(%error, path = %path.display(), "Pokaż w Finderze");
+    }
 }
 
 fn show_download(tray: &mut (TrayIcon, TrayMenu), state: &DownloadState, shown: State) {

@@ -9,6 +9,7 @@ mod hotkeys;
 mod indicator;
 mod messages;
 mod microphones;
+mod model_menu;
 mod startup;
 mod tray_menu;
 
@@ -42,6 +43,7 @@ fn main() -> anyhow::Result<()> {
     app::run(
         controller_parts,
         download,
+        source.info(),
         paths.config_file,
         config.max_recording_secs,
     )

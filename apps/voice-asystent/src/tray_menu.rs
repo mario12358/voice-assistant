@@ -1,4 +1,4 @@
-//! Menu pod prawym kliknięciem: podmenu „Historia”, „Mikrofon” i „Zakończ”.
+//! Menu pod prawym kliknięciem: podmenu „Historia”, „Model”, „Mikrofon” i „Zakończ”.
 
 use std::path::PathBuf;
 
@@ -11,12 +11,14 @@ use va_core::history::HistoryEntry;
 use crate::download::DownloadState;
 use crate::history_menu::{CLEAR_HISTORY_ID, history_items};
 use crate::microphones::{QUIT_ID, microphone_items};
+use crate::model_menu::{ModelMenu, REDOWNLOAD_MODEL_ID, REMOVE_MODEL_ID, SHOW_MODEL_ID};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
 
 pub struct TrayMenu {
     pub menu: Menu,
     history: Submenu,
+    model: Submenu,
     microphones: Submenu,
     config_path: PathBuf,
     download: Option<(MenuItem, MenuItem)>,
@@ -25,11 +27,13 @@ pub struct TrayMenu {
 impl TrayMenu {
     pub fn new(config_path: PathBuf) -> anyhow::Result<Self> {
         let history = Submenu::new("Historia", true);
+        let model = Submenu::new("Model", true);
         let microphones = Submenu::new("Mikrofon", true);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
         let menu = Menu::new();
         menu.append_items(&[
             &history,
+            &model,
             &microphones,
             &PredefinedMenuItem::separator(),
             &quit,
@@ -38,6 +42,7 @@ impl TrayMenu {
         let tray_menu = Self {
             menu,
             history,
+            model,
             microphones,
             config_path,
             download: None,
@@ -45,6 +50,30 @@ impl TrayMenu {
         tray_menu.show_history(&[]);
         tray_menu.refresh_microphones();
         Ok(tray_menu)
+    }
+
+    /// Podmenu „Model”: linie informacyjne, „Pokaż w Finderze”, „Usuń model…”, „Pobierz ponownie”.
+    pub fn show_model(&self, menu: &ModelMenu) {
+        while self.model.remove_at(0).is_some() {}
+        for line in &menu.lines {
+            let _ = self.model.append(&MenuItem::new(line, false, None));
+        }
+        let show = MenuItem::with_id(SHOW_MODEL_ID, "Pokaż w Finderze", true, None);
+        let remove = MenuItem::with_id(REMOVE_MODEL_ID, "Usuń model…", menu.remove_enabled, None);
+        let redownload = MenuItem::with_id(
+            REDOWNLOAD_MODEL_ID,
+            "Pobierz ponownie",
+            menu.redownload_enabled,
+            None,
+        );
+        if let Err(error) = self.model.append_items(&[
+            &PredefinedMenuItem::separator(),
+            &show,
+            &remove,
+            &redownload,
+        ]) {
+            tracing::error!(%error, "podmenu Model");
+        }
     }
 
     /// Podmenu „Historia”: wpisy od najnowszego (kliknięcie kopiuje), na dole „Wyczyść historię”.
