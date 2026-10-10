@@ -24,6 +24,17 @@ pub struct ModelSpec {
     pub size: u64,
 }
 
+impl ModelSpec {
+    /// Nazwa dla użytkownika: `ggml-large-v3-turbo.bin` → `large-v3-turbo`.
+    pub fn display_name(&self) -> &str {
+        self.file_name
+            .strip_prefix("ggml-")
+            .unwrap_or(self.file_name)
+            .strip_suffix(".bin")
+            .unwrap_or(self.file_name)
+    }
+}
+
 pub const LARGE_V3_TURBO: ModelSpec = ModelSpec {
     file_name: "ggml-large-v3-turbo.bin",
     url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin",
@@ -88,6 +99,27 @@ impl ModelStore {
 
     pub fn model_path(&self) -> PathBuf {
         self.dir.join(self.spec.file_name)
+    }
+
+    pub fn spec(&self) -> &ModelSpec {
+        &self.spec
+    }
+
+    /// Rozmiar gotowego pliku modelu na dysku; `None`, gdy go nie ma.
+    pub fn size_on_disk(&self) -> Option<u64> {
+        fs::metadata(self.model_path()).ok().map(|meta| meta.len())
+    }
+
+    /// Usuwa plik modelu i plik częściowy (VA-MODEL-2); brak któregoś z nich nie jest błędem.
+    pub fn remove(&self) -> Result<()> {
+        for path in [self.model_path(), self.part_path()] {
+            match fs::remove_file(&path) {
+                Ok(()) => tracing::info!(path = %path.display(), "plik modelu usunięty"),
+                Err(error) if error.kind() == io::ErrorKind::NotFound => {}
+                Err(source) => return Err(self.io(&path, source)),
+            }
+        }
+        Ok(())
     }
 
     fn part_path(&self) -> PathBuf {
