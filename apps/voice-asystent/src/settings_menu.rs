@@ -3,7 +3,7 @@
 
 use std::path::Path;
 
-use va_config::{Config, Language};
+use va_config::{Config, Language, ModelVariant};
 use va_core::controller::Command;
 
 const LANGUAGE_ID_PREFIX: &str = "setting-language:";
@@ -36,13 +36,16 @@ pub struct SettingsMenu {
 pub enum SettingChange {
     Language(Language),
     RecordingLimit(u32),
+    /// Wariant modelu (VA-MODEL-4) — kontroler nie dostaje polecenia, model jest ładowany od nowa.
+    ModelVariant(ModelVariant),
 }
 
 impl SettingChange {
-    pub fn command(self) -> Command {
+    pub fn command(self) -> Option<Command> {
         match self {
-            Self::Language(language) => Command::SetLanguage(language),
-            Self::RecordingLimit(seconds) => Command::SetRecordingLimit(seconds),
+            Self::Language(language) => Some(Command::SetLanguage(language)),
+            Self::RecordingLimit(seconds) => Some(Command::SetRecordingLimit(seconds)),
+            Self::ModelVariant(_) => None,
         }
     }
 
@@ -50,6 +53,7 @@ impl SettingChange {
         match self {
             Self::Language(language) => config.language = language,
             Self::RecordingLimit(seconds) => config.max_recording_secs = seconds,
+            Self::ModelVariant(variant) => config.model_variant = variant,
         }
     }
 }
@@ -168,7 +172,7 @@ mod tests {
             Some(SettingChange::Language(Language::En))
         );
         assert_eq!(
-            change_from_menu_id(&menu.limits[3].id).map(SettingChange::command),
+            change_from_menu_id(&menu.limits[3].id).and_then(SettingChange::command),
             Some(Command::SetRecordingLimit(1800))
         );
         assert_eq!(change_from_menu_id("setting-limit:7"), None);
@@ -195,5 +199,24 @@ mod tests {
         assert_eq!(saved.language, Language::Pl);
         assert_eq!(saved.max_recording_secs, 300);
         assert_eq!(saved.microphone.as_deref(), Some("PXC 550"));
+    }
+
+    #[test]
+    // specky: crit 01M4KD15M6BESGW2M37ZY4WV7S
+    fn choosing_a_variant_is_saved_in_config_without_a_controller_command() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("config.toml");
+
+        let saved = save_change(&path, SettingChange::ModelVariant(ModelVariant::Q5_0)).unwrap();
+
+        assert_eq!(saved.model_variant, ModelVariant::Q5_0);
+        assert_eq!(
+            Config::load(&path).unwrap().model_variant,
+            ModelVariant::Q5_0
+        );
+        assert_eq!(
+            SettingChange::ModelVariant(ModelVariant::Q5_0).command(),
+            None
+        );
     }
 }
