@@ -115,5 +115,5 @@ Konwencje:
 - Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`, wersja v0.5.0; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
 - Faza 8 (własna ścieżka modelu VA-MODEL-3, podmenu „Model” VA-MODEL-2): kod zmergowany 2026-10-10 (PR #42–#45), wymagania `code_ready`, wersja v0.6.0; zostało ⛔ 8.5 (test ręczny) — tag `ralph/faza-8` po jego wyniku
 - Faza 9 (logi VA-OPS-1, szybki start VA-PERF-1, sygnał gotowe VA-UX-1, jakość STT VA-STT-3, Ustawienia VA-SET-1, autostart VA-SET-2, wariant q5_0 VA-MODEL-4, wydanie w CI VA-CI-1): kod zmergowany 2026-10-10 (PR #49–#58), wymagania `code_ready`; zostało ⛔ 9.10 (test ręczny) — tag `ralph/faza-9` po jego wyniku
-- Następne: tylko testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10; propozycja wersji v0.7.0; tagi v0.4.0–v0.6.0 tylko lokalnie (workflow wydania ruszy dopiero po wypchnięciu tagu)
+- Następne: tylko testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10 (scenariusze 9.10 w docs/test-scenarios/v0.7.0.md); wersja v0.7.0 utworzona 2026-10-10 (2dbd1db, migawka Specky 01M4KNBCV4MJQ3SRSPZDH1MGGK); żaden tag v* nie jest wypchnięty — workflow wydania ruszy po `git push origin v0.7.0`
 - Blokery: brak
