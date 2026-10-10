@@ -48,8 +48,14 @@ fn main() -> anyhow::Result<()> {
         download,
         needs_download,
         source.info(),
-        paths.config_file,
-        paths.logs_dir,
-        config.max_recording_secs,
+        app::AppSettings {
+            config_path: paths.config_file,
+            logs_dir: paths.logs_dir,
+            recording_limit_secs: config.max_recording_secs,
+            ready_signal: messages::ReadySignal {
+                notify: config.notify_on_transcript,
+                sound: config.sound_on_transcript,
+            },
+        },
     )
 }

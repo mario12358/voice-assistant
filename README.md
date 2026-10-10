@@ -85,6 +85,8 @@ zmianie mikrofonu; wszystkie pola są opcjonalne:
 microphone = "MacBook Pro Microphone"   # brak = mikrofon domyślny systemu
 language = "auto"                       # auto | pl | en
 max_recording_secs = 600                # limit długości nagrania (auto-Stop + powiadomienie)
+notify_on_transcript = true             # powiadomienie „Transkrypcja w schowku” z początkiem tekstu
+sound_on_transcript = false             # dźwięk systemowy po zapisie do schowka
 # model_path = "/inna/sciezka/ggml-large-v3-turbo.bin"   # własny plik GGML: bez pobierania i sumy SHA-256
 
 [silence]

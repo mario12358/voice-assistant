@@ -65,6 +65,10 @@ pub struct Config {
     pub model_path: Option<PathBuf>,
     pub max_recording_secs: u32,
     pub silence: SilenceConfig,
+    /// Powiadomienie „Transkrypcja w schowku” z początkiem tekstu (VA-UX-1).
+    pub notify_on_transcript: bool,
+    /// Dźwięk systemowy po zapisie transkrypcji do schowka (VA-UX-1).
+    pub sound_on_transcript: bool,
 }
 
 impl Default for Config {
@@ -75,6 +79,8 @@ impl Default for Config {
             model_path: None,
             max_recording_secs: 600,
             silence: SilenceConfig::default(),
+            notify_on_transcript: true,
+            sound_on_transcript: false,
         }
     }
 }
@@ -195,6 +201,8 @@ microphone = "MacBook Pro Microphone"
 language = "pl"
 model_path = "/tmp/model.bin"
 max_recording_secs = 60
+notify_on_transcript = false
+sound_on_transcript = true
 
 [silence]
 threshold_rms = 0.05
@@ -215,6 +223,8 @@ padding_ms = 100
                     threshold_rms: 0.05,
                     padding_ms: 100,
                 },
+                notify_on_transcript: false,
+                sound_on_transcript: true,
             }
         );
     }
@@ -230,6 +240,15 @@ padding_ms = 100
         assert_eq!(config.silence.padding_ms, 50);
         assert_eq!(config.silence.threshold_rms, 0.01);
         assert_eq!(config.max_recording_secs, 600);
+    }
+
+    #[test]
+    // specky: crit 01M4KD152NK6764Z8AMZPSHQQN
+    fn transcript_signal_defaults_to_notification_without_sound() {
+        let config = Config::default();
+
+        assert!(config.notify_on_transcript);
+        assert!(!config.sound_on_transcript);
     }
 
     #[test]
