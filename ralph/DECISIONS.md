@@ -215,3 +215,27 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel zaakceptował wsad 01M4K6JNNT5ZPGGVCXY8D7AMAP.
 **Ustalenie**: VA-MODEL-2 (01M4K6M2ZC8PQ1AE9FQNFWQ1DA) i VA-MODEL-3 (01M4K6M32Y0MQ3JPWM4XJ4CRAZ) zaakceptowane na wyraźną prośbę właściciela. Przegląd sprzeczności: VA-MODEL-3 uzupełnia VA-MODEL-1 (bez model_path zachowanie bez zmian), VA-MODEL-2 nie zmienia VA-STT-1. Mapa w ralph/SPECKY.md uzupełniona; następny start Ralpha w trybie 1 założy pliki w changes/ i Fazę 8.
 **Wpływ**: Specky; Faza 8
+
+## 2026-10-10 18:16 — Wydanie wersji v0.6.0
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel przyjął propozycję wydania po zielonym pełnym suicie po zadaniach 8.1–8.4 (testy ręczne 7.7 i 8.5 jeszcze czekają).
+**Ustalenie**: Utworzono wersję v0.6.0 (commit 91c33bd): podmenu „Model” (stan, Pokaż w Finderze, Usuń z potwierdzeniem, Pobierz ponownie bez restartu) i naprawa model_path. Scenariusze w docs/test-scenarios/v0.6.0.md (pokrywają zadanie 8.5), migawka Specky 01M4K9P49FEQ7NR1ND94TC8NWZ. Wersja lokalnie do czasu git push origin v0.6.0; v0.4.0 i v0.5.0 również niewypchnięte.
+**Wpływ**: tag v0.6.0, Specky, zadanie 8.5
+
+## 2026-10-10 18:28 — Co jeszcze dodać lub poprawić (przegląd)
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel zapytał, co według Ralpha warto jeszcze dodać albo poprawić.
+**Ustalenie**: Zaproponowano listę z priorytetami: (1) brak sygnału „transkrypcja gotowa” — powiadomienie/dźwięk po zapisie do schowka; (2) start aplikacji opóźniony liczeniem SHA-256 modelu 1,6 GB przy każdym uruchomieniu — pamiętać sumę po rozmiarze i dacie pliku; (3) ustawienia w menu zamiast ręcznej edycji config.toml (język, limit); (4) uruchamianie przy logowaniu; (5) wariant skwantyzowany large-v3-turbo q5_0 (~0,6 GB) jako opcja — nadal ten sam model; (6) zabezpieczenia Whispera przed halucynacjami (próg no-speech, język pl zamiast auto); (7) retencja logów; (8) CI budujące .dmg przy tagu; (9) notaryzacja Apple — wymaga konta deweloperskiego; (10) „Pokaż logi” w menu. Odradzono: sprawdzanie aktualizacji (koliduje z zasadą zero ruchu sieciowego po pobraniu modelu) i automatyczne wklejanie (wymaga Dostępności). Bez zmian w planie — czeka na wybór właściciela.
+**Wpływ**: brak (propozycje)
+
+## 2026-10-10 19:03 — Propozycje Fazy 9 w Specky (8 wymagań)
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel wybrał z listy ulepszeń wszystko oprócz notaryzacji Apple (9) i runnera z GPU w CI (10).
+**Ustalenie**: Wystawiono wsad 01M4KC9EX5DBY9R1XYWNVHGX4Z: VA-UX-1 (sygnał „transkrypcja gotowa”: powiadomienie z początkiem tekstu, opcjonalny dźwięk, wyłączalne), VA-PERF-1 (szybki start: suma SHA-256 pamiętana po rozmiarze i dacie pliku), VA-SET-1 (podmenu Ustawienia: język, limit nagrania, bez restartu), VA-SET-2 (uruchamianie przy logowaniu przez LaunchAgent), VA-OPS-1 (Pokaż logi, retencja 7 dni), VA-STT-3 (parametry Whispera przeciw halucynacjom, szum → pusty wynik), VA-MODEL-4 (wariant q5_0 do wyboru w podmenu Model), VA-CI-1 (tag v* → .dmg w wydaniu GitHub). Czeka na akceptację właściciela; po niej następny start Ralpha założy Fazę 9.
+**Wpływ**: Specky; przyszła Faza 9
+
+## 2026-10-10 19:16 — Akceptacja ośmiu wymagań Fazy 9
+**Rodzaj**: rozwój
+**Pytanie/kontekst**: Właściciel zaakceptował wsad 01M4KC9EX5DBY9R1XYWNVHGX4Z.
+**Ustalenie**: VA-UX-1, VA-PERF-1, VA-SET-1, VA-SET-2, VA-OPS-1, VA-STT-3, VA-MODEL-4, VA-CI-1 zaakceptowane na wyraźną prośbę właściciela. Przegląd sprzeczności: brak; jedna uwaga — pamiętanie sumy SHA-256 (VA-PERF-1) nie wykryje uszkodzenia pliku bez zmiany rozmiaru i daty, co jest świadomym kompromisem (uszkodzenie przy zapisie zmienia datę). Mapa w ralph/SPECKY.md uzupełniona; następny start Ralpha w trybie 1 założy pliki w changes/ i Fazę 9.
+**Wpływ**: Specky; Faza 9

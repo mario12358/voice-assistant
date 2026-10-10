@@ -14,8 +14,8 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: Fazy 7 i 8 — cały kod zmergowany (PR #33–#38, #42–#45); czekają tylko testy ręczne właściciela ⛔ 7.7 i ⛔ 8.5
-- **Postęp**: 67/69 pozycji ukończonych (zostały ⛔ 7.7 i ⛔ 8.5)
+- **Status**: W trakcie — Faza 9 (sygnał gotowe, szybki start, ustawienia, autostart, logi, jakość STT, wariant q5_0, wydanie w CI) dopisana 2026-10-10 z ośmiu wymagań Specky; Fazy 7 i 8 czekają tylko na testy ręczne ⛔ 7.7 i ⛔ 8.5
+- **Postęp**: 67/88 pozycji ukończonych (zostały ⛔ 7.7, ⛔ 8.5 i Faza 9: 0/19)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
 - Otwarte PR: brak. Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
@@ -105,6 +105,78 @@ Format wpisu (jeden ### na każdą zmianę):
 
 Plik źródłowy zmiany żyje w changes/processed/<nazwa-pliku>.md (audyt w gicie).
 -->
+
+### 2026-10-10 2026-10-10-specky-TGDZ530.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-UX-1; kontroler, messages.rs, app.rs, va-config)
+- **Streszczenie**: Sygnał „transkrypcja gotowa”: powiadomienie z pierwszymi 60 znakami i opcjonalny dźwięk, wyłączalne w konfiguracji.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.3, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-2QWNE2N.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-PERF-1; crates/model, startup.rs)
+- **Streszczenie**: Znacznik (rozmiar, data, suma) obok modelu zamiast liczenia SHA-256 1,6 GB przy każdym starcie.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.2, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-ZW632WW.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-SET-1; tray_menu.rs, app.rs, kontroler, va-stt, va-audio)
+- **Streszczenie**: Podmenu „Ustawienia” (język, limit nagrania) z zapisem do config.toml i działaniem bez restartu.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.5, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-S3WPKBD.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-SET-2; login_item.rs, tray_menu.rs, app.rs)
+- **Streszczenie**: „Uruchamiaj przy logowaniu” przez LaunchAgent, zaznaczenie odzwierciedla stan, nieaktywne poza bundlem.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.6, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-PV3NVAC.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-OPS-1; logging.rs, tray_menu.rs, main.rs)
+- **Streszczenie**: „Pokaż logi” w menu i usuwanie logów starszych niż 7 dni przy starcie.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.1, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-F01XRR5.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-STT-3; crates/stt, fixtures)
+- **Streszczenie**: Parametry Whispera przeciw halucynacjom i zmiana języka w działającym modelu; szum daje pusty wynik.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.4, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-1JBKCWR.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-MODEL-4; crates/model, va-config, startup.rs, model_menu.rs, app.rs)
+- **Streszczenie**: Wariant skwantyzowany q5_0 (~0,6 GB) do wyboru w podmenu „Model” z pobieraniem i przeładowaniem bez restartu; VA-STT-1 bez zmian.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.7, 9.8, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-47S54D5.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-CI-1; .github/workflows/release.yml, scripts/)
+- **Streszczenie**: Tag v* buduje .dmg w CI i publikuje wydanie GitHub z opisem z tagu; obraz < 20 MB bez modelu.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.9, 9.10 (Faza 9)
 
 ### 2026-10-10 2026-10-10-specky-NFWQ1DA.md
 - **Rodzaj**: rozwój
