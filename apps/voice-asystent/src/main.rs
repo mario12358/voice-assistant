@@ -26,6 +26,7 @@ fn main() -> anyhow::Result<()> {
         verbosity: 0,
     });
     tracing::info!(version = env!("CARGO_PKG_VERSION"), "start VoiceAsystent");
+    logging::prune_old_logs(&paths.logs_dir, logging::LOG_RETENTION);
     let (config, config_error) = Config::load_or_default(&paths.config_file);
     if let Some(error) = config_error {
         tracing::warn!(%error, "używam ustawień domyślnych");
@@ -48,6 +49,7 @@ fn main() -> anyhow::Result<()> {
         needs_download,
         source.info(),
         paths.config_file,
+        paths.logs_dir,
         config.max_recording_secs,
     )
 }

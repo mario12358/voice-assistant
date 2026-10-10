@@ -17,6 +17,7 @@ use crate::model_menu::{
 };
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
+pub const SHOW_LOGS_ID: &str = "show-logs";
 
 pub struct TrayMenu {
     pub menu: Menu,
@@ -32,6 +33,7 @@ impl TrayMenu {
         let history = Submenu::new("Historia", true);
         let model = Submenu::new("Model", true);
         let microphones = Submenu::new("Mikrofon", true);
+        let show_logs = MenuItem::with_id(SHOW_LOGS_ID, "Pokaż logi", true, None);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
         let menu = Menu::new();
         menu.append_items(&[
@@ -39,6 +41,7 @@ impl TrayMenu {
             &model,
             &microphones,
             &PredefinedMenuItem::separator(),
+            &show_logs,
             &quit,
         ])
         .context("menu ikony")?;

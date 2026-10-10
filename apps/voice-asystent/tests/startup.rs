@@ -28,6 +28,32 @@ fn write_config(home: &std::path::Path, text: &str) {
 }
 
 #[test]
+// specky: crit 01M4KD15FXMVKSVBYXV6QS4ED6
+fn startup_prunes_logs_older_than_seven_days() {
+    let home = tempfile::tempdir().expect("katalog tymczasowy");
+    let logs = home.path().join("Library/Logs/VoiceAsystent");
+    std::fs::create_dir_all(&logs).unwrap();
+    let old = logs.join("voice-asystent.log.2026-09-01");
+    std::fs::write(&old, b"stary").unwrap();
+    let file = std::fs::File::options().write(true).open(&old).unwrap();
+    file.set_modified(
+        std::time::SystemTime::now() - std::time::Duration::from_secs(10 * 24 * 3600),
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_voice-asystent"))
+        .env("HOME", home.path())
+        .arg("--self-check")
+        .output()
+        .expect("voice-asystent uruchamia się");
+
+    assert!(output.status.success(), "{output:?}");
+    let stderr = String::from_utf8(output.stderr).expect("wyjście w UTF-8");
+    assert!(stderr.contains("stare logi usunięte"), "{stderr}");
+    assert!(!old.exists(), "stary log nie został usunięty przy starcie");
+}
+
+#[test]
 // specky: crit 01M4K6M33C1BCHBQ7DEG4GER2W
 fn startup_uses_custom_model_path_from_config() {
     let home = tempfile::tempdir().expect("katalog tymczasowy");

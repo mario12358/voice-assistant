@@ -25,7 +25,7 @@ use crate::model_menu::{
     state_with_percent,
 };
 use crate::startup::ModelDownload;
-use crate::tray_menu::{RETRY_DOWNLOAD_ID, TrayMenu};
+use crate::tray_menu::{RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
 use va_model::{LARGE_V3_TURBO, ModelStore};
 
 enum UserEvent {
@@ -45,6 +45,7 @@ pub fn run(
     needs_download: bool,
     model_info: ModelInfo,
     config_path: PathBuf,
+    logs_dir: PathBuf,
     recording_limit_secs: u32,
 ) -> anyhow::Result<()> {
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
@@ -174,6 +175,8 @@ pub fn run(
                     }
                 } else if id == SHOW_MODEL_ID {
                     reveal_in_finder(&model_info.path);
+                } else if id == SHOW_LOGS_ID {
+                    reveal_in_finder(&logs_dir);
                 } else if let Some(name) = microphone_from_menu_id(id) {
                     if let Err(error) = select_microphone(&config_path, name) {
                         tracing::error!(%error, "zapis wyboru mikrofonu");
@@ -336,11 +339,13 @@ fn remove_model_files(info: &ModelInfo) {
     }
 }
 
-/// `open -R` zaznacza plik w Finderze; bez pliku otwiera jego katalog.
+/// `open -R` zaznacza plik w Finderze; katalog otwiera wprost; brakujący plik — jego katalog.
 fn reveal_in_finder(path: &Path) {
     let mut command = std::process::Command::new("open");
     if path.is_file() {
         command.arg("-R").arg(path);
+    } else if path.is_dir() {
+        command.arg(path);
     } else {
         command.arg(path.parent().unwrap_or(path));
     }
