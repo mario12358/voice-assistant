@@ -3,6 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::messages::Problem;
+use crate::model_menu::ModelInfo;
 use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
 use va_clipboard::system_sink;
 use va_config::{Config, Paths};
@@ -30,6 +31,32 @@ impl ModelSource {
         match self {
             Self::Custom(path) => Some(path),
             Self::Store(_) => None,
+        }
+    }
+
+    /// Opis modelu dla podmenu „Model” (nazwa, ścieżka, rozmiar, czy własny).
+    pub fn info(&self) -> ModelInfo {
+        match self {
+            Self::Store(store) => ModelInfo {
+                name: store.spec().display_name().to_owned(),
+                path: store.model_path(),
+                bytes: store.spec().size,
+                custom: false,
+                custom_present: false,
+            },
+            Self::Custom(path) => {
+                let bytes = std::fs::metadata(path).map_or(0, |meta| meta.len());
+                ModelInfo {
+                    name: path
+                        .file_name()
+                        .map(|name| name.to_string_lossy().into_owned())
+                        .unwrap_or_else(|| path.display().to_string()),
+                    path: path.clone(),
+                    bytes,
+                    custom: true,
+                    custom_present: path.is_file(),
+                }
+            }
         }
     }
 
