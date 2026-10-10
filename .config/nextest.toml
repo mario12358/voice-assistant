@@ -4,3 +4,13 @@ fail-fast = false
 
 [profile.ci.junit]
 path = "junit.xml"
+
+# Testy obrazów .dmg (apps/voice-asystent/tests/dmg.rs) jeden po drugim: kilka równoległych
+# `hdiutil create/attach` kończy się „Resource temporarily unavailable”. Nextest uruchamia
+# każdy test w osobnym procesie, więc mutex w pliku testów tu nie wystarcza.
+[test-groups]
+obrazy-dysku = { max-threads = 1 }
+
+[[profile.default.overrides]]
+filter = "binary(dmg)"
+test-group = "obrazy-dysku"

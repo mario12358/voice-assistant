@@ -44,5 +44,18 @@ ln -s /Applications "$STAGING/Applications"
 mkdir -p "$OUT"
 DMG="$OUT/VoiceAsystent-${VERSION#v}.dmg"
 rm -f "$DMG"
-hdiutil create -quiet -volname "VoiceAsystent" -srcfolder "$STAGING" -format UDZO -ov "$DMG"
+# hdiutil bywa chwilowo zajęty przy kilku obrazach naraz (testy równoległe, runner CI) — do trzech prób.
+created=0
+for attempt in 1 2 3; do
+  if ERR=$(hdiutil create -quiet -volname "VoiceAsystent" -srcfolder "$STAGING" -format UDZO -ov "$DMG" 2>&1); then
+    created=1
+    break
+  fi
+  echo "hdiutil create (próba ${attempt}/3): ${ERR:-bez komunikatu}" >&2
+  sleep $((attempt * 2))
+done
+if (( created == 0 )); then
+  echo "nie udało się utworzyć obrazu: $DMG" >&2
+  exit 1
+fi
 echo "zbudowano: $DMG"
