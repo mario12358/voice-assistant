@@ -9,6 +9,8 @@ pub enum Problem {
     GpuMissing,
     /// Model nie jest pobrany albo nie dał się załadować.
     ModelUnavailable,
+    /// `model_path` z konfiguracji wskazuje plik, którego nie ma (VA-MODEL-3) — nic nie pobieramy.
+    CustomModelMissing(String),
     /// Model w trakcie pobierania albo pobieranie nieudane (tekst ze stanu pobierania).
     ModelNotReady(String),
     /// Inny błąd pojedynczego nagrania (tekst z kontrolera).
@@ -37,6 +39,13 @@ pub fn message(problem: &Problem) -> (&'static str, String) {
              modelu."
                 .to_owned(),
         ),
+        Problem::CustomModelMissing(path) => (
+            "Brak modelu",
+            format!(
+                "Plik modelu z config.toml (model_path) nie istnieje: {path}. Popraw ścieżkę \
+                 albo usuń to pole, aby aplikacja pobrała model domyślny."
+            ),
+        ),
         Problem::ModelNotReady(text) => ("Model niedostępny", text.clone()),
         Problem::RecordingFailed(reason) => (
             "Nagranie nieudane",
@@ -63,10 +72,13 @@ fn duration_label(seconds: u32) -> String {
 }
 
 /// Krótka, stała pozycja menu dla problemów, które blokują nagrywanie do skutku.
-pub fn menu_notice(problem: &Problem) -> Option<&'static str> {
+pub fn menu_notice(problem: &Problem) -> Option<String> {
     match problem {
-        Problem::GpuMissing => Some("Wymagane GPU (Metal) — nagrywanie niedostępne"),
-        Problem::ModelUnavailable => Some("Brak modelu — nagrywanie niedostępne"),
+        Problem::GpuMissing => Some("Wymagane GPU (Metal) — nagrywanie niedostępne".to_owned()),
+        Problem::ModelUnavailable => Some("Brak modelu — nagrywanie niedostępne".to_owned()),
+        Problem::CustomModelMissing(path) => {
+            Some(format!("Brak modelu: {path} — nagrywanie niedostępne"))
+        }
         Problem::MicrophoneSilent
         | Problem::ModelNotReady(_)
         | Problem::RecordingFailed(_)
@@ -108,8 +120,26 @@ mod tests {
     #[test]
     fn missing_model_stays_in_menu() {
         assert_eq!(
-            menu_notice(&Problem::ModelUnavailable),
+            menu_notice(&Problem::ModelUnavailable).as_deref(),
             Some("Brak modelu — nagrywanie niedostępne")
+        );
+    }
+
+    #[test]
+    // specky: crit 01M4K6M33CWKR54XAT4JVG3HWG
+    fn missing_custom_model_names_the_path_in_menu_and_notification() {
+        let problem = Problem::CustomModelMissing("/tmp/model.bin".into());
+
+        let (title, body) = message(&problem);
+
+        assert_eq!(title, "Brak modelu");
+        assert!(
+            body.contains("/tmp/model.bin") && body.contains("model_path"),
+            "{body}"
+        );
+        assert_eq!(
+            menu_notice(&problem).as_deref(),
+            Some("Brak modelu: /tmp/model.bin — nagrywanie niedostępne")
         );
     }
 

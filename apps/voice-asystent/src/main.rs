@@ -30,12 +30,15 @@ fn main() -> anyhow::Result<()> {
         tracing::warn!(%error, "używam ustawień domyślnych");
     }
     let gpu = startup::check_gpu();
-    let model = startup::check_model(&paths);
+    let source = startup::ModelSource::from_config(&config, &paths);
+    let model = startup::check_model(&source);
     if std::env::args().any(|arg| arg == SELF_CHECK_FLAG) {
         return Ok(());
     }
-    let controller_parts = startup::controller_parts(&config, &paths, gpu.as_ref(), model.as_ref());
-    let download = startup::ModelDownload::needed(&config, &paths, gpu.as_ref(), model.as_ref());
+    let controller_parts =
+        startup::controller_parts(&config, &paths, &source, gpu.as_ref(), model.as_ref());
+    let download =
+        startup::ModelDownload::needed(&config, &paths, &source, gpu.as_ref(), model.as_ref());
     app::run(
         controller_parts,
         download,

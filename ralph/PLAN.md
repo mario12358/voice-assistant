@@ -198,11 +198,11 @@
 
 ### Faza 8: Podmenu „Model” i własna ścieżka modelu
 
-- [ ] Zadanie 8.1: `startup`: źródło modelu z konfiguracji — `ModelSource::{Store(ModelStore), Custom(PathBuf)}`; własna ścieżka: istnieje → `Ready(path)` bez SHA-256 i bez pobierania, brak pliku → `Missing` + komunikat w menu „Brak modelu: <ścieżka>” i brak pobierania; bez `model_path` jak dotąd [VA-MODEL-3] (zmiana: 2026-10-10-specky-XJ4CRAZ.md)
+- [ ] Zadanie 8.1: `startup`: źródło modelu z konfiguracji — `ModelSource::{Store(ModelStore), Custom(PathBuf)}`; własna ścieżka: istnieje → `Ready(path)` bez SHA-256 i bez pobierania, brak pliku → `Missing` + komunikat w menu „Brak modelu: <ścieżka>” i brak pobierania; bez `model_path` jak dotąd [VA-MODEL-3] (zmiana: 2026-10-10-specky-XJ4CRAZ.md) (pr: #42)
   - Specky: (req: 01M4K6M32Y0MQ3JPWM4XJ4CRAZ v1 @9f73318)
   - Specky kryteria: (crit: 01M4K6M33C1BCHBQ7DEG4GER2W) własny plik ładowany, bez pobierania; (crit: 01M4K6M33CWKR54XAT4JVG3HWG) brak pliku → „Brak modelu” ze ścieżką, bez pobierania; (crit: 01M4K6M33CGTMKF9VPRYQXKE1C) bez pola jak dotąd
   - AC: wejście — start aplikacji (`main` → `startup::check_model`) z `config.toml` zawierającym `model_path`; test startu (`--self-check`) z HOME tymczasowym: log pokazuje `Ready(<własna ścieżka>)` i żadnego pobierania; z nieistniejącą ścieżką log pokazuje brak modelu z tą ścieżką
-- [ ] Test: 8.1 — testy `ModelSource` (jednostkowe) + testy startu z własną ścieżką istniejącą/nieistniejącą; mutacja (ignorowanie model_path) czerwona
+- [ ] Test: 8.1 — testy `ModelSource` (jednostkowe) + testy startu z własną ścieżką istniejącą/nieistniejącą; mutacja (ignorowanie model_path) czerwona (pr: #42)
 - [ ] Zadanie 8.2: `va-model`: `ModelStore::remove()` (plik + `.part`), `ModelStore::size()`; `download.rs`: stany `Missing` (po usunięciu) i zdarzenia `Removed`/`Retry` → `Downloading`, `can_remove(state, controller_state)`, `ModelDownload::available(config, paths, gpu)` niezależnie od obecności modelu [VA-MODEL-2] (zmiana: 2026-10-10-specky-NFWQ1DA.md)
   - Specky: (req: 01M4K6M2ZC8PQ1AE9FQNFWQ1DA v1 @b18086a)
   - Specky kryteria: (crit: 01M4K6M2ZYCYED1VTTXDC6R542) „Usuń model” nieaktywne przy pobieraniu i transkrypcji
