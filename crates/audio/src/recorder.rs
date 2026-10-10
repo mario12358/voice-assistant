@@ -18,6 +18,8 @@ pub type LimitNotifier = Box<dyn FnOnce() + Send>;
 pub trait Recorder: Send {
     fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> Result<()>;
     fn stop(&mut self) -> Result<Vec<f32>>;
+    /// Limit długości dla następnych nagrań (VA-SET-1); trwające nagranie go nie zmienia.
+    fn set_limit(&mut self, max_seconds: u32);
 }
 
 /// Surowe próbki w formacie urządzenia, przed normalizacją.
@@ -51,6 +53,11 @@ impl CpalRecorder {
 }
 
 impl Recorder for CpalRecorder {
+    fn set_limit(&mut self, max_seconds: u32) {
+        tracing::info!(max_seconds, "limit nagrania zmieniony");
+        self.max_seconds = max_seconds;
+    }
+
     fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> Result<()> {
         if self.active.is_some() {
             return Err(Error::AlreadyRecording);

@@ -26,6 +26,7 @@ use crate::model_menu::{
     ModelInfo, REDOWNLOAD_MODEL_ID, RemoveAction, RemovePrompt, SHOW_MODEL_ID, model_menu,
     state_with_percent,
 };
+use crate::settings_menu::{change_from_menu_id, save_change, settings_menu};
 use crate::startup::ModelDownload;
 use crate::tray_menu::{RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
 use va_model::{LARGE_V3_TURBO, ModelStore};
@@ -59,7 +60,7 @@ pub fn run(
     let AppSettings {
         config_path,
         logs_dir,
-        recording_limit_secs,
+        mut recording_limit_secs,
         ready_signal,
     } = settings;
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
@@ -208,6 +209,19 @@ pub fn run(
                         unavailable.as_ref(),
                         command,
                     );
+                } else if let Some(change) = change_from_menu_id(id) {
+                    match save_change(&config_path, change) {
+                        Ok(saved) => {
+                            recording_limit_secs = saved.max_recording_secs;
+                            if let Some(controller) = &controller {
+                                controller.send(change.command());
+                            }
+                            if let Some((_, menu)) = &tray {
+                                menu.show_settings(&settings_menu(&saved));
+                            }
+                        }
+                        Err(error) => tracing::error!(%error, "zapis ustawienia"),
+                    }
                 }
             }
             Event::UserEvent(UserEvent::Download(event)) => {
@@ -218,7 +232,13 @@ pub fn run(
                 }
             }
             Event::UserEvent(UserEvent::ModelLoaded(parts)) => {
-                controller = Some(spawn_controller(parts, proxy.clone()));
+                let fresh = spawn_controller(parts, proxy.clone());
+                // Zadanie pobierania niesie konfigurację ze startu — ustawienia zmienione
+                // w menu w trakcie pobierania przekazujemy nowemu kontrolerowi.
+                let (current, _) = va_config::Config::load_or_default(&config_path);
+                fresh.send(Command::SetLanguage(current.language));
+                fresh.send(Command::SetRecordingLimit(current.max_recording_secs));
+                controller = Some(fresh);
                 unavailable = None;
                 download_state = download_state.clone().next(DownloadEvent::Ready);
                 if let Some(built) = &mut tray {

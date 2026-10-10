@@ -16,6 +16,8 @@ use crate::model_menu::{
     RemovePrompt, SHOW_MODEL_ID,
 };
 
+use crate::settings_menu::{SettingsMenu, settings_menu};
+
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
 pub const SHOW_LOGS_ID: &str = "show-logs";
 
@@ -24,6 +26,8 @@ pub struct TrayMenu {
     history: Submenu,
     model: Submenu,
     microphones: Submenu,
+    languages: Submenu,
+    limits: Submenu,
     config_path: PathBuf,
     download: Option<(MenuItem, MenuItem)>,
 }
@@ -33,6 +37,12 @@ impl TrayMenu {
         let history = Submenu::new("Historia", true);
         let model = Submenu::new("Model", true);
         let microphones = Submenu::new("Mikrofon", true);
+        let languages = Submenu::new("Język", true);
+        let limits = Submenu::new("Limit nagrania", true);
+        let settings = Submenu::new("Ustawienia", true);
+        settings
+            .append_items(&[&languages, &limits])
+            .context("podmenu Ustawienia")?;
         let show_logs = MenuItem::with_id(SHOW_LOGS_ID, "Pokaż logi", true, None);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
         let menu = Menu::new();
@@ -40,6 +50,7 @@ impl TrayMenu {
             &history,
             &model,
             &microphones,
+            &settings,
             &PredefinedMenuItem::separator(),
             &show_logs,
             &quit,
@@ -50,12 +61,34 @@ impl TrayMenu {
             history,
             model,
             microphones,
+            languages,
+            limits,
             config_path,
             download: None,
         };
         tray_menu.show_history(&[]);
         tray_menu.refresh_microphones();
+        tray_menu.show_settings(&settings_menu(
+            &Config::load_or_default(&tray_menu.config_path).0,
+        ));
         Ok(tray_menu)
+    }
+
+    /// Podmenu „Ustawienia”: język i limit nagrania z zaznaczoną wartością z konfiguracji.
+    pub fn show_settings(&self, settings: &SettingsMenu) {
+        for (submenu, items) in [
+            (&self.languages, &settings.languages),
+            (&self.limits, &settings.limits),
+        ] {
+            while submenu.remove_at(0).is_some() {}
+            for item in items {
+                let entry =
+                    CheckMenuItem::with_id(&item.id, &item.label, item.enabled, item.checked, None);
+                if let Err(error) = submenu.append(&entry) {
+                    tracing::error!(%error, "pozycja ustawień w menu");
+                }
+            }
+        }
     }
 
     /// Podmenu „Model”: linie informacyjne, „Pokaż w Finderze”, „Usuń model…” (albo pytanie

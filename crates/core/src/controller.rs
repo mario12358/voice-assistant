@@ -12,6 +12,7 @@ use va_audio::{
     LimitNotifier, Recorder, SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, trim_silence,
 };
 use va_clipboard::{Delivery, TextSink};
+use va_config::Language;
 use va_stt::{SpeechToText, Transcript};
 
 use crate::history::{History, HistoryEntry};
@@ -26,6 +27,10 @@ pub enum Command {
     /// Kopiuje wpis historii o tym id do schowka, bez nagrywania (VA-HIST-1).
     CopyHistoryEntry(u64),
     ClearHistory,
+    /// Język następnych transkrypcji (VA-SET-1), bez ładowania modelu od nowa.
+    SetLanguage(Language),
+    /// Limit długości następnych nagrań w sekundach (VA-SET-1).
+    SetRecordingLimit(u32),
 }
 
 /// Zdarzenia dla UI.
@@ -183,6 +188,12 @@ impl Controller {
                     self.history.clear();
                     self.publish_history();
                 }
+                Message::Command(Command::SetLanguage(language)) => {
+                    self.worker.set_language(language);
+                }
+                Message::Command(Command::SetRecordingLimit(seconds)) => {
+                    self.recorder.set_limit(seconds);
+                }
                 Message::Transcribed(result) => self.on_transcribed(result),
                 Message::Copied(result) => self.on_copied(result),
                 Message::LimitReached(number) => self.on_limit_reached(number),
@@ -324,6 +335,9 @@ struct TranscriptionWorker {
 enum Job {
     Transcribe(Vec<f32>),
     Deliver(String),
+    /// Model żyje w wątku roboczym, więc zmiana języka idzie tą samą kolejką co nagrania —
+    /// nagranie wysłane po zmianie jest już w nowym języku.
+    SetLanguage(Language),
 }
 
 impl TranscriptionWorker {
@@ -345,6 +359,10 @@ impl TranscriptionWorker {
                             Job::Deliver(text) => Message::Copied(
                                 sink.deliver(&text).map_err(|error| error.to_string()),
                             ),
+                            Job::SetLanguage(language) => {
+                                stt.set_language(language);
+                                continue;
+                            }
                         };
                     if results.send(message).is_err() {
                         break;
@@ -357,6 +375,10 @@ impl TranscriptionWorker {
 
     fn transcribe(&self, speech: Vec<f32>) {
         let _ = self.jobs.send(Job::Transcribe(speech));
+    }
+
+    fn set_language(&self, language: Language) {
+        let _ = self.jobs.send(Job::SetLanguage(language));
     }
 
     fn deliver(&self, text: String) {
