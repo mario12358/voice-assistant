@@ -287,3 +287,26 @@ fn digital_silence_reports_no_signal_instead_of_transcribing() {
     assert!(harness.stt.received().is_empty());
     assert_eq!(harness.clipboard.contents().as_deref(), Some("bez zmian"));
 }
+
+#[test]
+fn long_pause_inside_recording_is_shortened_before_stt() {
+    let recording = fixture("speech_pl_long_pause.wav");
+    let harness = Harness::new(
+        FakeRecorder::playing(recording.clone()),
+        ScriptedStt::answering([Ok("dwa zdania".into())]),
+        MemoryClipboard::default(),
+    );
+
+    harness.record_and_stop();
+
+    let received = harness.stt.received();
+    assert_eq!(received.len(), 1);
+    let removed_seconds = (recording.len() - received[0].len()) / 16_000;
+    assert!(
+        removed_seconds >= 39,
+        "STT dostał {} z {} próbek — 40 s pauzy miało zostać skrócone do 0,5 s",
+        received[0].len(),
+        recording.len()
+    );
+    assert!(received[0].len() > 2 * 16_000, "mowa została wycięta");
+}

@@ -136,3 +136,29 @@ fn transcribe_without_model_points_to_model_download() {
         "{stderr}"
     );
 }
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M4K06AR8TJXY24K05X0MNBJC
+fn transcribe_keeps_both_sentences_around_a_long_pause_without_extra_phrases() {
+    let wav = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../tests/fixtures/speech_pl_long_pause.wav");
+
+    let output = va_dev()
+        .arg("transcribe")
+        .arg(&wav)
+        .output()
+        .expect("va-dev uruchamia się");
+
+    assert!(output.status.success(), "{output:?}");
+    let stdout = String::from_utf8(output.stdout).expect("wyjście w UTF-8");
+    let text = stdout.to_lowercase();
+    for keyword in ["pogoda", "spacer", "jutro", "spotkanie"] {
+        assert!(text.contains(keyword), "brak «{keyword}» w: {stdout}");
+    }
+    let words = text.split_whitespace().count();
+    assert!(
+        words <= 20,
+        "{words} słów — spodziewane dwa zdania (17 słów) bez dodatkowych fraz: {stdout}"
+    );
+}

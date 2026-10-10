@@ -8,7 +8,7 @@
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread::JoinHandle;
 
-use va_audio::{Recorder, SilenceParams, TARGET_SAMPLE_RATE, trim_silence};
+use va_audio::{Recorder, SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, trim_silence};
 use va_clipboard::{Delivery, TextSink};
 use va_stt::{SpeechToText, Transcript};
 
@@ -154,7 +154,8 @@ impl Controller {
         match self.recorder.stop() {
             Ok(samples) if has_no_signal(&samples) => self.no_signal(),
             Ok(samples) => {
-                let speech = trim_silence(&samples, TARGET_SAMPLE_RATE, &self.silence).to_vec();
+                let speech = trim_silence(&samples, TARGET_SAMPLE_RATE, &self.silence);
+                let speech = compress_pauses(speech, TARGET_SAMPLE_RATE, &self.silence);
                 self.worker.transcribe(speech);
             }
             Err(error) => self.fail(error.to_string()),

@@ -1,9 +1,12 @@
-//! `va-dev transcribe <plik.wav>`: WAV → 16 kHz mono → przycięcie ciszy → Whisper → stdout.
+//! `va-dev transcribe <plik.wav>`: WAV → 16 kHz mono → przycięcie ciszy i skrócenie pauz →
+//! Whisper → stdout (ta sama ścieżka co w kontrolerze aplikacji).
 
 use std::path::Path;
 
 use anyhow::Context;
-use va_audio::{SilenceParams, TARGET_SAMPLE_RATE, convert::normalize, trim_silence};
+use va_audio::{
+    SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, convert::normalize, trim_silence,
+};
 use va_config::{Config, Paths};
 use va_model::LARGE_V3_TURBO;
 use va_stt::{METAL_BUILT, MetalProbe, SpeechToText, Transcript, WhisperStt, require_metal};
@@ -51,7 +54,8 @@ pub fn transcribe_file(
     if speech.is_empty() {
         return Ok(None);
     }
-    Ok(Some(stt.transcribe(speech)?))
+    let speech = compress_pauses(speech, TARGET_SAMPLE_RATE, silence);
+    Ok(Some(stt.transcribe(&speech)?))
 }
 
 /// Próbki przeplatane jako f32 (-1.0..1.0), liczba kanałów, częstotliwość.
@@ -155,6 +159,30 @@ mod tests {
 
         assert!(result.is_none());
         assert!(observer.received().is_empty());
+    }
+
+    #[test]
+    fn long_pause_is_shortened_before_stt() {
+        let mut stt = ScriptedStt::answering([Ok("dwa zdania".into())]);
+        let observer = stt.clone();
+        let (original, ..) = read_wav(&fixture("speech_pl_long_pause.wav")).unwrap();
+
+        transcribe_file(
+            &fixture("speech_pl_long_pause.wav"),
+            &mut stt,
+            &DEFAULT_SILENCE,
+        )
+        .unwrap();
+
+        let received = observer.received();
+        assert_eq!(received.len(), 1);
+        let removed_seconds = (original.len() - received[0].len()) / 16_000;
+        assert!(
+            removed_seconds >= 39,
+            "STT dostał {} z {} próbek",
+            received[0].len(),
+            original.len()
+        );
     }
 
     #[test]
