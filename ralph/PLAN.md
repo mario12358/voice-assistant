@@ -174,16 +174,16 @@
   - Specky kryteria: (crit: 01M4K06AR8TJXY24K05X0MNBJC) 2 zdania + 40 s ciszy → oba zdania bez dodatkowych fraz
   - AC: wejście — Stop w kontrolerze (ścieżka Recorder → STT) oraz komenda `va-dev transcribe`; mutacja (pominięcie compress_pauses) wykrywana testem kontrolera przez długość próbek przekazanych do STT
 - [x] Test: 7.2 — test kontrolera z fałszywą nagrywarką (STT dostaje skrócone pauzy) + `#[ignore]` prawdziwa transkrypcja fixture z 40 s ciszy (oba zdania, nic między nimi) (pr: #34)
-- [ ] Zadanie 7.3: Limit nagrania: domyślne `max_recording_secs` 600 (va-config); `Recorder` zgłasza osiągnięcie limitu (callback/kanał z wątku audio), kontroler dostaje `Message::LimitReached` → `Input::Stop` tą samą ścieżką co ctrl+cmd+s + `ControllerEvent::LimitReached` [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md) (pr: #35)
+- [x] Zadanie 7.3: Limit nagrania: domyślne `max_recording_secs` 600 (va-config); `Recorder` zgłasza osiągnięcie limitu (callback/kanał z wątku audio), kontroler dostaje `Message::LimitReached` → `Input::Stop` tą samą ścieżką co ctrl+cmd+s + `ControllerEvent::LimitReached` [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md) (pr: #35)
   - Specky: (req: 01M4K06AXGNSZ9XEZ3E9VFYND0 v1 @97b27f2)
   - Specky kryteria: (crit: 01M4K06AY61DWRJ5R2DFNDJD6W) domyślnie 600 s, config nadal zmienia; (crit: 01M4K06AY60EVTQQ78X8RQ4RCK) auto-Stop → transkrypcja → schowek, ikona szara; (crit: 01M4K06AY6N6SB7WBZE4J4MM09) ręczny Stop jak dotąd
   - AC: wejście — zdarzenie limitu z nagrywarki (bez polecenia użytkownika) kończy nagranie: automat Recording → Transcribing → Idle, STT dostaje cały bufor do limitu, schowek otrzymuje tekst; ręczny Stop przed limitem bez zmian
-- [ ] Test: 7.3 — `Config::default().max_recording_secs == 600` i odczyt z pliku; test kontrolera: fałszywa nagrywarka emituje limit → Stop bez polecenia, STT i schowek wywołane, stan Idle; mutacja (ignorowanie limitu) czerwona (pr: #35)
-- [ ] Zadanie 7.4: Aplikacja: `ControllerEvent::LimitReached` → powiadomienie systemowe „Osiągnięto limit długości nagrania” (messages.rs, tekst po polsku, nazwa limitu w minutach); README/RUNBOOK: limit 10 min i auto-Stop (wymaga: 7.3) [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md)
+- [x] Test: 7.3 — `Config::default().max_recording_secs == 600` i odczyt z pliku; test kontrolera: fałszywa nagrywarka emituje limit → Stop bez polecenia, STT i schowek wywołane, stan Idle; mutacja (ignorowanie limitu) czerwona (pr: #35)
+- [ ] Zadanie 7.4: Aplikacja: `ControllerEvent::LimitReached` → powiadomienie systemowe „Osiągnięto limit długości nagrania” (messages.rs, tekst po polsku, nazwa limitu w minutach); README/RUNBOOK: limit 10 min i auto-Stop (wymaga: 7.3) [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md) (pr: #36)
   - Specky: (req: 01M4K06AXGNSZ9XEZ3E9VFYND0 v1 @97b27f2)
   - Specky kryteria: (crit: 01M4K06AY6B3424GJDBAQQK3WY) powiadomienie przy auto-Stop
   - AC: wejście — zdarzenie kontrolera w pętli tao (`UserEvent::Controller`) wywołuje `notify`; tekst powiadomienia zawiera limit w minutach z konfiguracji
-- [ ] Test: 7.4 — test messages (tytuł/treść z limitem) i test wpięcia (mapowanie zdarzenia → Problem) w module app
+- [ ] Test: 7.4 — test messages (tytuł/treść z limitem) i test wpięcia (mapowanie zdarzenia → Problem) w module app (pr: #36)
 - [ ] Zadanie 7.5: `va-core::history`: bufor 30 wpisów `{text, at}` (najnowszy pierwszy), zapis JSON do `Paths::history_file` (tryb 0600, atomowo), `clear()` kasuje plik; kontroler: po `Delivery::Written` wpis + `ControllerEvent::HistoryChanged`, polecenia `CopyHistoryEntry(id)` (przez `TextSink`) i `ClearHistory`; treść poza logami [VA-HIST-1] (zmiana: 2026-10-10-specky-CY0SQA5.md)
   - Specky: (req: 01M4K06AGAV8G79RJMXCY0SQA5 v1 @d3eecdb)
   - Specky kryteria: (crit: 01M4K06AH032985T6JXJX7EE3W) wpis po niepustej, cisza bez wpisu; (crit: 01M4K06AH0FMZJZZX7SHA9KR5A) plik 0600, wraca po restarcie; (crit: 01M4K06AH0BR7ZQYXPH6B08P26) wyczyść kasuje z dysku; (crit: 01M4K06AH0B2HW26D29WR4H4F3) treść poza logami

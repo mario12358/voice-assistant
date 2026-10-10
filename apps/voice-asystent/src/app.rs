@@ -34,6 +34,7 @@ pub fn run(
     controller_parts: Result<ControllerParts, Problem>,
     download: Option<ModelDownload>,
     config_path: PathBuf,
+    recording_limit_secs: u32,
 ) -> anyhow::Result<()> {
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     event_loop.set_activation_policy(ActivationPolicy::Accessory);
@@ -79,21 +80,14 @@ pub fn run(
                 }
             },
             Event::UserEvent(UserEvent::Controller(event)) => {
-                match &event {
-                    ControllerEvent::StateChanged(state) => {
-                        shown = *state;
-                        if let Some((icon, _)) = &tray {
-                            show(icon, indicator_for(*state));
-                        }
+                if let ControllerEvent::StateChanged(state) = &event {
+                    shown = *state;
+                    if let Some((icon, _)) = &tray {
+                        show(icon, indicator_for(*state));
                     }
-                    ControllerEvent::NoSignal => notify(&Problem::MicrophoneSilent),
-                    ControllerEvent::Failed(reason) => {
-                        notify(&Problem::RecordingFailed(reason.clone()))
-                    }
-                    ControllerEvent::Delivered(_) => {}
-                    ControllerEvent::LimitReached => {
-                        tracing::info!("limit długości nagrania — zakończone automatycznie");
-                    }
+                }
+                if let Some(problem) = problem_for(&event, recording_limit_secs) {
+                    notify(&problem);
                 }
                 tracing::debug!(?event, "zdarzenie kontrolera");
             }
@@ -164,6 +158,18 @@ pub fn run(
             _ => {}
         }
     })
+}
+
+/// Które zdarzenia kontrolera kończą się powiadomieniem dla użytkownika.
+fn problem_for(event: &ControllerEvent, recording_limit_secs: u32) -> Option<Problem> {
+    match event {
+        ControllerEvent::NoSignal => Some(Problem::MicrophoneSilent),
+        ControllerEvent::Failed(reason) => Some(Problem::RecordingFailed(reason.clone())),
+        ControllerEvent::LimitReached => Some(Problem::RecordingLimitReached {
+            limit_secs: recording_limit_secs,
+        }),
+        ControllerEvent::StateChanged(_) | ControllerEvent::Delivered(_) => None,
+    }
 }
 
 fn forward_tray_menu_and_hotkey_events(proxy: &EventLoopProxy<UserEvent>) {
@@ -282,4 +288,36 @@ fn show(tray: &TrayIcon, indicator: Indicator) {
 
 fn icon(indicator: Indicator) -> anyhow::Result<Icon> {
     Icon::from_rgba(dot_rgba(indicator.dot), ICON_PIXELS, ICON_PIXELS).context("obraz ikony")
+}
+
+#[cfg(test)]
+mod tests {
+    use va_clipboard::Delivery;
+
+    use super::*;
+
+    #[test]
+    // specky: crit 01M4K06AY6B3424GJDBAQQK3WY
+    fn limit_reached_event_becomes_a_notification_with_configured_limit() {
+        assert_eq!(
+            problem_for(&ControllerEvent::LimitReached, 600),
+            Some(Problem::RecordingLimitReached { limit_secs: 600 })
+        );
+    }
+
+    #[test]
+    fn state_and_delivery_events_do_not_notify() {
+        assert_eq!(
+            problem_for(&ControllerEvent::StateChanged(State::Recording), 600),
+            None
+        );
+        assert_eq!(
+            problem_for(&ControllerEvent::Delivered(Delivery::Written), 600),
+            None
+        );
+        assert_eq!(
+            problem_for(&ControllerEvent::NoSignal, 600),
+            Some(Problem::MicrophoneSilent)
+        );
+    }
 }
