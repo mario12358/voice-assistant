@@ -58,6 +58,14 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 użytkownika, i wraca po ponownym uruchomieniu aplikacji. To jedyne miejsce, w którym tekst
 Twoich wypowiedzi ląduje na dysku; **Wyczyść historię** kasuje listę razem z plikiem.
 
+**Model.** Podmenu **Model** pokazuje, jaki model jest używany, jego rozmiar i stan
+(`large-v3-turbo · 1,7 GB · gotowy`, w trakcie pobierania procent). **Pokaż w Finderze**
+zaznacza plik modelu. **Usuń model…** po potwierdzeniu w tym samym menu kasuje plik (zwalnia
+ok. 1,6 GB); nagrywanie jest wtedy niedostępne do czasu, aż wybierzesz **Pobierz ponownie**,
+które pobiera model od nowa z postępem i uruchamia nagrywanie bez restartu aplikacji. Usuwanie
+jest nieaktywne w trakcie pobierania, nagrywania i transkrypcji. Jeśli w `config.toml` ustawisz
+własną ścieżkę `model_path`, podmenu pokazuje ten plik, a usuwanie i pobieranie są wyłączone.
+
 Podczas nagrywania kółko jest czerwone; w trakcie transkrypcji i w spoczynku — szare.
 Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Długie przerwy w mówieniu
 (powyżej 1,5 s) są skracane przed transkrypcją, więc możesz spokojnie myśleć między
@@ -77,7 +85,7 @@ zmianie mikrofonu; wszystkie pola są opcjonalne:
 microphone = "MacBook Pro Microphone"   # brak = mikrofon domyślny systemu
 language = "auto"                       # auto | pl | en
 max_recording_secs = 600                # limit długości nagrania (auto-Stop + powiadomienie)
-# model_path = "/inna/sciezka/ggml-large-v3-turbo.bin"
+# model_path = "/inna/sciezka/ggml-large-v3-turbo.bin"   # własny plik GGML: bez pobierania i sumy SHA-256
 
 [silence]
 threshold_rms = 0.01                    # próg ciszy przy przycinaniu nagrania

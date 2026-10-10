@@ -9,7 +9,40 @@ use crate::download::DownloadState;
 
 pub const SHOW_MODEL_ID: &str = "model-show";
 pub const REMOVE_MODEL_ID: &str = "model-remove";
+pub const CONFIRM_REMOVE_ID: &str = "model-remove-confirm";
+pub const CANCEL_REMOVE_ID: &str = "model-remove-cancel";
 pub const REDOWNLOAD_MODEL_ID: &str = "model-redownload";
+
+/// Potwierdzenie usunięcia w samym menu (bez okien dialogowych): po „Usuń model…” podmenu
+/// pokazuje „Potwierdź usunięcie (1,7 GB)” i „Anuluj”; każde inne kliknięcie zamyka pytanie.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RemovePrompt {
+    #[default]
+    Idle,
+    Confirming,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RemoveAction {
+    None,
+    ShowPrompt,
+    Remove,
+    Cancel,
+}
+
+impl RemovePrompt {
+    /// Przejście po kliknięciu pozycji menu `id`; `remove_allowed` = flaga z [`model_menu`].
+    pub fn on_menu_click(self, id: &str, remove_allowed: bool) -> (Self, RemoveAction) {
+        match (self, id) {
+            (Self::Idle, REMOVE_MODEL_ID) if remove_allowed => {
+                (Self::Confirming, RemoveAction::ShowPrompt)
+            }
+            (Self::Idle, _) => (Self::Idle, RemoveAction::None),
+            (Self::Confirming, CONFIRM_REMOVE_ID) => (Self::Idle, RemoveAction::Remove),
+            (Self::Confirming, _) => (Self::Idle, RemoveAction::Cancel),
+        }
+    }
+}
 
 /// Model wskazany przy starcie: z magazynu domyślnego albo z własnej ścieżki użytkownika.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,6 +63,8 @@ pub struct ModelMenu {
     pub lines: Vec<String>,
     pub remove_enabled: bool,
     pub redownload_enabled: bool,
+    /// Etykieta pozycji potwierdzającej usunięcie, z rozmiarem zwalnianego pliku.
+    pub confirm_label: String,
 }
 
 pub fn model_menu(info: &ModelInfo, download: &DownloadState, controller: State) -> ModelMenu {
@@ -54,6 +89,7 @@ pub fn model_menu(info: &ModelInfo, download: &DownloadState, controller: State)
         lines,
         remove_enabled: !info.custom && download.can_remove(controller),
         redownload_enabled: !info.custom && download.can_retry(),
+        confirm_label: format!("Potwierdź usunięcie ({})", gigabytes(info.bytes)),
     }
 }
 
@@ -162,6 +198,43 @@ mod tests {
         let missing = model_menu(&store_model(), &DownloadState::Missing, State::Idle);
         assert!(!missing.remove_enabled);
         assert!(missing.redownload_enabled);
+    }
+
+    #[test]
+    // specky: crit 01M4K6M2ZYTC7D38NMHZJXF1FV
+    fn removal_needs_a_confirmation_click_and_any_other_click_cancels() {
+        let (prompt, action) = RemovePrompt::Idle.on_menu_click(REMOVE_MODEL_ID, true);
+        assert_eq!(
+            (prompt, action),
+            (RemovePrompt::Confirming, RemoveAction::ShowPrompt)
+        );
+
+        assert_eq!(
+            prompt.on_menu_click(CONFIRM_REMOVE_ID, true),
+            (RemovePrompt::Idle, RemoveAction::Remove)
+        );
+        assert_eq!(
+            prompt.on_menu_click(CANCEL_REMOVE_ID, true),
+            (RemovePrompt::Idle, RemoveAction::Cancel)
+        );
+        assert_eq!(
+            prompt.on_menu_click("quit", true),
+            (RemovePrompt::Idle, RemoveAction::Cancel)
+        );
+        assert_eq!(
+            RemovePrompt::Idle.on_menu_click(CONFIRM_REMOVE_ID, true),
+            (RemovePrompt::Idle, RemoveAction::None),
+            "potwierdzenie bez pytania nie usuwa"
+        );
+        assert_eq!(
+            RemovePrompt::Idle.on_menu_click(REMOVE_MODEL_ID, false),
+            (RemovePrompt::Idle, RemoveAction::None),
+            "nieaktywne Usuń nie otwiera pytania"
+        );
+        assert_eq!(
+            model_menu(&store_model(), &DownloadState::Ready, State::Idle).confirm_label,
+            "Potwierdź usunięcie (1,7 GB)"
+        );
     }
 
     #[test]

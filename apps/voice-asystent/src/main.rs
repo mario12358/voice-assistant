@@ -38,11 +38,14 @@ fn main() -> anyhow::Result<()> {
     }
     let controller_parts =
         startup::controller_parts(&config, &paths, &source, gpu.as_ref(), model.as_ref());
-    let download =
-        startup::ModelDownload::needed(&config, &paths, &source, gpu.as_ref(), model.as_ref());
+    let needs_download =
+        startup::ModelDownload::needed(&config, &paths, &source, gpu.as_ref(), model.as_ref())
+            .is_some();
+    let download = startup::ModelDownload::available(&config, &paths, &source, gpu.as_ref());
     app::run(
         controller_parts,
         download,
+        needs_download,
         source.info(),
         paths.config_file,
         config.max_recording_secs,
