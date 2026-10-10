@@ -223,16 +223,16 @@
 
 ### Faza 9: Sygnał gotowe, szybki start, ustawienia, autostart, logi, jakość STT, wariant q5_0, wydanie w CI
 
-- [ ] Zadanie 9.1: Logi: `va_core::logging::prune_old_logs(dir, 7 dni)` (tylko `voice-asystent.log.*`, zwraca liczbę, loguje ją) wołane przy starcie w `main`; pozycja „Pokaż logi” w menu ikony (`open <katalog logów>`) [VA-OPS-1] (zmiana: 2026-10-10-specky-PV3NVAC.md) (pr: #49)
+- [x] Zadanie 9.1: Logi: `va_core::logging::prune_old_logs(dir, 7 dni)` (tylko `voice-asystent.log.*`, zwraca liczbę, loguje ją) wołane przy starcie w `main`; pozycja „Pokaż logi” w menu ikony (`open <katalog logów>`) [VA-OPS-1] (zmiana: 2026-10-10-specky-PV3NVAC.md) (pr: #49)
   - Specky: (req: 01M4KD15FGKP1T46QXWPV3NVAC v1 @bb6317e)
   - Specky kryteria: (crit: 01M4KD15FXQ488KDR36QPHD62D) Pokaż logi; (crit: 01M4KD15FXMVKSVBYXV6QS4ED6) usuwanie > 7 dni z logiem; (crit: 01M4KD15FXMYC7NHSDBX6BGCTJ) inne pliki nieruszane
   - AC: wejście — start aplikacji (`main` przed `app::run`) i kliknięcie pozycji w pętli tao; test z katalogiem tymczasowym: plik 8-dniowy usunięty, 6-dniowy i obcy plik zostają, zwrócona liczba 1
-- [ ] Test: 9.1 — test `prune_old_logs` (granica 7 dni, obce pliki, pusty katalog) + test startu `--self-check` z HOME tymczasowym (log „usunięto N plików”); mutacja progu 7 dni czerwona (pr: #49)
-- [ ] Zadanie 9.2: `va-model`: znacznik `ggml-large-v3-turbo.bin.verified.json` {size, mtime, sha256} zapisywany po udanej weryfikacji (check i download); `check()` pomija SHA-256, gdy rozmiar i data się zgadzają (log „suma pominięta — znacznik aktualny”), liczy ponownie przy zmianie; `va-dev model-download` bez zmian korzysta z magazynu [VA-PERF-1] (zmiana: 2026-10-10-specky-2QWNE2N.md)
+- [x] Test: 9.1 — test `prune_old_logs` (granica 7 dni, obce pliki, pusty katalog) + test startu `--self-check` z HOME tymczasowym (log „usunięto N plików”); mutacja progu 7 dni czerwona (pr: #49)
+- [ ] Zadanie 9.2: `va-model`: znacznik `ggml-large-v3-turbo.bin.verified.json` {size, mtime, sha256} zapisywany po udanej weryfikacji (check i download); `check()` pomija SHA-256, gdy rozmiar i data się zgadzają (log „suma pominięta — znacznik aktualny”), liczy ponownie przy zmianie; `va-dev model-download` bez zmian korzysta z magazynu [VA-PERF-1] (zmiana: 2026-10-10-specky-2QWNE2N.md) (pr: #50)
   - Specky: (req: 01M4KD155TWYHX07DQC2QWNE2N v1 @159765b)
   - Specky kryteria: (crit: 01M4KD15697ZGFE288GDZGAZF6) znacznik i pominięcie; (crit: 01M4KD1569JT903G56F1TTX1VH) zmiana → ponowne liczenie, uszkodzony usuwany; (crit: 01M4KD15698XHWP7W8FXSF3DB7) va-dev ten sam mechanizm
   - AC: wejście — `startup::check_model` przy starcie aplikacji (log z pominięciem przy drugim starcie) i `va-dev model-download`; testy magazynu: drugi `check()` nie czyta całego pliku (licznik przez czas/`Instant` nie — przez brak wpisu „liczę sumę” w logu albo przez atrapę hashera), zmiana mtime → liczenie, podmiana treści z inną datą → usunięcie
-- [ ] Test: 9.2 — testy magazynu ze znacznikiem (pominięcie, wymuszenie, uszkodzenie, brak znacznika) + test `va-dev model-download` na gotowym pliku; mutacja (ignorowanie daty) czerwona
+- [ ] Test: 9.2 — testy magazynu ze znacznikiem (pominięcie, wymuszenie, uszkodzenie, brak znacznika) + test `va-dev model-download` na gotowym pliku; mutacja (ignorowanie daty) czerwona (pr: #50)
 - [ ] Zadanie 9.3: Sygnał gotowe: pola `notify_on_transcript` (true) i `sound_on_transcript` (false) w konfiguracji; kontroler publikuje `TranscriptReady { preview }` (60 znaków + „…”) po `Written`; aplikacja: powiadomienie „Transkrypcja w schowku” i/lub dźwięk (`afplay`); treść poza logami [VA-UX-1] (zmiana: 2026-10-10-specky-TGDZ530.md)
   - Specky: (req: 01M4KD151ZKD1RNYJNVTGDZ530 v1 @d87c04f)
   - Specky kryteria: (crit: 01M4KD152NZM9VP8S1V8VX1E6R) powiadomienie z 60 znakami; (crit: 01M4KD152NN5K9FT1BPAY3Y250) cisza i błędy bez niego; (crit: 01M4KD152NK6764Z8AMZPSHQQN) pola konfiguracji i domyślne; (crit: 01M4KD152NR0QTPMC1RHSY5D6P) treść poza logami

@@ -187,6 +187,79 @@ fn remove_deletes_model_and_partial_file_and_tolerates_their_absence() {
     store.remove().unwrap();
 }
 
+fn set_mtime(path: &std::path::Path, time: std::time::SystemTime) {
+    std::fs::File::options()
+        .write(true)
+        .open(path)
+        .unwrap()
+        .set_modified(time)
+        .unwrap();
+}
+
+#[test]
+// specky: crit 01M4KD15697ZGFE288GDZGAZF6
+fn verified_model_with_unchanged_size_and_date_skips_the_checksum() {
+    let content = model_content();
+    let dir = tempfile::tempdir().unwrap();
+    let store = ModelStore::new(dir.path(), spec_for(&content));
+    std::fs::write(store.model_path(), &content).unwrap();
+    assert!(matches!(store.check().unwrap(), ModelState::Ready(_)));
+    assert!(
+        store.marker_path().exists(),
+        "brak znacznika po weryfikacji"
+    );
+    let mtime = std::fs::metadata(store.model_path())
+        .unwrap()
+        .modified()
+        .unwrap();
+
+    // Podmiana treści przy tym samym rozmiarze i dacie: suma nie jest liczona, więc
+    // check() nadal zgłasza gotowy model — dowód, że znacznik zastąpił liczenie sumy.
+    std::fs::write(store.model_path(), vec![0_u8; content.len()]).unwrap();
+    set_mtime(&store.model_path(), mtime);
+
+    assert!(matches!(store.check().unwrap(), ModelState::Ready(_)));
+}
+
+#[test]
+// specky: crit 01M4KD1569JT903G56F1TTX1VH
+fn changed_date_forces_checksum_and_corrupted_model_is_removed() {
+    let content = model_content();
+    let dir = tempfile::tempdir().unwrap();
+    let store = ModelStore::new(dir.path(), spec_for(&content));
+    std::fs::write(store.model_path(), &content).unwrap();
+    store.check().unwrap();
+    let mtime = std::fs::metadata(store.model_path())
+        .unwrap()
+        .modified()
+        .unwrap();
+
+    std::fs::write(store.model_path(), vec![0_u8; content.len()]).unwrap();
+    set_mtime(
+        &store.model_path(),
+        mtime + std::time::Duration::from_secs(5),
+    );
+
+    assert_eq!(store.check().unwrap(), ModelState::Missing);
+    assert!(!store.model_path().exists());
+    assert!(!store.marker_path().exists());
+}
+
+#[test]
+// specky: crit 01M4KD15698XHWP7W8FXSF3DB7
+fn download_writes_the_marker_and_remove_deletes_it() {
+    let content = model_content();
+    let server = FileServer::start(content.clone(), None);
+    let dir = tempfile::tempdir().unwrap();
+    let store = ModelStore::new(dir.path(), spec_for(&content));
+
+    store.download(&server.url, &mut no_progress).unwrap();
+    assert!(store.marker_path().exists());
+
+    store.remove().unwrap();
+    assert!(!store.marker_path().exists());
+}
+
 #[test]
 fn display_name_strips_ggml_prefix_and_extension() {
     assert_eq!(va_model::LARGE_V3_TURBO.display_name(), "large-v3-turbo");

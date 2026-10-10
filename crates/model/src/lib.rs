@@ -7,7 +7,7 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
-use std::time::Duration;
+use std::time::{Duration, UNIX_EPOCH};
 
 use sha2::{Digest, Sha256};
 
@@ -110,9 +110,10 @@ impl ModelStore {
         fs::metadata(self.model_path()).ok().map(|meta| meta.len())
     }
 
-    /// Usuwa plik modelu i plik częściowy (VA-MODEL-2); brak któregoś z nich nie jest błędem.
+    /// Usuwa plik modelu, plik częściowy i znacznik weryfikacji (VA-MODEL-2); brak któregoś
+    /// z nich nie jest błędem.
     pub fn remove(&self) -> Result<()> {
-        for path in [self.model_path(), self.part_path()] {
+        for path in [self.model_path(), self.part_path(), self.marker_path()] {
             match fs::remove_file(&path) {
                 Ok(()) => tracing::info!(path = %path.display(), "plik modelu usunięty"),
                 Err(error) if error.kind() == io::ErrorKind::NotFound => {}
@@ -126,15 +127,28 @@ impl ModelStore {
         self.dir.join(format!("{}.part", self.spec.file_name))
     }
 
-    /// Sprawdza obecność i sumę modelu; uszkodzony plik docelowy jest usuwany.
+    /// Znacznik udanej weryfikacji (VA-PERF-1): `rozmiar mtime_ns sha256` obok modelu.
+    pub fn marker_path(&self) -> PathBuf {
+        self.dir.join(format!("{}.verified", self.spec.file_name))
+    }
+
+    /// Sprawdza obecność i sumę modelu; uszkodzony plik docelowy jest usuwany. Suma jest
+    /// pomijana, gdy znacznik zgadza się z rozmiarem i datą modyfikacji pliku (VA-PERF-1).
     pub fn check(&self) -> Result<ModelState> {
         let model = self.model_path();
         if model.exists() {
+            if self.marker_matches(&model) {
+                tracing::info!(path = %model.display(), "suma pominięta — znacznik aktualny");
+                return Ok(ModelState::Ready(model));
+            }
+            tracing::info!(path = %model.display(), "liczę sumę SHA-256 modelu");
             if self.checksum_matches(&model)? {
+                self.write_marker(&model);
                 return Ok(ModelState::Ready(model));
             }
             tracing::warn!(path = %model.display(), "model z błędną sumą SHA-256 — usuwam");
             remove(&model)?;
+            let _ = fs::remove_file(self.marker_path());
         }
         match fs::metadata(self.part_path()) {
             Ok(meta) => Ok(ModelState::Partial(meta.len())),
@@ -156,8 +170,37 @@ impl ModelStore {
         }
         let model = self.model_path();
         fs::rename(&part, &model).map_err(|source| self.io(&model, source))?;
+        self.write_marker(&model);
         tracing::info!(path = %model.display(), "model pobrany i zweryfikowany");
         Ok(model)
+    }
+
+    /// Opis pliku do znacznika: rozmiar i data modyfikacji w nanosekundach.
+    fn fingerprint(path: &Path) -> Option<(u64, u128)> {
+        let meta = fs::metadata(path).ok()?;
+        let mtime = meta.modified().ok()?.duration_since(UNIX_EPOCH).ok()?;
+        Some((meta.len(), mtime.as_nanos()))
+    }
+
+    fn marker_matches(&self, model: &Path) -> bool {
+        let (Some((size, mtime)), Ok(text)) = (
+            Self::fingerprint(model),
+            fs::read_to_string(self.marker_path()),
+        ) else {
+            return false;
+        };
+        text.trim() == format!("{size} {mtime} {}", self.spec.sha256)
+    }
+
+    /// Błąd zapisu znacznika nie jest błędem modelu — najwyżej następny start policzy sumę.
+    fn write_marker(&self, model: &Path) {
+        let Some((size, mtime)) = Self::fingerprint(model) else {
+            return;
+        };
+        let text = format!("{size} {mtime} {}\n", self.spec.sha256);
+        if let Err(error) = fs::write(self.marker_path(), text) {
+            tracing::warn!(%error, "znacznik weryfikacji modelu nie zapisany");
+        }
     }
 
     fn fetch_into(&self, url: &str, part: &Path, progress: &mut dyn FnMut(Progress)) -> Result<()> {
