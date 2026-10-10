@@ -14,11 +14,11 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: W trakcie — Faza 7 (historia wypowiedzi, pauzy, limit nagrania) dopisana 2026-10-10 z wymagań Specky VA-HIST-1, VA-REC-5, VA-REC-6
-- **Postęp**: 47/60 pozycji ukończonych (Fazy 1–6 kompletne; Faza 7: 0/13)
+- **Status**: Faza 7 (historia wypowiedzi, pauzy, limit nagrania) — cały kod zmergowany (PR #33–#38), czeka ⛔ 7.7 (test ręczny właściciela)
+- **Postęp**: 59/60 pozycji ukończonych (zostało ⛔ 7.7)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
-- Otwarte PR: brak. 6.1 (b188bf1), 6.2 (3530198) i 6.3 (5f13dab) zmergowane; VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -35,6 +35,8 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Przebieg po zadaniach 7.1–7.6 (2026-10-10) — ZIELONY (main 6627cc3, nie regresja fazy — czeka ⛔ 7.7):** `cargo test --workspace -- --include-ignored` 156/0 (w tym prawdziwa transkrypcja fixture z 40 s pauzy, limit z prawdziwego mikrofonu, historia z plikiem, build release i .dmg), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 126/0 po Fazie 6: +30 testów. Bez tagu `ralph/faza-7` do wyniku testu ręcznego 7.7.
+
 **Regresja po Fazie 6 (2026-10-10) — ZIELONA:** na main (1ae141a) `cargo test --workspace -- --include-ignored` 126/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; test ręczny 6.4 właściciela (2026-10-09) bez uwag. Bez zmian liczby testów od przebiegu po 6.3. Tag `ralph/faza-6`.
 
 **Przebieg po zadaniach 6.1–6.3 (2026-10-09) — ZIELONY (main 5f13dab, nie regresja fazy — czekało ⛔ 6.4):** `cargo test --workspace -- --include-ignored` 126/0 (w tym build release i bundle, montowanie .dmg, mikrofon, GPU Metal, model, schowek), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 119/0 po Fazie 5: +7 testów (bundle.rs 5, dmg.rs 2). Bez tagu `ralph/faza-6` do wyniku testu ręcznego 6.4.
@@ -47,11 +49,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 126 |
-| Pass | 126 |
+| Łącznie testów | 156 |
+| Pass | 156 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-10 (regresja Fazy 6 na main) |
+| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 7.6) |
 
 ## Historia realizacji
 
@@ -76,7 +78,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 7.3 Limit nagrania: domyślnie 600 s, `Recorder::start(…, on_limit)` z wątku audio, kontroler `LimitReached(nr)` → Stop + `ControllerEvent::LimitReached` + test 7.3 | ✅ PR #35 | 129/0 + 10 ignored; wątek audio zgłasza limit 1 s z prawdziwego mikrofonu; mutacja (ignorowanie sygnału limitu) czerwona | 1 | 5860bfb | 2026-10-10 |
 | 7.4 Powiadomienie „Osiągnięto limit długości nagrania” (Problem::RecordingLimitReached, `problem_for` w pętli tao), README/RUNBOOK: limit 10 min, pauzy + test 7.4 | ✅ PR #36 | 133/0 + 10 ignored; mutacja (LimitReached → None) czerwona | 1 | 5ea081c | 2026-10-10 |
 | 7.5 `va_core::history` (30 wpisów, plik JSON 0600, clear), kontroler: wpis po transkrypcji, `HistoryChanged`, `CopyHistoryEntry` przez TextSink, `ClearHistory`; `Paths::history_file` + test 7.5 | ✅ PR #37 | 143/0 + 10 ignored; mutacja limitu 30 → 31 czerwona (po poprawce testu, który porównywał ze stałą); test logów bez treści wpisu | 1 | c5271be | 2026-10-10 |
-| 7.6 Podmenu „Historia” (history_menu.rs: etykiety `HH:MM · tekst…`, id → `CopyHistoryEntry`/`ClearHistory`; TrayMenu::show_history, wpięcie w pętli tao), README/RUNBOOK + test 7.6 | PR #38 otwarty | 146/0 + 10 ignored; mutacja odwrócenia kolejności czerwona; aplikacja z podmenu startuje lokalnie | 1 | — | 2026-10-10 |
+| 7.6 Podmenu „Historia” (history_menu.rs: etykiety `HH:MM · tekst…`, id → `CopyHistoryEntry`/`ClearHistory`; TrayMenu::show_history, wpięcie w pętli tao), README/RUNBOOK + test 7.6 | ✅ PR #38 | 146/0 + 10 ignored; mutacja odwrócenia kolejności czerwona; aplikacja z podmenu startuje lokalnie | 1 | 6627cc3 | 2026-10-10 |
 
 ## Historia zmian
 
