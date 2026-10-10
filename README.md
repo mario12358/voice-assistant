@@ -51,8 +51,11 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 | Zakończenie aplikacji | prawy przycisk na ikonie → **Zakończ** |
 
 Podczas nagrywania kółko jest czerwone; w trakcie transkrypcji i w spoczynku — szare.
-Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Nagranie kończy się
-automatycznie po 5 minutach.
+Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Długie przerwy w mówieniu
+(powyżej 1,5 s) są skracane przed transkrypcją, więc możesz spokojnie myśleć między
+zdaniami. Nagranie ma limit długości, domyślnie 10 minut: po jego osiągnięciu kończy się
+samo, dostajesz powiadomienie, a nagrany materiał jest transkrybowany do schowka tak samo
+jak po `ctrl+cmd+s`.
 
 Jeśli skrót jest już zajęty przez inną aplikację, menu ikony pokazuje o tym komunikat —
 kliknięcie ikony działa wtedy nadal.
@@ -65,7 +68,7 @@ zmianie mikrofonu; wszystkie pola są opcjonalne:
 ```toml
 microphone = "MacBook Pro Microphone"   # brak = mikrofon domyślny systemu
 language = "auto"                       # auto | pl | en
-max_recording_secs = 300
+max_recording_secs = 600                # limit długości nagrania (auto-Stop + powiadomienie)
 # model_path = "/inna/sciezka/ggml-large-v3-turbo.bin"
 
 [silence]

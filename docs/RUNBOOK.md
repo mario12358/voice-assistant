@@ -107,6 +107,7 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Menu: „Brak modelu — nagrywanie niedostępne" / „Pobieranie modelu nieudane: …" | wybierz **Ponów pobieranie** w menu albo `cargo run -p va-dev -- model-download`. Uszkodzony plik (zła suma) jest usuwany automatycznie; ręcznie: usuń `models/ggml-large-v3-turbo.bin` i `.part` |
 | Powiadomienie „Brak dostępu do mikrofonu" | nagranie dało same zera: brak zgody (Ustawienia → Prywatność i ochrona → Mikrofon) albo wirtualne wejście bez sygnału. Diagnoza: `cargo run -p va-dev -- mic-test` |
 | Skrót nie działa, w menu komunikat o konflikcie | kombinacja `ctrl+cmd+r`/`ctrl+cmd+s` zajęta przez inną aplikację; zwolnij ją tam albo używaj kliknięcia ikony |
+| Nagranie skończyło się samo, powiadomienie „Osiągnięto limit długości nagrania" | limit `max_recording_secs` (domyślnie 600 s): materiał do limitu jest transkrybowany jak po Stop; dłuższe dyktowanie → podnieś wartość w `config.toml` |
 | Transkrypcja pusta, schowek bez zmian | nagranie było ciszą poniżej `silence.threshold_rms` (domyślnie 0.01) — obniż próg w `config.toml` albo sprawdź mikrofon `mic-test` |
 | Start aplikacji trwa kilka sekund | przy każdym starcie liczona jest suma SHA-256 modelu (1,6 GB, ok. 3–4 s) i ładowany model na GPU |
 | Powiadomienia pokazują się jako „Terminal" | aplikacja uruchomiona z `cargo run`, nie z bundla; z `dist/VoiceAsystent.app` pokazują się pod nazwą VoiceAsystent |

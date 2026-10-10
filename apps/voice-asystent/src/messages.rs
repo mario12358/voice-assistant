@@ -13,6 +13,8 @@ pub enum Problem {
     ModelNotReady(String),
     /// Inny błąd pojedynczego nagrania (tekst z kontrolera).
     RecordingFailed(String),
+    /// Nagranie zakończone automatycznie po osiągnięciu limitu długości (VA-REC-6).
+    RecordingLimitReached { limit_secs: u32 },
 }
 
 /// Tytuł i treść powiadomienia / pozycji menu.
@@ -40,6 +42,23 @@ pub fn message(problem: &Problem) -> (&'static str, String) {
             "Nagranie nieudane",
             format!("Nagranie nie powiodło się: {reason}"),
         ),
+        Problem::RecordingLimitReached { limit_secs } => (
+            "Osiągnięto limit długości nagrania",
+            format!(
+                "Nagranie zakończono automatycznie po {} — tekst trafi do schowka jak po \
+                 ctrl+cmd+s. Limit zmienisz w config.toml (max_recording_secs).",
+                duration_label(*limit_secs)
+            ),
+        ),
+    }
+}
+
+/// „10 min” dla pełnych minut, inaczej „90 s”.
+fn duration_label(seconds: u32) -> String {
+    if seconds >= 60 && seconds % 60 == 0 {
+        format!("{} min", seconds / 60)
+    } else {
+        format!("{seconds} s")
     }
 }
 
@@ -48,7 +67,10 @@ pub fn menu_notice(problem: &Problem) -> Option<&'static str> {
     match problem {
         Problem::GpuMissing => Some("Wymagane GPU (Metal) — nagrywanie niedostępne"),
         Problem::ModelUnavailable => Some("Brak modelu — nagrywanie niedostępne"),
-        Problem::MicrophoneSilent | Problem::ModelNotReady(_) | Problem::RecordingFailed(_) => None,
+        Problem::MicrophoneSilent
+        | Problem::ModelNotReady(_)
+        | Problem::RecordingFailed(_)
+        | Problem::RecordingLimitReached { .. } => None,
     }
 }
 
@@ -95,6 +117,29 @@ mod tests {
     fn one_off_failures_are_not_pinned_to_menu() {
         assert_eq!(menu_notice(&Problem::MicrophoneSilent), None);
         assert_eq!(menu_notice(&Problem::RecordingFailed("x".into())), None);
+    }
+
+    #[test]
+    // specky: crit 01M4K06AY6B3424GJDBAQQK3WY
+    fn recording_limit_notification_names_the_limit_in_minutes() {
+        let (title, body) = message(&Problem::RecordingLimitReached { limit_secs: 600 });
+
+        assert_eq!(title, "Osiągnięto limit długości nagrania");
+        assert!(body.contains("po 10 min"), "{body}");
+        assert!(body.contains("max_recording_secs"), "{body}");
+        assert_eq!(
+            menu_notice(&Problem::RecordingLimitReached { limit_secs: 600 }),
+            None
+        );
+    }
+
+    #[test]
+    fn limit_below_a_minute_is_shown_in_seconds() {
+        let (_, body) = message(&Problem::RecordingLimitReached { limit_secs: 20 });
+
+        assert!(body.contains("po 20 s"), "{body}");
+        assert_eq!(duration_label(90), "90 s");
+        assert_eq!(duration_label(120), "2 min");
     }
 
     #[test]
