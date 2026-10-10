@@ -51,6 +51,9 @@ enum Command {
         /// Katalog docelowy; domyślnie katalog modeli aplikacji.
         #[arg(long)]
         dir: Option<PathBuf>,
+        /// Wariant modelu: full (1,6 GB) albo q5_0 (0,6 GB).
+        #[arg(long, default_value = "full", value_parser = parse_variant)]
+        variant: va_config::ModelVariant,
     },
     /// Transkrybuje plik WAV modelem large-v3-turbo na GPU Metal i wypisuje tekst.
     Transcribe {
@@ -69,7 +72,9 @@ fn main() -> anyhow::Result<()> {
         Some(Command::Config { file }) => show_config(file),
         Some(Command::Devices) => list_devices(),
         Some(Command::MicTest { seconds, save }) => mic_test::run(seconds, save.as_deref()),
-        Some(Command::ModelDownload { url, dir }) => model_download::run(url, dir),
+        Some(Command::ModelDownload { url, dir, variant }) => {
+            model_download::run(url, dir, variant)
+        }
         Some(Command::Transcribe { wav }) => transcribe::run(&wav),
         None => Ok(()),
     }
@@ -85,6 +90,14 @@ fn list_devices() -> anyhow::Result<()> {
         println!("{used}{default} {}", device.name);
     }
     Ok(())
+}
+
+fn parse_variant(text: &str) -> Result<va_config::ModelVariant, String> {
+    match text {
+        "full" => Ok(va_config::ModelVariant::Full),
+        "q5_0" => Ok(va_config::ModelVariant::Q5_0),
+        other => Err(format!("nieznany wariant „{other}” — dostępne: full, q5_0")),
+    }
 }
 
 fn show_config(file: Option<PathBuf>) -> anyhow::Result<()> {

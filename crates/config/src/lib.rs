@@ -37,6 +37,18 @@ pub enum Language {
     En,
 }
 
+/// Wariant modelu large-v3-turbo z magazynu aplikacji (VA-MODEL-4).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum ModelVariant {
+    /// Pełny model, ok. 1,6 GB.
+    #[default]
+    #[serde(rename = "full")]
+    Full,
+    /// Skwantyzowany q5_0, ok. 0,6 GB — mniej pamięci GPU i szybsze pobranie.
+    #[serde(rename = "q5_0")]
+    Q5_0,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct SilenceConfig {
@@ -69,6 +81,8 @@ pub struct Config {
     pub notify_on_transcript: bool,
     /// Dźwięk systemowy po zapisie transkrypcji do schowka (VA-UX-1).
     pub sound_on_transcript: bool,
+    /// Wariant modelu z magazynu aplikacji; ignorowany przy `model_path` (VA-MODEL-4).
+    pub model_variant: ModelVariant,
 }
 
 impl Default for Config {
@@ -81,6 +95,7 @@ impl Default for Config {
             silence: SilenceConfig::default(),
             notify_on_transcript: true,
             sound_on_transcript: false,
+            model_variant: ModelVariant::Full,
         }
     }
 }
@@ -206,6 +221,7 @@ model_path = "/tmp/model.bin"
 max_recording_secs = 60
 notify_on_transcript = false
 sound_on_transcript = true
+model_variant = "q5_0"
 
 [silence]
 threshold_rms = 0.05
@@ -228,6 +244,7 @@ padding_ms = 100
                 },
                 notify_on_transcript: false,
                 sound_on_transcript: true,
+                model_variant: ModelVariant::Q5_0,
             }
         );
     }

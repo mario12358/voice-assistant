@@ -9,6 +9,7 @@ publish.workspace = true
 
 [dependencies]
 sha2 = "0.10"
+va-config.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 ureq = { version = "3", default-features = false, features = ["rustls"] }

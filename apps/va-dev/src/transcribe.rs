@@ -8,17 +8,18 @@ use va_audio::{
     SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, convert::normalize, trim_silence,
 };
 use va_config::{Config, Paths};
-use va_model::LARGE_V3_TURBO;
+use va_model::spec_for;
 use va_stt::{METAL_BUILT, MetalProbe, SpeechToText, Transcript, WhisperStt, require_metal};
 
 pub fn run(wav: &Path) -> anyhow::Result<()> {
     let paths = Paths::for_current_user()?;
     let (config, _) = Config::load_or_default(&paths.config_file);
     let gpu = require_metal(&MetalProbe, METAL_BUILT)?;
-    let model = config
-        .model_path
-        .clone()
-        .unwrap_or_else(|| paths.models_dir.join(LARGE_V3_TURBO.file_name));
+    let model = config.model_path.clone().unwrap_or_else(|| {
+        paths
+            .models_dir
+            .join(spec_for(config.model_variant).file_name)
+    });
     anyhow::ensure!(
         model.exists(),
         "brak modelu {} — uruchom `va-dev model-download`",

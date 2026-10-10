@@ -30,7 +30,7 @@ use crate::model_menu::{
 use crate::settings_menu::{change_from_menu_id, save_change, settings_menu};
 use crate::startup::ModelDownload;
 use crate::tray_menu::{RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
-use va_model::{LARGE_V3_TURBO, ModelStore};
+use va_model::{ModelStore, spec_for};
 
 enum UserEvent {
     Controller(ControllerEvent),
@@ -402,10 +402,10 @@ fn show_model(
 /// Usuwa plik modelu z magazynu domyślnego (i plik częściowy); kontroler jest już zamknięty,
 /// więc model nie siedzi w pamięci. Własna ścieżka nigdy tu nie trafia (pozycja nieaktywna).
 fn remove_model_files(info: &ModelInfo) {
-    let Some(dir) = info.path.parent() else {
+    let (Some(dir), Some(variant)) = (info.path.parent(), info.variant) else {
         return;
     };
-    match ModelStore::new(dir, LARGE_V3_TURBO).remove() {
+    match ModelStore::new(dir, spec_for(variant)).remove() {
         Ok(()) => tracing::info!(path = %info.path.display(), "model usunięty na życzenie"),
         Err(error) => tracing::error!(%error, "usuwanie modelu"),
     }

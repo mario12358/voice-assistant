@@ -6,16 +6,16 @@ use crate::messages::Problem;
 use crate::model_menu::ModelInfo;
 use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
 use va_clipboard::system_sink;
-use va_config::{Config, Paths};
+use va_config::{Config, ModelVariant, Paths};
 use va_core::controller::ControllerParts;
 use va_core::history::{FileHistoryStore, History};
-use va_model::{LARGE_V3_TURBO, ModelState, ModelStore, Progress};
+use va_model::{ModelState, ModelStore, Progress, spec_for};
 use va_stt::{GpuReady, METAL_BUILT, MetalProbe, WhisperStt, require_metal};
 
 /// Skąd aplikacja bierze model (VA-MODEL-3): magazyn domyślny (pobieranie, SHA-256) albo własna
 /// ścieżka z `config.toml` — plik użytkownika, bez pobierania i bez sprawdzania sumy.
 pub enum ModelSource {
-    Store(ModelStore),
+    Store(ModelStore, ModelVariant),
     Custom(PathBuf),
 }
 
@@ -23,21 +23,25 @@ impl ModelSource {
     pub fn from_config(config: &Config, paths: &Paths) -> Self {
         match &config.model_path {
             Some(path) => Self::Custom(path.clone()),
-            None => Self::Store(ModelStore::new(&paths.models_dir, LARGE_V3_TURBO)),
+            None => Self::Store(
+                ModelStore::new(&paths.models_dir, spec_for(config.model_variant)),
+                config.model_variant,
+            ),
         }
     }
 
     pub fn custom_path(&self) -> Option<&Path> {
         match self {
             Self::Custom(path) => Some(path),
-            Self::Store(_) => None,
+            Self::Store(..) => None,
         }
     }
 
     /// Opis modelu dla podmenu „Model” (nazwa, ścieżka, rozmiar, czy własny).
     pub fn info(&self) -> ModelInfo {
         match self {
-            Self::Store(store) => ModelInfo {
+            Self::Store(store, variant) => ModelInfo {
+                variant: Some(*variant),
                 name: store.spec().display_name().to_owned(),
                 path: store.model_path(),
                 bytes: store.spec().size,
@@ -55,6 +59,7 @@ impl ModelSource {
                     bytes,
                     custom: true,
                     custom_present: path.is_file(),
+                    variant: None,
                 }
             }
         }
@@ -62,7 +67,7 @@ impl ModelSource {
 
     fn check(&self) -> va_model::Result<ModelState> {
         match self {
-            Self::Store(store) => store.check(),
+            Self::Store(store, _) => store.check(),
             Self::Custom(path) if path.is_file() => Ok(ModelState::Ready(path.clone())),
             Self::Custom(_) => Ok(ModelState::Missing),
         }
@@ -71,8 +76,13 @@ impl ModelSource {
 
 /// Stan modelu przy starcie; brak modelu w magazynie uruchomi pobieranie w tle (zadanie 5.6).
 pub fn check_model(source: &ModelSource) -> Option<ModelState> {
-    if let Some(path) = source.custom_path() {
-        tracing::info!(path = %path.display(), "model: własna ścieżka z konfiguracji (model_path)");
+    match source {
+        ModelSource::Custom(path) => {
+            tracing::info!(path = %path.display(), "model: własna ścieżka z konfiguracji (model_path)");
+        }
+        ModelSource::Store(store, variant) => {
+            tracing::info!(?variant, path = %store.model_path().display(), "model: wariant z magazynu");
+        }
     }
     match source.check() {
         Ok(state) => {
@@ -189,9 +199,10 @@ impl ModelDownload {
 
     /// Pobiera (wznawiając) model i ładuje go — wołane w wątku roboczym.
     pub fn run(&self, progress: &mut dyn FnMut(Progress)) -> Result<ControllerParts, String> {
-        let store = ModelStore::new(&self.paths.models_dir, LARGE_V3_TURBO);
+        let spec = spec_for(self.config.model_variant);
+        let store = ModelStore::new(&self.paths.models_dir, spec);
         let model_path = store
-            .download(LARGE_V3_TURBO.url, progress)
+            .download(spec.url, progress)
             .map_err(|error| error.to_string())?;
         parts_from_model(&self.config, &self.paths, &self.gpu, &model_path)
             .map_err(|_| "model pobrany, ale nie dał się załadować".to_owned())
@@ -255,6 +266,28 @@ mod tests {
 
     #[test]
     // specky: crit 01M4K6M33CGTMKF9VPRYQXKE1C
+    fn quantized_variant_from_config_selects_its_file_and_download() {
+        let dir = tempfile::tempdir().unwrap();
+        let paths = paths_in(dir.path());
+        let config = Config {
+            model_variant: ModelVariant::Q5_0,
+            ..Config::default()
+        };
+
+        let source = ModelSource::from_config(&config, &paths);
+        let info = source.info();
+
+        assert_eq!(info.name, "large-v3-turbo-q5_0");
+        assert_eq!(info.variant, Some(ModelVariant::Q5_0));
+        assert_eq!(info.bytes, 574_041_195);
+        assert!(
+            info.path.ends_with("ggml-large-v3-turbo-q5_0.bin"),
+            "{:?}",
+            info.path
+        );
+    }
+
+    #[test]
     fn without_model_path_the_default_store_is_used() {
         let dir = tempfile::tempdir().unwrap();
         let paths = paths_in(dir.path());
@@ -263,6 +296,6 @@ mod tests {
 
         assert!(source.custom_path().is_none());
         assert_eq!(check_model(&source), Some(ModelState::Missing));
-        assert!(matches!(source, ModelSource::Store(_)));
+        assert!(matches!(source, ModelSource::Store(_, ModelVariant::Full)));
     }
 }
