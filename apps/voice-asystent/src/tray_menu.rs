@@ -1,4 +1,4 @@
-//! Menu pod prawym kliknięciem: podmenu „Mikrofon” i „Zakończ”.
+//! Menu pod prawym kliknięciem: podmenu „Historia”, „Mikrofon” i „Zakończ”.
 
 use std::path::PathBuf;
 
@@ -6,14 +6,17 @@ use anyhow::Context;
 use tray_icon::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu};
 use va_audio::{AudioHost, CpalHost};
 use va_config::Config;
+use va_core::history::HistoryEntry;
 
 use crate::download::DownloadState;
+use crate::history_menu::{CLEAR_HISTORY_ID, history_items};
 use crate::microphones::{QUIT_ID, microphone_items};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
 
 pub struct TrayMenu {
     pub menu: Menu,
+    history: Submenu,
     microphones: Submenu,
     config_path: PathBuf,
     download: Option<(MenuItem, MenuItem)>,
@@ -21,19 +24,56 @@ pub struct TrayMenu {
 
 impl TrayMenu {
     pub fn new(config_path: PathBuf) -> anyhow::Result<Self> {
+        let history = Submenu::new("Historia", true);
         let microphones = Submenu::new("Mikrofon", true);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
         let menu = Menu::new();
-        menu.append_items(&[&microphones, &PredefinedMenuItem::separator(), &quit])
-            .context("menu ikony")?;
+        menu.append_items(&[
+            &history,
+            &microphones,
+            &PredefinedMenuItem::separator(),
+            &quit,
+        ])
+        .context("menu ikony")?;
         let tray_menu = Self {
             menu,
+            history,
             microphones,
             config_path,
             download: None,
         };
+        tray_menu.show_history(&[]);
         tray_menu.refresh_microphones();
         Ok(tray_menu)
+    }
+
+    /// Podmenu „Historia”: wpisy od najnowszego (kliknięcie kopiuje), na dole „Wyczyść historię”.
+    pub fn show_history(&self, entries: &[HistoryEntry]) {
+        while self.history.remove_at(0).is_some() {}
+        let items = history_items(entries);
+        if items.is_empty() {
+            let _ = self
+                .history
+                .append(&MenuItem::new("Brak wpisów", false, None));
+        }
+        for item in &items {
+            let entry = MenuItem::with_id(&item.id, &item.label, true, None);
+            if let Err(error) = self.history.append(&entry) {
+                tracing::error!(%error, "pozycja historii w menu");
+            }
+        }
+        let clear = MenuItem::with_id(
+            CLEAR_HISTORY_ID,
+            "Wyczyść historię",
+            !items.is_empty(),
+            None,
+        );
+        if let Err(error) = self
+            .history
+            .append_items(&[&PredefinedMenuItem::separator(), &clear])
+        {
+            tracing::error!(%error, "czyszczenie historii w menu");
+        }
     }
 
     /// Stała, nieklikalna pozycja z komunikatem na górze menu (np. skróty niedostępne).

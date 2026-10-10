@@ -184,16 +184,16 @@
   - Specky kryteria: (crit: 01M4K06AY6B3424GJDBAQQK3WY) powiadomienie przy auto-Stop
   - AC: wejście — zdarzenie kontrolera w pętli tao (`UserEvent::Controller`) wywołuje `notify`; tekst powiadomienia zawiera limit w minutach z konfiguracji
 - [x] Test: 7.4 — test messages (tytuł/treść z limitem) i test wpięcia (mapowanie zdarzenia → Problem) w module app (pr: #36)
-- [ ] Zadanie 7.5: `va-core::history`: bufor 30 wpisów `{text, at}` (najnowszy pierwszy), zapis JSON do `Paths::history_file` (tryb 0600, atomowo), `clear()` kasuje plik; kontroler: po `Delivery::Written` wpis + `ControllerEvent::HistoryChanged`, polecenia `CopyHistoryEntry(id)` (przez `TextSink`) i `ClearHistory`; treść poza logami [VA-HIST-1] (zmiana: 2026-10-10-specky-CY0SQA5.md) (pr: #37)
+- [x] Zadanie 7.5: `va-core::history`: bufor 30 wpisów `{text, at}` (najnowszy pierwszy), zapis JSON do `Paths::history_file` (tryb 0600, atomowo), `clear()` kasuje plik; kontroler: po `Delivery::Written` wpis + `ControllerEvent::HistoryChanged`, polecenia `CopyHistoryEntry(id)` (przez `TextSink`) i `ClearHistory`; treść poza logami [VA-HIST-1] (zmiana: 2026-10-10-specky-CY0SQA5.md) (pr: #37)
   - Specky: (req: 01M4K06AGAV8G79RJMXCY0SQA5 v1 @d3eecdb)
   - Specky kryteria: (crit: 01M4K06AH032985T6JXJX7EE3W) wpis po niepustej, cisza bez wpisu; (crit: 01M4K06AH0FMZJZZX7SHA9KR5A) plik 0600, wraca po restarcie; (crit: 01M4K06AH0BR7ZQYXPH6B08P26) wyczyść kasuje z dysku; (crit: 01M4K06AH0B2HW26D29WR4H4F3) treść poza logami
   - AC: wejście — zakończona transkrypcja w kontrolerze (ta sama ścieżka co schowek) tworzy wpis; `CopyHistoryEntry` dostarcza pełny tekst do `TextSink` bez przejścia automatu do Recording; nowy kontroler z tym samym plikiem publikuje te same wpisy; `ClearHistory` zostawia pustą listę i brak pliku
-- [ ] Test: 7.5 — testy jednostkowe historii (limit 30, kolejność, round-trip pliku, uprawnienia 0600, clear) + testy kontrolera (wpis po Written, brak po SkippedEmpty, kopiowanie, czyszczenie); mutacja limitu 30 czerwona; test, że log nie zawiera tekstu wpisu (pr: #37)
-- [ ] Zadanie 7.6: Menu ikony: podmenu „Historia” (`HH:MM · początek tekstu…` do 40 znaków, najnowsza na górze, „Brak wpisów” gdy pusto, „Wyczyść historię”), odświeżane na `HistoryChanged`; zdarzenia menu → `CopyHistoryEntry` / `ClearHistory`; README o historii (wymaga: 7.5) [VA-HIST-1] (zmiana: 2026-10-10-specky-CY0SQA5.md)
+- [x] Test: 7.5 — testy jednostkowe historii (limit 30, kolejność, round-trip pliku, uprawnienia 0600, clear) + testy kontrolera (wpis po Written, brak po SkippedEmpty, kopiowanie, czyszczenie); mutacja limitu 30 czerwona; test, że log nie zawiera tekstu wpisu (pr: #37)
+- [ ] Zadanie 7.6: Menu ikony: podmenu „Historia” (`HH:MM · początek tekstu…` do 40 znaków, najnowsza na górze, „Brak wpisów” gdy pusto, „Wyczyść historię”), odświeżane na `HistoryChanged`; zdarzenia menu → `CopyHistoryEntry` / `ClearHistory`; README o historii (wymaga: 7.5) [VA-HIST-1] (zmiana: 2026-10-10-specky-CY0SQA5.md) (pr: #38)
   - Specky: (req: 01M4K06AGAV8G79RJMXCY0SQA5 v1 @d3eecdb)
   - Specky kryteria: (crit: 01M4K06AH0CZS3Z7N0FXXSKE1T) podmenu z godziną i początkiem tekstu, od najnowszego; (crit: 01M4K06AH09HZHH764X48P4GM4) kliknięcie kopiuje pełny tekst bez nagrywania
   - AC: wejście — kliknięcie pozycji podmenu w pętli tao (`UserEvent::Menu`) wysyła `CopyHistoryEntry` z właściwym id; funkcja budująca etykiety i parsująca id menu testowana jednostkowo (jak `microphone_items`)
-- [ ] Test: 7.6 — testy etykiet (skrót 40 znaków, godzina, kolejność, pusta lista) i mapowania id menu → polecenie; mutacja kolejności czerwona
+- [ ] Test: 7.6 — testy etykiet (skrót 40 znaków, godzina, kolejność, pusta lista) i mapowania id menu → polecenie; mutacja kolejności czerwona (pr: #38)
 - [ ] ⛔ Zadanie 7.7: Test manualny właściciela: historia (wpisy po nagraniach, kopiowanie starszego wpisu, restart, „Wyczyść historię”), nagranie z pauzami po 30–40 s bez śmieci w tekście, limit (tymczasowo `max_recording_secs = 20`: auto-Stop, powiadomienie, tekst w schowku) — wynik do REPORT.md (wymaga: 7.2, 7.4, 7.6)
 
 ## Pokrycie spec

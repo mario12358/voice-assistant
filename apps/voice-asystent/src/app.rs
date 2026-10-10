@@ -10,10 +10,12 @@ use tao::platform::macos::{ActivationPolicy, EventLoopExtMacOS};
 use tray_icon::menu::MenuEvent;
 use tray_icon::{Icon, MouseButton, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use va_core::controller::{self, Command, ControllerEvent, ControllerHandle, ControllerParts};
+use va_core::history::HistoryEntry;
 use va_core::state::State;
 
 use crate::click::command_for;
 use crate::download::{DownloadEvent, DownloadState};
+use crate::history_menu::command_from_menu_id;
 use crate::hotkeys::Hotkeys;
 use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
 use crate::messages::{Problem, menu_notice, notify};
@@ -57,6 +59,7 @@ pub fn run(
     };
     let mut tray: Option<(TrayIcon, TrayMenu)> = None;
     let mut shown = State::Idle;
+    let mut history: Vec<HistoryEntry> = Vec::new();
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
         match event {
@@ -72,6 +75,7 @@ pub fn run(
                         built.1.show_notice(notice);
                     }
                     show_download(&mut built, &download_state, shown);
+                    built.1.show_history(&history);
                     tray = Some(built);
                 }
                 Err(error) => {
@@ -84,6 +88,12 @@ pub fn run(
                     shown = *state;
                     if let Some((icon, _)) = &tray {
                         show(icon, indicator_for(*state));
+                    }
+                }
+                if let ControllerEvent::HistoryChanged(entries) = &event {
+                    history = entries.clone();
+                    if let Some((_, menu)) = &tray {
+                        menu.show_history(&history);
                     }
                 }
                 if let Some(problem) = problem_for(&event, recording_limit_secs) {
@@ -139,6 +149,13 @@ pub fn run(
                     if let Some((_, menu)) = &tray {
                         menu.refresh_microphones();
                     }
+                } else if let Some(command) = command_from_menu_id(id) {
+                    send(
+                        controller.as_ref(),
+                        &download_state,
+                        unavailable.as_ref(),
+                        command,
+                    );
                 }
             }
             Event::UserEvent(UserEvent::Download(event)) => {

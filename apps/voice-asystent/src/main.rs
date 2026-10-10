@@ -4,6 +4,7 @@ compile_error!("VoiceAsystent jest wspierany wyłącznie na macOS");
 mod app;
 mod click;
 mod download;
+mod history_menu;
 mod hotkeys;
 mod indicator;
 mod messages;
