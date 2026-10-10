@@ -72,7 +72,7 @@ pub fn run(
                     if download_state == DownloadState::NotNeeded
                         && let Some(notice) = unavailable.as_ref().and_then(menu_notice)
                     {
-                        built.1.show_notice(notice);
+                        built.1.show_notice(&notice);
                     }
                     show_download(&mut built, &download_state, shown);
                     built.1.show_history(&history);

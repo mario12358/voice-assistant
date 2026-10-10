@@ -1,6 +1,6 @@
 //! Sprawdzenia startowe i złożenie kontrolera z prawdziwych elementów.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::messages::Problem;
 use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
@@ -11,9 +11,43 @@ use va_core::history::{FileHistoryStore, History};
 use va_model::{LARGE_V3_TURBO, ModelState, ModelStore, Progress};
 use va_stt::{GpuReady, METAL_BUILT, MetalProbe, WhisperStt, require_metal};
 
-/// Stan modelu przy starcie; brak modelu uruchomi pobieranie w tle (zadanie 5.6).
-pub fn check_model(paths: &Paths) -> Option<ModelState> {
-    match ModelStore::new(&paths.models_dir, LARGE_V3_TURBO).check() {
+/// Skąd aplikacja bierze model (VA-MODEL-3): magazyn domyślny (pobieranie, SHA-256) albo własna
+/// ścieżka z `config.toml` — plik użytkownika, bez pobierania i bez sprawdzania sumy.
+pub enum ModelSource {
+    Store(ModelStore),
+    Custom(PathBuf),
+}
+
+impl ModelSource {
+    pub fn from_config(config: &Config, paths: &Paths) -> Self {
+        match &config.model_path {
+            Some(path) => Self::Custom(path.clone()),
+            None => Self::Store(ModelStore::new(&paths.models_dir, LARGE_V3_TURBO)),
+        }
+    }
+
+    pub fn custom_path(&self) -> Option<&Path> {
+        match self {
+            Self::Custom(path) => Some(path),
+            Self::Store(_) => None,
+        }
+    }
+
+    fn check(&self) -> va_model::Result<ModelState> {
+        match self {
+            Self::Store(store) => store.check(),
+            Self::Custom(path) if path.is_file() => Ok(ModelState::Ready(path.clone())),
+            Self::Custom(_) => Ok(ModelState::Missing),
+        }
+    }
+}
+
+/// Stan modelu przy starcie; brak modelu w magazynie uruchomi pobieranie w tle (zadanie 5.6).
+pub fn check_model(source: &ModelSource) -> Option<ModelState> {
+    if let Some(path) = source.custom_path() {
+        tracing::info!(path = %path.display(), "model: własna ścieżka z konfiguracji (model_path)");
+    }
+    match source.check() {
         Ok(state) => {
             tracing::info!(?state, "model: stan przy starcie");
             Some(state)
@@ -41,13 +75,17 @@ pub fn check_gpu() -> Option<GpuReady> {
 pub fn controller_parts(
     config: &Config,
     paths: &Paths,
+    source: &ModelSource,
     gpu: Option<&GpuReady>,
     model: Option<&ModelState>,
 ) -> Result<ControllerParts, Problem> {
     let gpu = gpu.ok_or(Problem::GpuMissing)?;
     let Some(ModelState::Ready(model_path)) = model else {
         tracing::warn!("brak gotowego modelu — nagrywanie niedostępne");
-        return Err(Problem::ModelUnavailable);
+        return Err(match source.custom_path() {
+            Some(path) => Problem::CustomModelMissing(path.display().to_string()),
+            None => Problem::ModelUnavailable,
+        });
     };
     parts_from_model(config, paths, gpu, model_path)
 }
@@ -91,13 +129,18 @@ pub struct ModelDownload {
 }
 
 impl ModelDownload {
-    /// Pobieranie ma sens tylko z GPU i gdy modelu brak (albo jest częściowy).
+    /// Pobieranie ma sens tylko z GPU, z magazynu domyślnego (nie przy własnej ścieżce)
+    /// i gdy modelu brak (albo jest częściowy).
     pub fn needed(
         config: &Config,
         paths: &Paths,
+        source: &ModelSource,
         gpu: Option<&GpuReady>,
         model: Option<&ModelState>,
     ) -> Option<Self> {
+        if source.custom_path().is_some() {
+            return None;
+        }
         let missing = matches!(model, Some(ModelState::Missing | ModelState::Partial(_)));
         gpu.filter(|_| missing).map(|gpu| Self {
             config: config.clone(),
@@ -114,5 +157,74 @@ impl ModelDownload {
             .map_err(|error| error.to_string())?;
         parts_from_model(&self.config, &self.paths, &self.gpu, &model_path)
             .map_err(|_| "model pobrany, ale nie dał się załadować".to_owned())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn paths_in(dir: &Path) -> Paths {
+        Paths::under_home(dir)
+    }
+
+    #[test]
+    // specky: crit 01M4K6M33C1BCHBQ7DEG4GER2W
+    fn custom_model_path_is_used_as_is_without_downloading() {
+        let dir = tempfile::tempdir().unwrap();
+        let model = dir.path().join("moj-model.bin");
+        std::fs::write(&model, b"ggml").unwrap();
+        let config = Config {
+            model_path: Some(model.clone()),
+            ..Config::default()
+        };
+
+        let source = ModelSource::from_config(&config, &paths_in(dir.path()));
+
+        assert_eq!(source.custom_path(), Some(model.as_path()));
+        assert_eq!(check_model(&source), Some(ModelState::Ready(model)));
+        assert!(
+            ModelDownload::needed(&config, &paths_in(dir.path()), &source, None, None).is_none()
+        );
+    }
+
+    #[test]
+    // specky: crit 01M4K6M33CWKR54XAT4JVG3HWG
+    fn missing_custom_model_is_reported_with_its_path_and_not_downloaded() {
+        let dir = tempfile::tempdir().unwrap();
+        let missing = dir.path().join("nie-ma.bin");
+        let config = Config {
+            model_path: Some(missing.clone()),
+            ..Config::default()
+        };
+        let paths = paths_in(dir.path());
+
+        let source = ModelSource::from_config(&config, &paths);
+        let state = check_model(&source);
+
+        assert_eq!(state, Some(ModelState::Missing));
+        assert!(ModelDownload::needed(&config, &paths, &source, None, state.as_ref()).is_none());
+        let problem = match controller_parts(&config, &paths, &source, None, state.as_ref()) {
+            Ok(_) => panic!("kontroler bez GPU i bez modelu"),
+            Err(problem) => problem,
+        };
+        assert_eq!(
+            problem,
+            Problem::GpuMissing,
+            "bez GPU wygrywa komunikat o GPU"
+        );
+    }
+
+    #[test]
+    // specky: crit 01M4K6M33CGTMKF9VPRYQXKE1C
+    fn without_model_path_the_default_store_is_used() {
+        let dir = tempfile::tempdir().unwrap();
+        let paths = paths_in(dir.path());
+
+        let source = ModelSource::from_config(&Config::default(), &paths);
+
+        assert!(source.custom_path().is_none());
+        assert_eq!(check_model(&source), Some(ModelState::Missing));
+        assert!(matches!(source, ModelSource::Store(_)));
     }
 }
