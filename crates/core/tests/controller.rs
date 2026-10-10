@@ -55,10 +55,23 @@ impl FakeRecorder {
     }
 
     /// Udaje zapełnienie bufora w nagraniu o podanym numerze (od 1), jak wątek audio.
+    /// Kontroler publikuje `Recording` przed `Recorder::start`, więc czekamy, aż nagranie
+    /// faktycznie wystartuje i zarejestruje sygnał limitu.
     fn reach_limit_of(&self, recording_number: usize) {
-        let notifier = self.limit_notifiers.lock().unwrap()[recording_number - 1]
-            .take()
-            .expect("sygnał limitu już zużyty");
+        let deadline = std::time::Instant::now() + WAIT;
+        let notifier = loop {
+            {
+                let mut notifiers = self.limit_notifiers.lock().unwrap();
+                if let Some(slot) = notifiers.get_mut(recording_number - 1) {
+                    break slot.take().expect("sygnał limitu już zużyty");
+                }
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "nagranie {recording_number} nie wystartowało"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        };
         notifier();
     }
 }
