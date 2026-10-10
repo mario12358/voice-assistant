@@ -164,11 +164,11 @@
 
 ### Faza 7: Historia wypowiedzi, pauzy w nagraniu, limit długości
 
-- [ ] Zadanie 7.1: `va-audio`: `compress_pauses(samples, rate, &SilenceParams)` — odcinki ciszy wewnątrz nagrania dłuższe niż 1,5 s skracane do 0,5 s (stałe w module), mowa i krótsze pauzy bajt w bajt bez zmian; `trim_silence` nietknięte [VA-REC-5] (zmiana: 2026-10-10-specky-1BY4F4Z.md)
+- [ ] Zadanie 7.1: `va-audio`: `compress_pauses(samples, rate, &SilenceParams)` — odcinki ciszy wewnątrz nagrania dłuższe niż 1,5 s skracane do 0,5 s (stałe w module), mowa i krótsze pauzy bajt w bajt bez zmian; `trim_silence` nietknięte [VA-REC-5] (zmiana: 2026-10-10-specky-1BY4F4Z.md) (pr: #33)
   - Specky: (req: 01M4K06AQB7B8055HQ21BY4F4Z v1 @04c88f7)
   - Specky kryteria: (crit: 01M4K06AR8A386FPF759VJJ9M2) pauza > 1,5 s → 0,5 s; (crit: 01M4K06AR8A4107QK83WR0K6YC) reszta identyczna; (crit: 01M4K06AR8VG4GQ4HY90VTX40G) brzegi jak dotąd
   - AC: sygnał mowa–40 s ciszy–mowa po przetworzeniu ma 0,5 s ciszy między fragmentami, a fragmenty mowy są identyczne z wejściem; pauza 1,0 s zostaje; sama cisza nadal daje pusty wycinek
-- [ ] Test: 7.1 — testy jednostkowe na sygnale syntetycznym (pauza 40 s, 1,0 s, kilka pauz, brzegi), mutacja progu 1,5 s czerwona
+- [ ] Test: 7.1 — testy jednostkowe na sygnale syntetycznym (pauza 40 s, 1,0 s, kilka pauz, brzegi), mutacja progu 1,5 s czerwona (pr: #33)
 - [ ] Zadanie 7.2: Wpięcie `compress_pauses` po `trim_silence` w kontrolerze (`stop_and_transcribe`) i w `va-dev transcribe`; fixture WAV „dwa zdania rozdzielone 40 s ciszy” (skrypt `tests/fixtures/generate_silence_fixtures.py`) (wymaga: 7.1) [VA-REC-5] (zmiana: 2026-10-10-specky-1BY4F4Z.md)
   - Specky: (req: 01M4K06AQB7B8055HQ21BY4F4Z v1 @04c88f7)
   - Specky kryteria: (crit: 01M4K06AR8TJXY24K05X0MNBJC) 2 zdania + 40 s ciszy → oba zdania bez dodatkowych fraz
