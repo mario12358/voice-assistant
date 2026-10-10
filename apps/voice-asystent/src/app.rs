@@ -168,7 +168,9 @@ fn problem_for(event: &ControllerEvent, recording_limit_secs: u32) -> Option<Pro
         ControllerEvent::LimitReached => Some(Problem::RecordingLimitReached {
             limit_secs: recording_limit_secs,
         }),
-        ControllerEvent::StateChanged(_) | ControllerEvent::Delivered(_) => None,
+        ControllerEvent::StateChanged(_)
+        | ControllerEvent::Delivered(_)
+        | ControllerEvent::HistoryChanged(_) => None,
     }
 }
 

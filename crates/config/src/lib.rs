@@ -134,6 +134,8 @@ pub struct Paths {
     pub config_file: PathBuf,
     pub models_dir: PathBuf,
     pub logs_dir: PathBuf,
+    /// Historia wypowiedzi (VA-HIST-1) — jedyny plik z treścią transkrypcji.
+    pub history_file: PathBuf,
 }
 
 impl Paths {
@@ -143,6 +145,7 @@ impl Paths {
             config_file: data_dir.join("config.toml"),
             models_dir: data_dir.join("models"),
             logs_dir: home.join("Library/Logs").join(APP_DIR),
+            history_file: data_dir.join("history.json"),
         }
     }
 
@@ -299,6 +302,10 @@ padding_ms = 100
         assert_eq!(
             paths.models_dir,
             Path::new("/Users/test/Library/Application Support/VoiceAsystent/models")
+        );
+        assert_eq!(
+            paths.history_file,
+            Path::new("/Users/test/Library/Application Support/VoiceAsystent/history.json")
         );
         assert_eq!(
             paths.logs_dir,

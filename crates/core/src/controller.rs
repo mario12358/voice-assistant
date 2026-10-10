@@ -14,6 +14,7 @@ use va_audio::{
 use va_clipboard::{Delivery, TextSink};
 use va_stt::{SpeechToText, Transcript};
 
+use crate::history::{History, HistoryEntry};
 use crate::logging;
 use crate::state::{Action, Input, State, StateMachine};
 
@@ -22,6 +23,9 @@ use crate::state::{Action, Input, State, StateMachine};
 pub enum Command {
     Start,
     Stop,
+    /// Kopiuje wpis historii o tym id do schowka, bez nagrywania (VA-HIST-1).
+    CopyHistoryEntry(u64),
+    ClearHistory,
 }
 
 /// Zdarzenia dla UI.
@@ -36,6 +40,8 @@ pub enum ControllerEvent {
     Delivered(Delivery),
     /// Nagranie osiągnęło limit długości i zostało zakończone automatycznie (VA-REC-6).
     LimitReached,
+    /// Aktualna lista wpisów historii, najnowszy pierwszy (także raz po starcie).
+    HistoryChanged(Vec<HistoryEntry>),
 }
 
 /// Wybór mikrofonu w chwili startu nagrania (konfiguracja może się zmienić w trakcie pracy).
@@ -50,11 +56,14 @@ pub struct ControllerParts {
     pub sink: Box<dyn TextSink>,
     pub silence: SilenceParams,
     pub select_device: DeviceSelector,
+    pub history: History,
 }
 
 enum Message {
     Command(Command),
     Transcribed(Result<Option<Transcript>, String>),
+    /// Wynik kopiowania wpisu historii do schowka.
+    Copied(Result<Delivery, String>),
     /// Nagrywarka zapełniła bufor; numer nagrania chroni przed spóźnionym sygnałem z poprzedniego.
     LimitReached(u64),
     Shutdown,
@@ -104,6 +113,7 @@ pub fn spawn(parts: ControllerParts, publish: EventPublisher) -> ControllerHandl
         publish,
         messages: messages.clone(),
         recording_number: 0,
+        history: parts.history,
     };
     let thread = std::thread::Builder::new()
         .name("va-controller".into())
@@ -124,18 +134,51 @@ struct Controller {
     publish: EventPublisher,
     messages: Sender<Message>,
     recording_number: u64,
+    history: History,
 }
 
 impl Controller {
     fn run(mut self, inbox: &Receiver<Message>) {
         (self.publish)(ControllerEvent::StateChanged(self.machine.state()));
+        self.publish_history();
         while let Ok(message) = inbox.recv() {
             match message {
                 Message::Command(Command::Start) => self.apply(Input::Start),
                 Message::Command(Command::Stop) => self.apply(Input::Stop),
+                Message::Command(Command::CopyHistoryEntry(id)) => self.copy_history_entry(id),
+                Message::Command(Command::ClearHistory) => {
+                    self.history.clear();
+                    self.publish_history();
+                }
                 Message::Transcribed(result) => self.on_transcribed(result),
+                Message::Copied(result) => self.on_copied(result),
                 Message::LimitReached(number) => self.on_limit_reached(number),
                 Message::Shutdown => break,
+            }
+        }
+    }
+
+    fn publish_history(&mut self) {
+        (self.publish)(ControllerEvent::HistoryChanged(
+            self.history.entries().to_vec(),
+        ));
+    }
+
+    /// Kopiowanie idzie przez ten sam schowek co transkrypcja, w wątku roboczym; automat
+    /// stanów nie bierze w tym udziału — nagrywanie nie startuje.
+    fn copy_history_entry(&mut self, id: u64) {
+        match self.history.find(id) {
+            Some(entry) => self.worker.deliver(entry.text.clone()),
+            None => tracing::warn!(id, "wpis historii nie istnieje — nic do skopiowania"),
+        }
+    }
+
+    fn on_copied(&mut self, result: Result<Delivery, String>) {
+        match result {
+            Ok(delivery) => (self.publish)(ControllerEvent::Delivered(delivery)),
+            Err(message) => {
+                tracing::error!(error = %message, "kopiowanie wpisu historii nieudane");
+                (self.publish)(ControllerEvent::Failed(message));
             }
         }
     }
@@ -196,7 +239,7 @@ impl Controller {
     fn on_transcribed(&mut self, result: Result<Option<Transcript>, String>) {
         match result {
             Ok(transcript) => {
-                let delivery = match transcript {
+                let delivery = match &transcript {
                     Some(transcript) => {
                         logging::transcription_finished(&transcript.text, transcript.inference);
                         Delivery::Written
@@ -204,6 +247,11 @@ impl Controller {
                     None => Delivery::SkippedEmpty,
                 };
                 (self.publish)(ControllerEvent::Delivered(delivery));
+                if let Some(transcript) = transcript
+                    && self.history.push(&transcript.text, chrono::Local::now())
+                {
+                    self.publish_history();
+                }
                 self.apply(Input::TranscriptionFinished);
             }
             Err(message) => self.fail(message),
@@ -232,9 +280,14 @@ fn has_no_signal(samples: &[f32]) -> bool {
     !samples.is_empty() && samples.iter().all(|sample| *sample == 0.0)
 }
 
-/// Wątek roboczy z modelem i schowkiem: nagranie → tekst → schowek.
+/// Wątek roboczy z modelem i schowkiem: nagranie → tekst → schowek, albo gotowy tekst → schowek.
 struct TranscriptionWorker {
-    jobs: Sender<Vec<f32>>,
+    jobs: Sender<Job>,
+}
+
+enum Job {
+    Transcribe(Vec<f32>),
+    Deliver(String),
 }
 
 impl TranscriptionWorker {
@@ -243,13 +296,21 @@ impl TranscriptionWorker {
         mut sink: Box<dyn TextSink>,
         results: Sender<Message>,
     ) -> Self {
-        let (jobs, queue) = mpsc::channel::<Vec<f32>>();
+        let (jobs, queue) = mpsc::channel::<Job>();
         std::thread::Builder::new()
             .name("va-transcription".into())
             .spawn(move || {
-                for speech in queue {
-                    let result = transcribe_and_deliver(stt.as_mut(), sink.as_mut(), &speech);
-                    if results.send(Message::Transcribed(result)).is_err() {
+                for job in queue {
+                    let message =
+                        match job {
+                            Job::Transcribe(speech) => Message::Transcribed(
+                                transcribe_and_deliver(stt.as_mut(), sink.as_mut(), &speech),
+                            ),
+                            Job::Deliver(text) => Message::Copied(
+                                sink.deliver(&text).map_err(|error| error.to_string()),
+                            ),
+                        };
+                    if results.send(message).is_err() {
                         break;
                     }
                 }
@@ -259,7 +320,11 @@ impl TranscriptionWorker {
     }
 
     fn transcribe(&self, speech: Vec<f32>) {
-        let _ = self.jobs.send(speech);
+        let _ = self.jobs.send(Job::Transcribe(speech));
+    }
+
+    fn deliver(&self, text: String) {
+        let _ = self.jobs.send(Job::Deliver(text));
     }
 }
 

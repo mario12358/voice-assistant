@@ -7,6 +7,7 @@ use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
 use va_clipboard::system_sink;
 use va_config::{Config, Paths};
 use va_core::controller::ControllerParts;
+use va_core::history::{FileHistoryStore, History};
 use va_model::{LARGE_V3_TURBO, ModelState, ModelStore, Progress};
 use va_stt::{GpuReady, METAL_BUILT, MetalProbe, WhisperStt, require_metal};
 
@@ -66,6 +67,7 @@ fn parts_from_model(
         recorder: Box::new(CpalRecorder::new(config.max_recording_secs)),
         stt: Box::new(stt),
         sink: Box::new(system_sink()),
+        history: History::open(Box::new(FileHistoryStore::new(&paths.history_file))),
         silence: SilenceParams {
             threshold_rms: config.silence.threshold_rms,
             padding_ms: config.silence.padding_ms,

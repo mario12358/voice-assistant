@@ -9,6 +9,7 @@ use va_audio::{LimitNotifier, Recorder, SilenceParams};
 use va_clipboard::testing::MemoryClipboard;
 use va_clipboard::{ClipboardSink, Delivery};
 use va_core::controller::{Command, ControllerEvent, ControllerHandle, ControllerParts, spawn};
+use va_core::history::{FileHistoryStore, History, HistoryEntry};
 use va_core::state::State;
 use va_stt::testing::ScriptedStt;
 
@@ -89,10 +90,27 @@ struct Harness {
     stt: ScriptedStt,
     clipboard: MemoryClipboard,
     recorder: FakeRecorder,
+    history_file: PathBuf,
+    /// Lista historii opublikowana zaraz po starcie kontrolera.
+    initial_history: Vec<HistoryEntry>,
+    _history_dir: Option<tempfile::TempDir>,
 }
 
 impl Harness {
     fn new(recorder: FakeRecorder, stt: ScriptedStt, clipboard: MemoryClipboard) -> Self {
+        let dir = tempfile::tempdir().expect("katalog tymczasowy");
+        let history_file = dir.path().join("history.json");
+        let mut harness = Self::with_history_file(recorder, stt, clipboard, history_file);
+        harness._history_dir = Some(dir);
+        harness
+    }
+
+    fn with_history_file(
+        recorder: FakeRecorder,
+        stt: ScriptedStt,
+        clipboard: MemoryClipboard,
+        history_file: PathBuf,
+    ) -> Self {
         let (sender, events) = mpsc::channel();
         let handle = spawn(
             ControllerParts {
@@ -101,23 +119,39 @@ impl Harness {
                 sink: Box::new(ClipboardSink::new(clipboard.clone())),
                 silence: SILENCE,
                 select_device: Box::new(|| Ok("PXC 550".to_owned())),
+                history: History::open(Box::new(FileHistoryStore::new(&history_file))),
             },
             Box::new(move |event| {
                 let _ = sender.send(event);
             }),
         );
-        let harness = Self {
+        let mut harness = Self {
             handle,
             events,
             stt,
             clipboard,
             recorder,
+            history_file,
+            initial_history: Vec::new(),
+            _history_dir: None,
         };
         assert_eq!(
             harness.next_event(),
             ControllerEvent::StateChanged(State::Idle)
         );
+        match harness.next_event() {
+            ControllerEvent::HistoryChanged(entries) => harness.initial_history = entries,
+            other => panic!("po starcie oczekiwano listy historii, było {other:?}"),
+        }
         harness
+    }
+
+    /// Ostatnia opublikowana lista historii spośród podanych zdarzeń.
+    fn history_in(events: &[ControllerEvent]) -> Option<&[HistoryEntry]> {
+        events.iter().rev().find_map(|event| match event {
+            ControllerEvent::HistoryChanged(entries) => Some(entries.as_slice()),
+            _ => None,
+        })
     }
 
     fn next_event(&self) -> ControllerEvent {
@@ -158,12 +192,16 @@ fn stop_puts_transcript_in_clipboard_and_reports_states_to_ui() {
 
     let events = harness.record_and_stop();
 
+    let history = Harness::history_in(&events).expect("lista historii po transkrypcji");
+    assert_eq!(history.len(), 1);
+    assert_eq!(history[0].text, "Dzień dobry, test przycinania ciszy.");
     assert_eq!(
         events,
         vec![
             ControllerEvent::StateChanged(State::Recording),
             ControllerEvent::StateChanged(State::Transcribing),
             ControllerEvent::Delivered(Delivery::Written),
+            ControllerEvent::HistoryChanged(history.to_vec()),
             ControllerEvent::StateChanged(State::Idle),
         ]
     );
@@ -316,8 +354,13 @@ fn limit_reached_stops_recording_and_transcribes_without_stop_command() {
     harness.recorder.reach_limit_of(1);
     let events = harness.events_until_idle();
 
+    let without_history: Vec<_> = events
+        .iter()
+        .filter(|event| !matches!(event, ControllerEvent::HistoryChanged(_)))
+        .cloned()
+        .collect();
     assert_eq!(
-        events,
+        without_history,
         vec![
             ControllerEvent::LimitReached,
             ControllerEvent::StateChanged(State::Transcribing),
@@ -362,6 +405,110 @@ fn stale_limit_signal_from_previous_recording_is_ignored() {
         "{events:?}"
     );
     assert_eq!(harness.clipboard.contents().as_deref(), Some("drugie"));
+}
+
+#[test]
+// specky: crit 01M4K06AH032985T6JXJX7EE3W
+fn silence_adds_nothing_to_history_but_speech_does() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("silence_only.wav")),
+        ScriptedStt::answering([Ok("po ciszy".into())]),
+        MemoryClipboard::default(),
+    );
+    assert!(harness.initial_history.is_empty());
+
+    let silent = harness.record_and_stop();
+    assert!(Harness::history_in(&silent).is_none(), "{silent:?}");
+
+    *harness.recorder.recording.lock().unwrap() = fixture("speech_with_silence.wav");
+    let spoken = harness.record_and_stop();
+    let history = Harness::history_in(&spoken).expect("wpis po mowie");
+    assert_eq!(history.len(), 1);
+    assert_eq!(history[0].text, "po ciszy");
+}
+
+#[test]
+// specky: crit 01M4K06AH09HZHH764X48P4GM4
+fn copying_a_history_entry_fills_the_clipboard_without_recording() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("pierwsze zdanie".into()), Ok("drugie zdanie".into())]),
+        MemoryClipboard::default(),
+    );
+    harness.record_and_stop();
+    let events = harness.record_and_stop();
+    let history = Harness::history_in(&events).unwrap().to_vec();
+    assert_eq!(history[0].text, "drugie zdanie");
+    assert_eq!(
+        harness.clipboard.contents().as_deref(),
+        Some("drugie zdanie")
+    );
+
+    harness
+        .handle
+        .send(Command::CopyHistoryEntry(history[1].id));
+
+    assert_eq!(
+        harness.next_event(),
+        ControllerEvent::Delivered(Delivery::Written)
+    );
+    assert_eq!(
+        harness.clipboard.contents().as_deref(),
+        Some("pierwsze zdanie")
+    );
+    assert_eq!(
+        harness.recorder.starts().len(),
+        2,
+        "kopiowanie uruchomiło nagranie"
+    );
+    assert_eq!(harness.stt.received().len(), 2);
+}
+
+#[test]
+// specky: crit 01M4K06AH0FMZJZZX7SHA9KR5A
+fn history_is_published_again_after_restart_from_the_same_file() {
+    let dir = tempfile::tempdir().unwrap();
+    let file = dir.path().join("history.json");
+    let first = Harness::with_history_file(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("trwałe zdanie".into())]),
+        MemoryClipboard::default(),
+        file.clone(),
+    );
+    let events = first.record_and_stop();
+    let saved = Harness::history_in(&events).unwrap().to_vec();
+    drop(first);
+
+    let restarted = Harness::with_history_file(
+        FakeRecorder::default(),
+        ScriptedStt::answering([]),
+        MemoryClipboard::default(),
+        file.clone(),
+    );
+
+    assert_eq!(restarted.initial_history, saved);
+    assert_eq!(restarted.initial_history[0].text, "trwałe zdanie");
+    assert!(restarted.history_file.exists());
+}
+
+#[test]
+// specky: crit 01M4K06AH0BR7ZQYXPH6B08P26
+fn clearing_history_empties_the_list_and_deletes_the_file() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("do wyczyszczenia".into())]),
+        MemoryClipboard::default(),
+    );
+    harness.record_and_stop();
+    assert!(harness.history_file.exists());
+
+    harness.handle.send(Command::ClearHistory);
+
+    assert_eq!(
+        harness.next_event(),
+        ControllerEvent::HistoryChanged(vec![])
+    );
+    assert!(!harness.history_file.exists());
 }
 
 #[test]
