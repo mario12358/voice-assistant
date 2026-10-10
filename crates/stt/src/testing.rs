@@ -4,6 +4,8 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use va_config::Language;
+
 use crate::{Error, Result, SpeechToText, Transcript};
 
 /// Kolejne wywołania zwracają kolejne odpowiedzi; `Err(())` udaje błąd inferencji.
@@ -11,19 +13,25 @@ use crate::{Error, Result, SpeechToText, Transcript};
 pub struct ScriptedStt {
     answers: Arc<Mutex<VecDeque<std::result::Result<String, ()>>>>,
     received: Arc<Mutex<Vec<Vec<f32>>>>,
+    languages: Arc<Mutex<Vec<Language>>>,
 }
 
 impl ScriptedStt {
     pub fn answering(answers: impl IntoIterator<Item = std::result::Result<String, ()>>) -> Self {
         Self {
             answers: Arc::new(Mutex::new(answers.into_iter().collect())),
-            received: Arc::default(),
+            ..Self::default()
         }
     }
 
     /// Nagrania, które trafiły do transkrypcji (wspólne dla klonów).
     pub fn received(&self) -> Vec<Vec<f32>> {
         self.received.lock().expect("lista nagrań").clone()
+    }
+
+    /// Języki ustawione przez `set_language`, w kolejności (wspólne dla klonów).
+    pub fn languages(&self) -> Vec<Language> {
+        self.languages.lock().expect("lista języków").clone()
     }
 }
 
@@ -41,6 +49,10 @@ impl SpeechToText for ScriptedStt {
             Some(Err(())) => Err(Error::Inference("błąd testowy".into())),
             None => Err(Error::Inference("brak zaplanowanej odpowiedzi".into())),
         }
+    }
+
+    fn set_language(&mut self, language: Language) {
+        self.languages.lock().expect("lista języków").push(language);
     }
 }
 
