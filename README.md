@@ -47,8 +47,16 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 | Start nagrywania | `ctrl+cmd+r` (w dowolnej aplikacji) albo kliknięcie szarego kółka |
 | Stop i transkrypcja | `ctrl+cmd+s` albo kliknięcie czerwonego kółka |
 | Wklejenie tekstu | `cmd+v` w miejscu z kursorem — schowek zawiera ostatnią transkrypcję |
+| Wcześniejsza wypowiedź | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`) |
+| Wyczyszczenie historii | prawy przycisk na ikonie → **Historia** → **Wyczyść historię** |
 | Wybór mikrofonu | prawy przycisk na ikonie → **Mikrofon** → urządzenie z listy |
 | Zakończenie aplikacji | prawy przycisk na ikonie → **Zakończ** |
+
+**Historia wypowiedzi.** Każda niepusta transkrypcja trafia na listę w podmenu **Historia**
+(godzina i początek tekstu, najnowsza na górze, 30 ostatnich). Lista jest zapisywana w pliku
+`~/Library/Application Support/VoiceAsystent/history.json`, dostępnym tylko dla Twojego
+użytkownika, i wraca po ponownym uruchomieniu aplikacji. To jedyne miejsce, w którym tekst
+Twoich wypowiedzi ląduje na dysku; **Wyczyść historię** kasuje listę razem z plikiem.
 
 Podczas nagrywania kółko jest czerwone; w trakcie transkrypcji i w spoczynku — szare.
 Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Długie przerwy w mówieniu

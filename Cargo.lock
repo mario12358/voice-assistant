@@ -3173,6 +3173,7 @@ name = "voice-asystent"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "global-hotkey",
  "mac-notification-sys",
  "tao",

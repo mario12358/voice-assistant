@@ -29,6 +29,7 @@ Aplikacja nie potrzebuje żadnych sekretów ani kluczy.
 | Co | Ścieżka |
 |----|---------|
 | Konfiguracja | `~/Library/Application Support/VoiceAsystent/config.toml` |
+| Historia wypowiedzi | `~/Library/Application Support/VoiceAsystent/history.json` (JSON, tryb 0600, 30 ostatnich wpisów; jedyny plik z treścią transkrypcji — „Wyczyść historię” w menu go kasuje) |
 | Model | `~/Library/Application Support/VoiceAsystent/models/ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 `1fc70f77…e2bc69`); częściowe pobranie: `.part` obok |
 | Logi | `~/Library/Logs/VoiceAsystent/voice-asystent.log.*` (JSON, dziennie) + tekst na stderr |
 
