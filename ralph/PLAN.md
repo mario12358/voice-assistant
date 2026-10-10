@@ -263,11 +263,14 @@
   - Specky kryteria: (crit: 01M4KD15M5E90XXM60PPS2S33J) pozycje z zaznaczeniem i nazwa wariantu; (crit: 01M4KD15M6BESGW2M37ZY4WV7S) wybór → pobieranie/przeładowanie bez restartu, zapis; (crit: 01M4KD15M63SWHPZAMN9BYDK0W) usuwanie per wariant
   - AC: wejście — kliknięcie pozycji wariantu w pętli tao; automat wyboru wariantu (`VariantSwitch`: wybrany/na dysku/pobierany → akcja) testowany jednostkowo; etykiety i flagi testowane; przeładowanie modelu używa istniejącej ścieżki `ModelLoaded`
 - [x] Test: 9.8 — testy etykiet i automatu wyboru wariantu, flag „Usuń drugi wariant”; mutacja (przełączenie bez zapisu do konfiguracji) czerwona (pr: #56)
-- [ ] Zadanie 9.9: `.github/workflows/release.yml` na tag `v*`: testy (bez ignorowanych) → `scripts/build-dmg.sh` → sprawdzenie rozmiaru < 20 MB i braku `.bin` w obrazie → `gh release create <tag> --notes-from-tag` z załącznikiem `VoiceAsystent-X.Y.Z.dmg`; RUNBOOK sekcja wydania [VA-CI-1] (zmiana: 2026-10-10-specky-47S54D5.md) (pr: #57)
+- [x] Zadanie 9.9: `.github/workflows/release.yml` na tag `v*`: testy (bez ignorowanych) → `scripts/build-dmg.sh` → sprawdzenie rozmiaru < 20 MB i braku `.bin` w obrazie → `gh release create <tag> --notes-from-tag` z załącznikiem `VoiceAsystent-X.Y.Z.dmg`; RUNBOOK sekcja wydania [VA-CI-1] (zmiana: 2026-10-10-specky-47S54D5.md) (pr: #57)
   - Specky: (req: 01M4KD15NQGKTSWZCH647S54D5 v1 @9ee4f05)
   - Specky kryteria: (crit: 01M4KD15NZAN4ZGGRTDR8327Z1) build na macOS, dmg skryptem; (crit: 01M4KD15NZMG0684CZTN5614X4) wydanie z opisem z tagu; (crit: 01M4KD15NZCFGE5HQME8HXCGJX) < 20 MB, bez modelu; (crit: 01M4KD15NZYVAV8WJAC6D217TD) czerwony build → brak wydania
   - AC: wejście — push tagu `v*` na GitHub (weryfikacja przy następnym wydaniu, które właściciel wypchnie); skrypt `scripts/check-dmg.sh` (rozmiar, brak modelu) testowany lokalnie na obrazie z binarki debug; workflow sprawdzony `actionlint` jeśli dostępny, inaczej `python3 -c yaml.safe_load`
-- [ ] Test: 9.9 — test `scripts/check-dmg.sh` (obraz poprawny → 0, obraz z plikiem `.bin` → 1, obraz > 20 MB → 1); składnia workflow (pr: #57)
+- [x] Test: 9.9 — test `scripts/check-dmg.sh` (obraz poprawny → 0, obraz z plikiem `.bin` → 1, obraz > 20 MB → 1); składnia workflow (pr: #57)
+- [ ] Zadanie 9.11: Naprawa niestabilnego testu `model_loads_once_on_metal_and_transcribes_polish_and_english` — przeniesiony do osobnego pliku `crates/stt/tests/whisper_metal.rs` (osobny proces), wspólne pomocniki w `tests/common/mod.rs`; w pełnym suicie po 9.9 test padał 4/4 razy przy równoległych testach modelu z 9.4/9.7 [VA-STT-1] (pr: #58)
+  - AC: wejście — `cargo test --workspace -- --include-ignored`; trzy przebiegi pod rząd zielone, mutacja `use_gpu(false)` czerwona
+- [ ] Test: 9.11 — trzy przebiegi `cargo test -p va-stt --features metal --tests -- --include-ignored` zielone; mutacja (`use_gpu(false)`) czerwona (pr: #58)
 - [ ] ⛔ Zadanie 9.10: Test manualny właściciela: powiadomienie po transkrypcji (i dźwięk po włączeniu), czas start → ikona ≤ 1,5 s, Ustawienia (język, limit, „inne”), Uruchamiaj przy logowaniu (wylogowanie/zalogowanie), Pokaż logi, przełączenie na q5_0 i z powrotem, wydanie z CI po wypchnięciu tagu — wynik do REPORT.md (wymaga: 9.3, 9.6, 9.8, 9.9)
 
 ## Pokrycie spec
