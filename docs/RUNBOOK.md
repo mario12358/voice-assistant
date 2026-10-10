@@ -117,7 +117,7 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Skrót nie działa, w menu komunikat o konflikcie | kombinacja `ctrl+cmd+r`/`ctrl+cmd+s` zajęta przez inną aplikację; zwolnij ją tam albo używaj kliknięcia ikony |
 | Nagranie skończyło się samo, powiadomienie „Osiągnięto limit długości nagrania" | limit `max_recording_secs` (domyślnie 600 s): materiał do limitu jest transkrybowany jak po Stop; dłuższe dyktowanie → podnieś wartość w `config.toml` |
 | Transkrypcja pusta, schowek bez zmian | nagranie było ciszą poniżej `silence.threshold_rms` (domyślnie 0.01) — obniż próg w `config.toml` albo sprawdź mikrofon `mic-test` |
-| Start aplikacji trwa kilka sekund | przy każdym starcie liczona jest suma SHA-256 modelu (1,6 GB, ok. 3–4 s) i ładowany model na GPU |
+| Start aplikacji trwa kilka sekund | suma SHA-256 modelu (ok. 3–4 s) liczona jest tylko przy braku albo niezgodności znacznika `<model>.verified` (pierwszy start, podmiana pliku); zwykle start zajmuje ułamek sekundy plus ładowanie modelu na GPU |
 | Powiadomienia pokazują się jako „Terminal" | aplikacja uruchomiona z `cargo run`, nie z bundla; z `dist/VoiceAsystent.app` pokazują się pod nazwą VoiceAsystent |
 | `cargo` nie znalezione w nowym shellu | `export PATH="$HOME/.cargo/bin:$PATH"` |
 | Brak miejsca na dysku przy testach | artefakty w `target/` (debug + release + whisper.cpp) zajmują kilka GB; `cargo clean` |
@@ -125,3 +125,4 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Testy modelu w `cargo test -p va-stt` nie ładują modelu („GPU Metal”) | cecha `metal` jest włączana przez binarki; uruchamiaj `cargo test --workspace` albo `-p va-stt --features metal` |
 | Po przełączeniu wariantu nagrywanie niedostępne | trwa pobieranie albo ładowanie wariantu (status na górze menu); błąd pobierania → **Ponów pobieranie** |
 | Obraz .dmg nie montuje się w teście („Resource busy") | poprzedni test nie odmontował wolumenu: `hdiutil info`, potem `hdiutil detach <mountpoint>` |
+| `hdiutil: attach failed - Zasoby czasowo niedostępne` | kilka obrazów montowanych naraz; testy obrazów są szeregowane (mutex w `dmg.rs`, grupa nextest `obrazy-dysku` w `.config/nextest.toml`), skrypty ponawiają 3× — nie dodawaj testów obrazów poza tym plikiem |

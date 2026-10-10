@@ -14,11 +14,11 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: W trakcie — Faza 9 (sygnał gotowe, szybki start, ustawienia, autostart, logi, jakość STT, wariant q5_0, wydanie w CI) dopisana 2026-10-10 z ośmiu wymagań Specky; Fazy 7 i 8 czekają tylko na testy ręczne ⛔ 7.7 i ⛔ 8.5
-- **Postęp**: 67/88 pozycji ukończonych (zostały ⛔ 7.7, ⛔ 8.5 i Faza 9: 0/19)
+- **Status**: W trakcie — kod Faz 7, 8 i 9 zmergowany (Faza 9: PR #49–#58), wszystkie wymagania Faz 7–9 `code_ready`; czekają tylko testy ręczne właściciela ⛔ 7.7, ⛔ 8.5 i ⛔ 9.10
+- **Postęp**: 87/90 pozycji ukończonych (zostały ⛔ 7.7, ⛔ 8.5, ⛔ 9.10)
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-08 (kursor 704): 0 zmian, kolejka pusta; VA-MODEL-1 czeka na decyzję. Na prośbę właściciela VA-PLAT-1 i VA-TECH-1 oznaczone `code_ready`.
 - Specky 2026-10-09 (kursor 709): kolejka pusta, VA-PLAT-2 `in_progress`.
-- Otwarte PR: brak. Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- Otwarte PR: brak. Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -34,6 +34,8 @@ zostawić (3 ostatnie), a które przenieść do ralph/REPORT_ARCHIVE.md. Akapit 
 jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pliku
 na zawsze i rośnie w prompcie każdej sesji.
 -->
+
+**Przebieg po zadaniach 9.1–9.11 (2026-10-10) — ZIELONY (main 4e23e64, nie regresja fazy — czekają ⛔ 7.7, ⛔ 8.5 i ⛔ 9.10):** `cargo test --workspace -- --include-ignored` 211/0 dwa razy pod rząd (w tym prawdziwy model pełny i q5_0, szum, mieszane PL, Metal, mikrofon, build release, obrazy .dmg), clippy `-D warnings` czysto, `cargo fmt --check` czysto; CI nextest 197/197. Względem 171/0 po 8.4: +40 testów. Pierwszy przebieg po 9.9 dał 209/1 — niestabilny test logów Metal i montowanie .dmg naprawione w 9.11. Bez tagów `ralph/faza-7..9` do wyników testów ręcznych.
 
 **Przebieg po zadaniach 8.1–8.4 (2026-10-10) — ZIELONY (main c7cd4d6, nie regresja fazy — czekają ⛔ 7.7 i ⛔ 8.5):** `cargo test --workspace -- --include-ignored` 171/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 156/0 po 7.6: +15 testów (model_path, remove/size w va-model, automat pobierania, podmenu Model, potwierdzenie). Bez tagów `ralph/faza-7` i `ralph/faza-8` do wyników testów ręcznych.
 
@@ -51,11 +53,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 171 |
-| Pass | 171 |
+| Łącznie testów | 211 |
+| Pass | 211 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 8.4) |
+| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 9.11, 4e23e64) |
 
 ## Historia realizacji
 
@@ -83,7 +85,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 8.1 `ModelSource::{Store, Custom}` z `config.model_path`: własny plik bez SHA-256 i pobierania, brak pliku → `Problem::CustomModelMissing` ze ścieżką w menu; `ModelDownload::needed` pomija własną ścieżkę + test 8.1 | ✅ PR #42 | 152/0 + 10 ignored; testy startu z HOME tymczasowym (własna ścieżka istniejąca/nieistniejąca); mutacja (ignorowanie model_path) czerwona | 1 | f8a4c80 | 2026-10-10 |
 | 8.2 `ModelStore::remove/size_on_disk/spec`, `ModelSpec::display_name`; `DownloadState::Missing`, zdarzenie `Removed`, `Retry` z `Missing`, `can_remove`; `ModelDownload::available` + test 8.2 | ✅ PR #43 | 156/0 + 10 ignored; mutacja (`can_remove` prawdziwe przy pobieraniu) czerwona | 1 | 17eba66 | 2026-10-10 |
 | 8.3 Podmenu „Model” (model_menu.rs: linie stanu z rozmiarem w GB, własna ścieżka, flagi Usuń/Pobierz; TrayMenu::show_model; odświeżanie w pętli tao; Pokaż w Finderze przez `open -R`) + test 8.3 | ✅ PR #44 | 160/0 + 10 ignored; mutacja (Usuń aktywne przy pobieraniu) czerwona | 1 | efd85e8 | 2026-10-10 |
-| 9.11 Naprawa niestabilnego testu logów Metal: `model_loads_once_on_metal…` w osobnym pliku `whisper_metal.rs` (osobny proces), pomocniki w `tests/common/mod.rs`; ponawianie `hdiutil attach`/`create` z widocznym błędem w `check-dmg.sh`, `build-dmg.sh` i teście montowania + test 9.11 | PR #58 otwarty | va-stt z `--include-ignored` 3× zielony (12/0); dmg.rs 19× i szybki zestaw 6× zielone po szeregowaniu testów obrazów; mutacje `use_gpu(false)` i brak `exit 1` po nieudanym montowaniu czerwone | 1 | — | 2026-10-10 |
+| 9.11 Naprawa niestabilnego testu logów Metal: `model_loads_once_on_metal…` w osobnym pliku `whisper_metal.rs` (osobny proces), pomocniki w `tests/common/mod.rs`; ponawianie `hdiutil attach`/`create` z widocznym błędem w `check-dmg.sh`, `build-dmg.sh` i teście montowania + test 9.11 | ✅ PR #58 | va-stt z `--include-ignored` 3× zielony (12/0); dmg.rs 19× i szybki zestaw 6× zielone po szeregowaniu testów obrazów; mutacje `use_gpu(false)` i brak `exit 1` po nieudanym montowaniu czerwone | 3 | 4e23e64 | 2026-10-10 |
 | 9.9 `.github/workflows/release.yml` (tag v* → testy → build-dmg → check-dmg → `gh release create --notes-from-tag`), `scripts/check-dmg.sh` (rozmiar < 20 MB, brak `*.bin`/`ggml*`), RUNBOOK sekcja wydania + test 9.9 | ✅ PR #57 | 196/0 + 14 ignored; prawdziwy obraz release 4,05 MB przechodzi kontrolę; YAML sprawdzony Ruby (actionlint niedostępny); mutacja (brak szukania modelu) czerwona | 1 | 586080c | 2026-10-10 |
 | 9.8 Wybór wariantu w podmenu „Model” (pozycje Pełny 1,6 GB / q5_0 0,6 GB z zaznaczeniem, przełączenie: zapis `model_variant` → `DownloadEvent::Switch` → pobranie albo samo załadowanie → `ModelLoaded`, „Usuń nieużywany wariant”), rozmiary zaokrąglane do najbliższej dziesiątej; README/RUNBOOK fazy 9 + test 9.8 | ✅ PR #56 | 194/0 + 14 ignored; mutacja (przełączenie bez zapisu do konfiguracji) czerwona; aplikacja startuje lokalnie | 1 | e97da01 | 2026-10-10 |
 | 9.7 Wariant q5_0: `ModelVariant` (`model_variant` w config.toml, domyślnie full), `LARGE_V3_TURBO_Q5_0` (574 041 195 B, SHA-256 z LFS HF) i `spec_for`, `ModelSource::Store(store, wariant)`, pobieranie i usuwanie per wariant, `va-dev model-download --variant` + test 9.7 | ✅ PR #55 | 189/0 + 14 ignored; q5_0 pobrany (54 s) i rozpoznaje speech_pl; mutacja (wariant ignorowany) czerwona | 1 | af22fbb | 2026-10-10 |
