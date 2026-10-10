@@ -13,7 +13,7 @@ use crate::history_menu::{CLEAR_HISTORY_ID, history_items};
 use crate::microphones::{QUIT_ID, microphone_items};
 use crate::model_menu::{
     CANCEL_REMOVE_ID, CONFIRM_REMOVE_ID, ModelMenu, REDOWNLOAD_MODEL_ID, REMOVE_MODEL_ID,
-    RemovePrompt, SHOW_MODEL_ID,
+    REMOVE_OTHER_VARIANT_ID, RemovePrompt, SHOW_MODEL_ID,
 };
 
 use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
@@ -118,6 +118,16 @@ impl TrayMenu {
         for line in &menu.lines {
             let _ = self.model.append(&MenuItem::new(line, false, None));
         }
+        for variant in &menu.variants {
+            let item = CheckMenuItem::with_id(
+                &variant.id,
+                &variant.label,
+                variant.enabled,
+                variant.checked,
+                None,
+            );
+            let _ = self.model.append(&item);
+        }
         let show = MenuItem::with_id(SHOW_MODEL_ID, "Pokaż w Finderze", true, None);
         let redownload = MenuItem::with_id(
             REDOWNLOAD_MODEL_ID,
@@ -150,6 +160,10 @@ impl TrayMenu {
         };
         if let Err(error) = result {
             tracing::error!(%error, "podmenu Model");
+        }
+        if let Some(label) = &menu.remove_other {
+            let remove_other = MenuItem::with_id(REMOVE_OTHER_VARIANT_ID, label, true, None);
+            let _ = self.model.append(&remove_other);
         }
     }
 

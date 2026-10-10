@@ -27,6 +27,8 @@ pub enum DownloadEvent {
     Retry,
     /// Użytkownik potwierdził usunięcie modelu w podmenu „Model”.
     Removed,
+    /// Użytkownik wybrał inny wariant modelu — pobranie (albo samo załadowanie) od nowa.
+    Switch,
 }
 
 impl DownloadState {
@@ -38,6 +40,9 @@ impl DownloadState {
             (Self::Downloading { .. }, E::Ready) => Self::Ready,
             (Self::Failed(_) | Self::Missing, E::Retry) => Self::Downloading { percent: 0 },
             (Self::NotNeeded | Self::Ready | Self::Failed(_), E::Removed) => Self::Missing,
+            (Self::NotNeeded | Self::Ready | Self::Failed(_) | Self::Missing, E::Switch) => {
+                Self::Downloading { percent: 0 }
+            }
             (state, _) => state,
         }
     }
@@ -66,6 +71,12 @@ impl DownloadState {
     /// „Usuń model” tylko z modelem na dysku i gdy kontroler nie nagrywa ani nie transkrybuje.
     pub fn can_remove(&self, controller: State) -> bool {
         matches!(self, Self::NotNeeded | Self::Ready)
+            && matches!(controller, State::Idle | State::Error)
+    }
+
+    /// Przełączenie wariantu (VA-MODEL-4): nie w trakcie pobierania, nagrywania ani transkrypcji.
+    pub fn can_switch(&self, controller: State) -> bool {
+        !matches!(self, Self::Downloading { .. })
             && matches!(controller, State::Idle | State::Error)
     }
 
@@ -171,6 +182,23 @@ mod tests {
         assert!(!DownloadState::Ready.can_remove(State::Recording));
         assert!(!DownloadState::Missing.can_remove(State::Idle));
         assert!(!DownloadState::Failed("x".into()).can_remove(State::Idle));
+    }
+
+    #[test]
+    fn variant_switch_restarts_loading_unless_busy() {
+        for before in [
+            DownloadState::NotNeeded,
+            DownloadState::Ready,
+            DownloadState::Missing,
+            DownloadState::Failed("x".into()),
+        ] {
+            assert!(before.can_switch(State::Idle), "{before:?}");
+            assert_eq!(before.next(DownloadEvent::Switch), downloading(0));
+        }
+        assert!(!downloading(10).can_switch(State::Idle));
+        assert!(!DownloadState::Ready.can_switch(State::Recording));
+        assert!(!DownloadState::Ready.can_switch(State::Transcribing));
+        assert_eq!(downloading(10).next(DownloadEvent::Switch), downloading(10));
     }
 
     #[test]

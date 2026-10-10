@@ -50,6 +50,9 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 | Wcześniejsza wypowiedź | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`) |
 | Wyczyszczenie historii | prawy przycisk na ikonie → **Historia** → **Wyczyść historię** |
 | Wybór mikrofonu | prawy przycisk na ikonie → **Mikrofon** → urządzenie z listy |
+| Język i limit nagrania | prawy przycisk → **Ustawienia** → **Język** (automatycznie / polski / angielski) albo **Limit nagrania** (5–30 min); działa od następnego nagrania, bez restartu |
+| Uruchamianie przy logowaniu | prawy przycisk → **Ustawienia** → **Uruchamiaj przy logowaniu** (tylko w aplikacji z folderu Aplikacje) |
+| Logi | prawy przycisk → **Pokaż logi** (Finder; pliki starsze niż 7 dni są usuwane przy starcie) |
 | Zakończenie aplikacji | prawy przycisk na ikonie → **Zakończ** |
 
 **Historia wypowiedzi.** Każda niepusta transkrypcja trafia na listę w podmenu **Historia**
@@ -59,12 +62,26 @@ użytkownika, i wraca po ponownym uruchomieniu aplikacji. To jedyne miejsce, w k
 Twoich wypowiedzi ląduje na dysku; **Wyczyść historię** kasuje listę razem z plikiem.
 
 **Model.** Podmenu **Model** pokazuje, jaki model jest używany, jego rozmiar i stan
-(`large-v3-turbo · 1,7 GB · gotowy`, w trakcie pobierania procent). **Pokaż w Finderze**
+(`large-v3-turbo · 1,6 GB · gotowy`, w trakcie pobierania procent). **Pokaż w Finderze**
 zaznacza plik modelu. **Usuń model…** po potwierdzeniu w tym samym menu kasuje plik (zwalnia
 ok. 1,6 GB); nagrywanie jest wtedy niedostępne do czasu, aż wybierzesz **Pobierz ponownie**,
 które pobiera model od nowa z postępem i uruchamia nagrywanie bez restartu aplikacji. Usuwanie
 jest nieaktywne w trakcie pobierania, nagrywania i transkrypcji. Jeśli w `config.toml` ustawisz
 własną ścieżkę `model_path`, podmenu pokazuje ten plik, a usuwanie i pobieranie są wyłączone.
+
+W tym samym podmenu wybierasz wariant modelu: **Pełny (1,6 GB)** albo **Skwantyzowany q5_0
+(0,6 GB)** — ten drugi to ten sam large-v3-turbo w lżejszej wersji (szybsze pobranie, mniej
+pamięci GPU, minimalnie niższa jakość). Wybór niepobranego wariantu pobiera go z postępem,
+a pobranego tylko ładuje (chwilę widać wtedy „Pobieranie modelu… 0%”); nagrywanie wraca bez
+restartu. Gdy oba warianty leżą na dysku, **Usuń nieużywany wariant** zwalnia miejsce po tym,
+którego nie używasz.
+
+**Szybki start.** Suma kontrolna modelu jest liczona tylko po zmianie pliku (znacznik
+`*.verified` obok modelu), więc ikona pojawia się od razu, a model ładuje się na GPU w tle.
+
+**Sygnał „gotowe”.** Po każdej transkrypcji zapisanej do schowka pojawia się powiadomienie
+„Transkrypcja w schowku” z początkiem tekstu (wyłączysz je w `config.toml`, tam też włączysz
+dźwięk). Szum bez mowy daje pusty wynik zamiast wymyślonych słów.
 
 Podczas nagrywania kółko jest czerwone; w trakcie transkrypcji i w spoczynku — szare.
 Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Długie przerwy w mówieniu
@@ -87,6 +104,7 @@ language = "auto"                       # auto | pl | en
 max_recording_secs = 600                # limit długości nagrania (auto-Stop + powiadomienie)
 notify_on_transcript = true             # powiadomienie „Transkrypcja w schowku” z początkiem tekstu
 sound_on_transcript = false             # dźwięk systemowy po zapisie do schowka
+model_variant = "full"                  # full (1,6 GB) | q5_0 (0,6 GB) — też z menu Model
 # model_path = "/inna/sciezka/ggml-large-v3-turbo.bin"   # własny plik GGML: bez pobierania i sumy SHA-256
 
 [silence]

@@ -30,7 +30,8 @@ Aplikacja nie potrzebuje żadnych sekretów ani kluczy.
 |----|---------|
 | Konfiguracja | `~/Library/Application Support/VoiceAsystent/config.toml` |
 | Historia wypowiedzi | `~/Library/Application Support/VoiceAsystent/history.json` (JSON, tryb 0600, 30 ostatnich wpisów; jedyny plik z treścią transkrypcji — „Wyczyść historię” w menu go kasuje) |
-| Model | `~/Library/Application Support/VoiceAsystent/models/ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 `1fc70f77…e2bc69`); częściowe pobranie: `.part` obok |
+| Model | `~/Library/Application Support/VoiceAsystent/models/ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 `1fc70f77…e2bc69`); wariant q5_0: `ggml-large-v3-turbo-q5_0.bin` (574 041 195 B, SHA-256 `39422170…ffa7e2`); częściowe pobranie: `.part` obok; znacznik weryfikacji: `<model>.verified` (rozmiar, mtime, suma — usunięcie wymusza ponowne liczenie sumy) |
+| Uruchamianie przy logowaniu | `~/Library/LaunchAgents/io.github.mario12358.voiceasystent.plist` (tworzony i usuwany z menu Ustawienia) |
 | Logi | `~/Library/Logs/VoiceAsystent/voice-asystent.log.*` (JSON, dziennie) + tekst na stderr |
 
 Portów sieciowych, bazy danych, migracji ani kont testowych nie ma. Jedyne połączenie
@@ -50,6 +51,7 @@ cargo run -p va-dev -- config                 # obowiązująca konfiguracja
 cargo run -p va-dev -- devices                # mikrofony (* domyślny, > z konfiguracji)
 cargo run -p va-dev -- mic-test --seconds 5   # poziom sygnału; --save plik.wav zapisuje 16 kHz mono
 cargo run -p va-dev -- model-download         # pobiera/wznawia model, sprawdza SHA-256
+cargo run -p va-dev -- model-download --variant q5_0   # wariant skwantyzowany (0,6 GB)
 cargo run -p va-dev -- transcribe plik.wav    # transkrypcja na Metalu, tekst na stdout
 
 # Testy
@@ -115,4 +117,7 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Powiadomienia pokazują się jako „Terminal" | aplikacja uruchomiona z `cargo run`, nie z bundla; z `dist/VoiceAsystent.app` pokazują się pod nazwą VoiceAsystent |
 | `cargo` nie znalezione w nowym shellu | `export PATH="$HOME/.cargo/bin:$PATH"` |
 | Brak miejsca na dysku przy testach | artefakty w `target/` (debug + release + whisper.cpp) zajmują kilka GB; `cargo clean` |
+| Transkrypcja pusta mimo mowy | segment odrzucony jako niepewny (`min_segment_confidence` 0,3 w `crates/stt/src/whisper.rs`) — w logu „odrzucone segmenty bez mowy”; sprawdź mikrofon `va-dev mic-test` i poziom szumu |
+| Testy modelu w `cargo test -p va-stt` nie ładują modelu („GPU Metal”) | cecha `metal` jest włączana przez binarki; uruchamiaj `cargo test --workspace` albo `-p va-stt --features metal` |
+| Po przełączeniu wariantu nagrywanie niedostępne | trwa pobieranie albo ładowanie wariantu (status na górze menu); błąd pobierania → **Ponów pobieranie** |
 | Obraz .dmg nie montuje się w teście („Resource busy") | poprzedni test nie odmontował wolumenu: `hdiutil info`, potem `hdiutil detach <mountpoint>` |

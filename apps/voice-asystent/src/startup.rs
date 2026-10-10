@@ -40,14 +40,7 @@ impl ModelSource {
     /// Opis modelu dla podmenu „Model” (nazwa, ścieżka, rozmiar, czy własny).
     pub fn info(&self) -> ModelInfo {
         match self {
-            Self::Store(store, variant) => ModelInfo {
-                variant: Some(*variant),
-                name: store.spec().display_name().to_owned(),
-                path: store.model_path(),
-                bytes: store.spec().size,
-                custom: false,
-                custom_present: false,
-            },
+            Self::Store(store, variant) => store_info(store, *variant),
             Self::Custom(path) => {
                 let bytes = std::fs::metadata(path).map_or(0, |meta| meta.len());
                 ModelInfo {
@@ -72,6 +65,23 @@ impl ModelSource {
             Self::Custom(_) => Ok(ModelState::Missing),
         }
     }
+}
+
+/// Opis modelu z magazynu aplikacji dla wariantu (podmenu „Model”, VA-MODEL-4).
+pub fn store_info(store: &ModelStore, variant: ModelVariant) -> ModelInfo {
+    ModelInfo {
+        variant: Some(variant),
+        name: store.spec().display_name().to_owned(),
+        path: store.model_path(),
+        bytes: store.spec().size,
+        custom: false,
+        custom_present: false,
+    }
+}
+
+/// Opis wariantu w katalogu modeli — po przełączeniu wariantu w menu.
+pub fn variant_info(models_dir: &Path, variant: ModelVariant) -> ModelInfo {
+    store_info(&ModelStore::new(models_dir, spec_for(variant)), variant)
 }
 
 /// Stan modelu przy starcie; brak modelu w magazynie uruchomi pobieranie w tle (zadanie 5.6).
@@ -197,7 +207,15 @@ impl ModelDownload {
         })
     }
 
-    /// Pobiera (wznawiając) model i ładuje go — wołane w wątku roboczym.
+    /// To samo zadanie dla innego wariantu modelu (przełączenie w menu, VA-MODEL-4).
+    pub fn for_variant(&self, variant: ModelVariant) -> Self {
+        let mut job = self.clone();
+        job.config.model_variant = variant;
+        job
+    }
+
+    /// Pobiera (wznawiając) model i ładuje go — wołane w wątku roboczym. Gdy plik wariantu
+    /// jest już na dysku, nic nie pobiera, tylko ładuje model (przełączenie wariantu).
     pub fn run(&self, progress: &mut dyn FnMut(Progress)) -> Result<ControllerParts, String> {
         let spec = spec_for(self.config.model_variant);
         let store = ModelStore::new(&self.paths.models_dir, spec);

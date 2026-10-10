@@ -24,11 +24,12 @@ use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
 use crate::messages::{Problem, ReadySignal, menu_notice, notify, signal_ready};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
 use crate::model_menu::{
-    ModelInfo, REDOWNLOAD_MODEL_ID, RemoveAction, RemovePrompt, SHOW_MODEL_ID, model_menu,
-    state_with_percent,
+    ModelInfo, REDOWNLOAD_MODEL_ID, REMOVE_OTHER_VARIANT_ID, RemoveAction, RemovePrompt,
+    SHOW_MODEL_ID, model_menu, other_variant, remove_other_label, state_with_percent,
+    variant_from_menu_id, variant_items,
 };
-use crate::settings_menu::{change_from_menu_id, save_change, settings_menu};
-use crate::startup::ModelDownload;
+use crate::settings_menu::{SettingChange, change_from_menu_id, save_change, settings_menu};
+use crate::startup::{ModelDownload, variant_info};
 use crate::tray_menu::{RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
 use va_model::{ModelStore, spec_for};
 
@@ -54,9 +55,9 @@ pub struct AppSettings {
 /// `needs_download` = czy uruchomić je od razu (modelu brak przy starcie).
 pub fn run(
     controller_parts: Result<ControllerParts, Problem>,
-    download: Option<ModelDownload>,
+    mut download: Option<ModelDownload>,
     needs_download: bool,
-    model_info: ModelInfo,
+    mut model_info: ModelInfo,
     settings: AppSettings,
 ) -> anyhow::Result<()> {
     let AppSettings {
@@ -106,7 +107,14 @@ pub fn run(
                         }
                         show_download(&mut built, &download_state, shown);
                         built.1.show_history(&history);
-                        show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
+                        show_model(
+                            &built.1,
+                            &model_info,
+                            &download_state,
+                            shown,
+                            remove_prompt,
+                            download.is_some(),
+                        );
                         tray = Some(built);
                     }
                     Err(error) => {
@@ -120,7 +128,14 @@ pub fn run(
                     shown = *state;
                     if let Some((icon, menu)) = &tray {
                         show(icon, indicator_for(*state));
-                        show_model(menu, &model_info, &download_state, shown, remove_prompt);
+                        show_model(
+                            menu,
+                            &model_info,
+                            &download_state,
+                            shown,
+                            remove_prompt,
+                            download.is_some(),
+                        );
                     }
                 }
                 if let ControllerEvent::HistoryChanged(entries) = &event {
@@ -180,7 +195,14 @@ pub fn run(
                 if action != RemoveAction::None
                     && let Some((_, menu)) = &tray
                 {
-                    show_model(menu, &model_info, &download_state, shown, remove_prompt);
+                    show_model(
+                        menu,
+                        &model_info,
+                        &download_state,
+                        shown,
+                        remove_prompt,
+                        download.is_some(),
+                    );
                 }
                 if id == QUIT_ID {
                     *control_flow = ControlFlow::Exit;
@@ -194,7 +216,48 @@ pub fn run(
                     }
                     if let Some(built) = &mut tray {
                         show_download(built, &download_state, shown);
-                        show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
+                        show_model(
+                            &built.1,
+                            &model_info,
+                            &download_state,
+                            shown,
+                            remove_prompt,
+                            download.is_some(),
+                        );
+                    }
+                } else if let Some(variant) = variant_from_menu_id(id) {
+                    let allowed = download.is_some()
+                        && model_info.variant.is_some()
+                        && model_info.variant != Some(variant)
+                        && download_state.can_switch(shown);
+                    if allowed && let Some(dir) = model_info.path.parent().map(Path::to_path_buf) {
+                        match save_change(&config_path, SettingChange::ModelVariant(variant)) {
+                            Ok(_) => {
+                                tracing::info!(?variant, "przełączam wariant modelu");
+                                model_info = variant_info(&dir, variant);
+                                download = download.as_ref().map(|job| job.for_variant(variant));
+                                controller = None;
+                                unavailable = Some(Problem::ModelUnavailable);
+                                download_state = download_state.clone().next(DownloadEvent::Switch);
+                                if let Some(job) = &download {
+                                    spawn_download(job.clone(), proxy.clone());
+                                }
+                            }
+                            Err(error) => tracing::error!(%error, "zapis wariantu modelu"),
+                        }
+                    }
+                    if let Some(built) = &mut tray {
+                        show_download(built, &download_state, shown);
+                    }
+                } else if id == REMOVE_OTHER_VARIANT_ID {
+                    if let (Some(dir), Some(variant)) =
+                        (model_info.path.parent(), model_info.variant)
+                    {
+                        let other = ModelStore::new(dir, spec_for(other_variant(variant)));
+                        match other.remove() {
+                            Ok(()) => tracing::info!("nieużywany wariant modelu usunięty"),
+                            Err(error) => tracing::error!(%error, "usuwanie nieużywanego wariantu"),
+                        }
                     }
                 } else if id == SHOW_MODEL_ID {
                     reveal_in_finder(&model_info.path);
@@ -225,8 +288,10 @@ pub fn run(
                     match save_change(&config_path, change) {
                         Ok(saved) => {
                             recording_limit_secs = saved.max_recording_secs;
-                            if let Some(controller) = &controller {
-                                controller.send(change.command());
+                            if let (Some(controller), Some(command)) =
+                                (&controller, change.command())
+                            {
+                                controller.send(command);
                             }
                             if let Some((_, menu)) = &tray {
                                 menu.show_settings(&settings_menu(&saved));
@@ -240,7 +305,14 @@ pub fn run(
                 download_state = download_state.clone().next(event);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
-                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
+                    show_model(
+                        &built.1,
+                        &model_info,
+                        &download_state,
+                        shown,
+                        remove_prompt,
+                        download.is_some(),
+                    );
                 }
             }
             Event::UserEvent(UserEvent::ModelLoaded(parts)) => {
@@ -255,7 +327,14 @@ pub fn run(
                 download_state = download_state.clone().next(DownloadEvent::Ready);
                 if let Some(built) = &mut tray {
                     show_download(built, &download_state, shown);
-                    show_model(&built.1, &model_info, &download_state, shown, remove_prompt);
+                    show_model(
+                        &built.1,
+                        &model_info,
+                        &download_state,
+                        shown,
+                        remove_prompt,
+                        download.is_some(),
+                    );
                 }
             }
             _ => {}
@@ -389,14 +468,25 @@ fn show_model(
     download: &DownloadState,
     shown: State,
     prompt: RemovePrompt,
+    download_available: bool,
 ) {
     let mut model = model_menu(info, download, shown);
+    model.variants = variant_items(info, download_available && download.can_switch(shown));
+    model.remove_other = remove_other_label(info, other_variant_bytes(info));
     if let Some(progress) = state_with_percent(download)
         && let Some(line) = model.lines.first_mut()
     {
         *line = line.replace("· pobieranie", &format!("· {progress}"));
     }
     menu.show_model(&model, prompt);
+}
+
+/// Rozmiar drugiego (nieużywanego) wariantu na dysku, jeśli tam jest.
+fn other_variant_bytes(info: &ModelInfo) -> Option<u64> {
+    let (Some(dir), Some(variant)) = (info.path.parent(), info.variant) else {
+        return None;
+    };
+    ModelStore::new(dir, spec_for(other_variant(variant))).size_on_disk()
 }
 
 /// Usuwa plik modelu z magazynu domyślnego (i plik częściowy); kontroler jest już zamknięty,
