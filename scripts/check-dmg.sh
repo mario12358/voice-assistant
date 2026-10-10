@@ -32,7 +32,21 @@ cleanup() {
   rmdir "$MOUNT" 2>/dev/null || true
 }
 trap cleanup EXIT
-hdiutil attach -quiet -nobrowse -readonly -mountpoint "$MOUNT" "$DMG"
+# Montowanie bywa chwilowo odrzucane przy kilku obrazach naraz (testy równoległe, runner CI) —
+# do trzech prób; błąd hdiutil idzie na stderr, żeby czerwony krok miał przyczynę.
+attached=0
+for attempt in 1 2 3; do
+  if ERR=$(hdiutil attach -nobrowse -readonly -mountpoint "$MOUNT" "$DMG" 2>&1); then
+    attached=1
+    break
+  fi
+  echo "hdiutil attach (próba ${attempt}/3): ${ERR:-bez komunikatu}" >&2
+  sleep $((attempt * 2))
+done
+if (( attached == 0 )); then
+  echo "nie udało się zamontować obrazu: $DMG" >&2
+  exit 1
+fi
 
 MODELS=$(find "$MOUNT" \( -name '*.bin' -o -iname 'ggml*' \) -not -type l 2>/dev/null || true)
 if [[ -n "$MODELS" ]]; then

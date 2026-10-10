@@ -1,0 +1,81 @@
+//! Ładowanie modelu na GPU Metal sprawdzane po logach whisper.cpp (wymaga pobranego modelu).
+//!
+//! Osobny plik = osobny proces testowy: logi whisper.cpp idą przez globalny hook do `tracing`,
+//! a subskrybent przechwytujący jest przypięty do wątku testu. Równoległe testy modelu w tym
+//! samym procesie gubiły linie o Metalu w przechwyconym buforze (niestabilny test po 9.4/9.7).
+
+mod common;
+
+use std::io::Write;
+use std::sync::{Arc, Mutex};
+
+use common::{fixture, model_path};
+use va_config::Language;
+use va_stt::{METAL_BUILT, MetalProbe, SpeechToText, WhisperStt, require_metal};
+
+#[derive(Clone, Default)]
+struct CapturedLogs(Arc<Mutex<Vec<u8>>>);
+
+impl Write for CapturedLogs {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        self.0.lock().unwrap().extend_from_slice(bytes);
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+impl CapturedLogs {
+    fn text(&self) -> String {
+        String::from_utf8_lossy(&self.0.lock().unwrap()).into_owned()
+    }
+}
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M4EKHCMW0ACD0XED5QNZ4WGX
+fn model_loads_once_on_metal_and_transcribes_polish_and_english() {
+    let logs = CapturedLogs::default();
+    let writer = logs.clone();
+    let subscriber = tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .with_ansi(false)
+        .with_writer(move || writer.clone())
+        .finish();
+    let _guard = tracing::subscriber::set_default(subscriber);
+    let gpu = require_metal(&MetalProbe, METAL_BUILT).expect("GPU Metal");
+
+    let mut stt = WhisperStt::load(&model_path(), &gpu, Language::Auto).expect("model");
+    let polish = stt.transcribe(&fixture("speech_pl.wav")).unwrap();
+    let english = stt.transcribe(&fixture("speech_en.wav")).unwrap();
+
+    let polish_text = polish.text.to_lowercase();
+    assert!(
+        polish_text.contains("pogoda") && polish_text.contains("spacer"),
+        "PL: {}",
+        polish.text
+    );
+    let english_text = english.text.to_lowercase();
+    assert!(
+        english_text.contains("weather") && english_text.contains("park"),
+        "EN: {}",
+        english.text
+    );
+    let logs = logs.text();
+    let whisper_lines = |pattern: &str| {
+        logs.lines()
+            .filter(|line| line.contains("whisper_rs::") && line.contains(pattern))
+            .count()
+    };
+    assert!(
+        whisper_lines("whisper_backend_init_gpu: device 0: Metal") > 0,
+        "whisper.cpp nie zgłosił backendu GPU Metal"
+    );
+    assert!(
+        whisper_lines("Metal total size") > 0,
+        "wagi modelu nie trafiły do pamięci Metal"
+    );
+    assert_eq!(logs.matches("model Whisper załadowany").count(), 1);
+}

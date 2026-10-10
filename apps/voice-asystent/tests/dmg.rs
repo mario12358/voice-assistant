@@ -5,10 +5,21 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::{Mutex, MutexGuard};
 
 use tempfile::TempDir;
 
 const TEST_VERSION: &str = "v9.8.7";
+
+/// Testy obrazów jeden po drugim: równoległe `hdiutil create/attach` kończą się
+/// „Resource temporarily unavailable”. Pod nextest to samo robi grupa `obrazy-dysku`
+/// w `.config/nextest.toml` (każdy test w osobnym procesie).
+fn one_image_at_a_time() -> MutexGuard<'static, ()> {
+    static IMAGES: Mutex<()> = Mutex::new(());
+    IMAGES
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
+}
 
 fn scripts_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../scripts")
@@ -47,14 +58,22 @@ struct MountedImage {
 impl MountedImage {
     fn attach(dmg: &Path, work: &TempDir) -> Self {
         let mountpoint = work.path().join("mnt");
-        let output = Command::new("hdiutil")
-            .args(["attach", "-nobrowse", "-readonly", "-mountpoint"])
-            .arg(&mountpoint)
-            .arg(dmg)
-            .output()
-            .expect("hdiutil uruchamia się");
-        assert!(output.status.success(), "hdiutil attach: {output:?}");
-        Self { mountpoint }
+        // Montowanie bywa chwilowo odrzucane przy kilku obrazach naraz — do trzech prób.
+        let mut output = None;
+        for attempt in 1..=3u64 {
+            let result = Command::new("hdiutil")
+                .args(["attach", "-nobrowse", "-readonly", "-mountpoint"])
+                .arg(&mountpoint)
+                .arg(dmg)
+                .output()
+                .expect("hdiutil uruchamia się");
+            if result.status.success() {
+                return Self { mountpoint };
+            }
+            output = Some(result);
+            std::thread::sleep(std::time::Duration::from_secs(attempt * 2));
+        }
+        panic!("hdiutil attach: {output:?}");
     }
 }
 
@@ -82,6 +101,7 @@ fn files_under(dir: &Path, found: &mut Vec<PathBuf>) {
 // specky: crit 01M4EKHC2ZVHXRXRCVCK6TPATD
 // specky: crit 01M4EQH9E1SE75YQPG89XWQV7B
 fn dmg_contains_app_and_applications_link_without_model() {
+    let _images = one_image_at_a_time();
     let work = tempfile::tempdir().expect("katalog tymczasowy");
     let app = build_test_app(work.path());
 
@@ -121,6 +141,7 @@ fn dmg_contains_app_and_applications_link_without_model() {
 
 #[test]
 fn dmg_build_fails_without_app_bundle() {
+    let _images = one_image_at_a_time();
     let work = tempfile::tempdir().expect("katalog tymczasowy");
 
     let output = build_dmg(&work.path().join("Nieistniejaca.app"), work.path());
@@ -141,6 +162,7 @@ fn check_dmg(dmg: &Path, max_mb: &str) -> std::process::Output {
 #[test]
 // specky: crit 01M4KD15NZCFGE5HQME8HXCGJX
 fn release_check_accepts_small_image_without_model() {
+    let _images = one_image_at_a_time();
     let work = tempfile::tempdir().expect("katalog tymczasowy");
     let app = build_test_app(work.path());
     assert!(build_dmg(&app, work.path()).status.success());
@@ -153,6 +175,7 @@ fn release_check_accepts_small_image_without_model() {
 #[test]
 // specky: crit 01M4KD15NZYVAV8WJAC6D217TD
 fn release_check_rejects_image_with_model_or_over_size_limit() {
+    let _images = one_image_at_a_time();
     let work = tempfile::tempdir().expect("katalog tymczasowy");
     let app = build_test_app(work.path());
     fs::write(
@@ -170,4 +193,19 @@ fn release_check_rejects_image_with_model_or_over_size_limit() {
     let too_big = check_dmg(&dmg, "0");
     assert_eq!(too_big.status.code(), Some(1), "{too_big:?}");
     assert!(String::from_utf8_lossy(&too_big.stderr).contains("za duży"));
+}
+
+#[test]
+fn release_check_fails_loudly_when_image_cannot_be_mounted() {
+    let _images = one_image_at_a_time();
+    let work = tempfile::tempdir().expect("katalog tymczasowy");
+    let fake = work.path().join("VoiceAsystent-9.8.7.dmg");
+    fs::write(&fake, b"to nie jest obraz dysku").unwrap();
+
+    let output = check_dmg(&fake, "20");
+
+    assert_eq!(output.status.code(), Some(1), "{output:?}");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("próba 3/3"), "{stderr}");
+    assert!(stderr.contains("nie udało się zamontować"), "{stderr}");
 }
