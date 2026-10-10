@@ -9,6 +9,7 @@ publish.workspace = true
 
 [dependencies]
 va-audio.workspace = true
+va-config.workspace = true
 va-clipboard.workspace = true
 va-stt.workspace = true
 tracing.workspace = true

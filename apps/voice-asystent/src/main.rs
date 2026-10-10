@@ -10,6 +10,7 @@ mod indicator;
 mod messages;
 mod microphones;
 mod model_menu;
+mod settings_menu;
 mod startup;
 mod tray_menu;
 

@@ -8,6 +8,7 @@ use std::time::Duration;
 use va_audio::{LimitNotifier, Recorder, SilenceParams};
 use va_clipboard::testing::MemoryClipboard;
 use va_clipboard::{ClipboardSink, Delivery};
+use va_config::Language;
 use va_core::controller::{
     Command, ControllerEvent, ControllerHandle, ControllerParts, TranscriptPreview, spawn,
 };
@@ -38,6 +39,7 @@ struct FakeRecorder {
     recording: Arc<Mutex<Vec<f32>>>,
     starts: Arc<Mutex<Vec<String>>>,
     limit_notifiers: Arc<Mutex<Vec<Option<LimitNotifier>>>>,
+    limits: Arc<Mutex<Vec<u32>>>,
     fail_start: bool,
     active: bool,
 }
@@ -77,6 +79,10 @@ impl FakeRecorder {
 }
 
 impl Recorder for FakeRecorder {
+    fn set_limit(&mut self, max_seconds: u32) {
+        self.limits.lock().unwrap().push(max_seconds);
+    }
+
     fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> va_audio::Result<()> {
         if self.fail_start {
             return Err(va_audio::Error::NoInputDevice);
@@ -448,6 +454,38 @@ fn silence_adds_nothing_to_history_but_speech_does() {
     let history = Harness::history_in(&spoken).expect("wpis po mowie");
     assert_eq!(history.len(), 1);
     assert_eq!(history[0].text, "po ciszy");
+}
+
+#[test]
+// specky: crit 01M4KD15A2V2GZ00PWDJ2RSFZV
+fn language_change_applies_to_the_next_transcription_without_restart() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("tekst".into())]),
+        MemoryClipboard::default(),
+    );
+
+    harness.handle.send(Command::SetLanguage(Language::Pl));
+    harness.record_and_stop();
+
+    assert_eq!(harness.stt.languages(), vec![Language::Pl]);
+    assert_eq!(harness.stt.received().len(), 1);
+}
+
+#[test]
+// specky: crit 01M4KD15A2ZRGP0QWYMMJVVSY6
+fn recording_limit_change_reaches_the_recorder_before_the_next_recording() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("tekst".into())]),
+        MemoryClipboard::default(),
+    );
+
+    harness.handle.send(Command::SetRecordingLimit(1200));
+    harness.record_and_stop();
+
+    assert_eq!(*harness.recorder.limits.lock().unwrap(), vec![1200]);
+    assert_eq!(harness.recorder.starts().len(), 1);
 }
 
 #[test]

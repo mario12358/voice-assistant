@@ -3096,6 +3096,7 @@ dependencies = [
  "tracing-subscriber",
  "va-audio",
  "va-clipboard",
+ "va-config",
  "va-stt",
 ]
 
