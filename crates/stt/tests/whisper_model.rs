@@ -92,3 +92,54 @@ fn model_loads_once_on_metal_and_transcribes_polish_and_english() {
     );
     assert_eq!(logs.matches("model Whisper załadowany").count(), 1);
 }
+
+fn loaded(language: Language) -> WhisperStt {
+    let gpu = require_metal(&MetalProbe, METAL_BUILT).expect("GPU Metal");
+    WhisperStt::load(&model_path(), &gpu, language).expect("model")
+}
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M4KD15J53HQD32A2N55TWF2R
+fn noise_without_speech_gives_empty_transcript() {
+    let mut stt = loaded(Language::Auto);
+
+    let transcript = stt.transcribe(&fixture("noise_only.wav")).unwrap();
+
+    assert_eq!(
+        transcript.text, "",
+        "szum bez mowy dał tekst — pusty schowek (VA-REC-3) wymaga pustego wyniku"
+    );
+}
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M4KD15J5D855VXXS167FCEPD
+fn polish_setting_keeps_mixed_sentence_in_polish_after_set_language() {
+    let mut stt = loaded(Language::Auto);
+    stt.set_language(Language::Pl);
+
+    let text = stt
+        .transcribe(&fixture("speech_pl_mixed.wav"))
+        .unwrap()
+        .text
+        .to_lowercase();
+
+    assert!(
+        text.contains("muszę") && text.contains("sprawdzić"),
+        "zdanie nie jest po polsku: {text}"
+    );
+}
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M4KD15J5A523398FWNFTBTT1
+fn decoding_settings_keep_existing_fixtures_recognised() {
+    let mut stt = loaded(Language::Auto);
+
+    let polish = stt.transcribe(&fixture("speech_pl.wav")).unwrap().text;
+    let english = stt.transcribe(&fixture("speech_en.wav")).unwrap().text;
+
+    assert!(polish.to_lowercase().contains("spacer"), "PL: {polish}");
+    assert!(english.to_lowercase().contains("park"), "EN: {english}");
+}

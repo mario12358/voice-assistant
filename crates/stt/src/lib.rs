@@ -8,7 +8,7 @@ pub mod testing;
 mod whisper;
 
 pub use gpu::{GpuProbe, GpuReady, METAL_BUILT, MetalProbe, require_metal};
-pub use whisper::WhisperStt;
+pub use whisper::{DECODING, DecodingSettings, WhisperStt};
 
 /// Wynik transkrypcji jednego nagrania.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,6 +20,8 @@ pub struct Transcript {
 /// Zamiana nagrania 16 kHz mono f32 na tekst.
 pub trait SpeechToText: Send {
     fn transcribe(&mut self, samples: &[f32]) -> Result<Transcript>;
+    /// Język kolejnych transkrypcji, bez ponownego ładowania modelu (VA-SET-1, VA-STT-3).
+    fn set_language(&mut self, language: va_config::Language);
 }
 
 #[derive(Debug, thiserror::Error)]
