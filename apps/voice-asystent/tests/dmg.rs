@@ -128,3 +128,46 @@ fn dmg_build_fails_without_app_bundle() {
     assert!(!output.status.success());
     assert!(!work.path().join("VoiceAsystent-9.8.7.dmg").exists());
 }
+
+fn check_dmg(dmg: &Path, max_mb: &str) -> std::process::Output {
+    Command::new(scripts_dir().join("check-dmg.sh"))
+        .arg(dmg)
+        .arg("--max-mb")
+        .arg(max_mb)
+        .output()
+        .expect("skrypt check-dmg.sh uruchamia się")
+}
+
+#[test]
+// specky: crit 01M4KD15NZCFGE5HQME8HXCGJX
+fn release_check_accepts_small_image_without_model() {
+    let work = tempfile::tempdir().expect("katalog tymczasowy");
+    let app = build_test_app(work.path());
+    assert!(build_dmg(&app, work.path()).status.success());
+
+    let output = check_dmg(&work.path().join("VoiceAsystent-9.8.7.dmg"), "20");
+
+    assert!(output.status.success(), "{output:?}");
+}
+
+#[test]
+// specky: crit 01M4KD15NZYVAV8WJAC6D217TD
+fn release_check_rejects_image_with_model_or_over_size_limit() {
+    let work = tempfile::tempdir().expect("katalog tymczasowy");
+    let app = build_test_app(work.path());
+    fs::write(
+        app.join("Contents/Resources/ggml-large-v3-turbo.bin"),
+        b"to nie powinno trafic do obrazu",
+    )
+    .unwrap();
+    assert!(build_dmg(&app, work.path()).status.success());
+    let dmg = work.path().join("VoiceAsystent-9.8.7.dmg");
+
+    let with_model = check_dmg(&dmg, "20");
+    assert_eq!(with_model.status.code(), Some(1), "{with_model:?}");
+    assert!(String::from_utf8_lossy(&with_model.stderr).contains("modelu"));
+
+    let too_big = check_dmg(&dmg, "0");
+    assert_eq!(too_big.status.code(), Some(1), "{too_big:?}");
+    assert!(String::from_utf8_lossy(&too_big.stderr).contains("za duży"));
+}

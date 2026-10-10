@@ -96,9 +96,13 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 1. Pełny zestaw testów zielony, drzewo czyste (`git status --porcelain` puste).
 2. Scenariusze ręczne: `docs/test-scenarios/vX.Y.Z.md` (szablon `ralph/TEST_SCENARIOS_TEMPLATE.md`).
 3. `git tag -a vX.Y.Z -m "…"`, `git push origin vX.Y.Z` (tagi nie idą ze zwykłym `git push`).
-4. `scripts/build-dmg.sh` na otagowanym commicie → `dist/VoiceAsystent-X.Y.Z.dmg`.
-   Wersja w Info.plist i w nazwie obrazu pochodzi z `git describe`; w repo nie ma pola wersji
-   do podbijania (`version` w `Cargo.toml` jest stałe).
+4. Wypchnięcie tagu uruchamia workflow `.github/workflows/release.yml`: testy (bez `#[ignore]`),
+   `scripts/build-dmg.sh --version vX.Y.Z`, `scripts/check-dmg.sh` (obraz < 20 MB, bez pliku
+   modelu) i `gh release create` z komunikatem tagu jako opisem i obrazem
+   `VoiceAsystent-X.Y.Z.dmg` jako załącznikiem. Czerwony krok = brak wydania.
+   Lokalnie to samo: `scripts/build-dmg.sh` na otagowanym commicie, potem
+   `scripts/check-dmg.sh dist/VoiceAsystent-X.Y.Z.dmg`. Wersja w Info.plist i w nazwie obrazu
+   pochodzi z `git describe`; w repo nie ma pola wersji do podbijania.
 5. Aplikacja jest podpisana ad-hoc, bez notaryzacji — odbiorca obrazu z sieci przechodzi przez
    Gatekeeper („Otwórz mimo to"), patrz README.
 
