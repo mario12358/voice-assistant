@@ -169,16 +169,16 @@
   - Specky kryteria: (crit: 01M4K06AR8A386FPF759VJJ9M2) pauza > 1,5 s → 0,5 s; (crit: 01M4K06AR8A4107QK83WR0K6YC) reszta identyczna; (crit: 01M4K06AR8VG4GQ4HY90VTX40G) brzegi jak dotąd
   - AC: sygnał mowa–40 s ciszy–mowa po przetworzeniu ma 0,5 s ciszy między fragmentami, a fragmenty mowy są identyczne z wejściem; pauza 1,0 s zostaje; sama cisza nadal daje pusty wycinek
 - [x] Test: 7.1 — testy jednostkowe na sygnale syntetycznym (pauza 40 s, 1,0 s, kilka pauz, brzegi), mutacja progu 1,5 s czerwona (pr: #33)
-- [ ] Zadanie 7.2: Wpięcie `compress_pauses` po `trim_silence` w kontrolerze (`stop_and_transcribe`) i w `va-dev transcribe`; fixture WAV „dwa zdania rozdzielone 40 s ciszy” (skrypt `tests/fixtures/generate_pause_fixture.py`) (wymaga: 7.1) [VA-REC-5] (zmiana: 2026-10-10-specky-1BY4F4Z.md) (pr: #34)
+- [x] Zadanie 7.2: Wpięcie `compress_pauses` po `trim_silence` w kontrolerze (`stop_and_transcribe`) i w `va-dev transcribe`; fixture WAV „dwa zdania rozdzielone 40 s ciszy” (skrypt `tests/fixtures/generate_pause_fixture.py`) (wymaga: 7.1) [VA-REC-5] (zmiana: 2026-10-10-specky-1BY4F4Z.md) (pr: #34)
   - Specky: (req: 01M4K06AQB7B8055HQ21BY4F4Z v1 @04c88f7)
   - Specky kryteria: (crit: 01M4K06AR8TJXY24K05X0MNBJC) 2 zdania + 40 s ciszy → oba zdania bez dodatkowych fraz
   - AC: wejście — Stop w kontrolerze (ścieżka Recorder → STT) oraz komenda `va-dev transcribe`; mutacja (pominięcie compress_pauses) wykrywana testem kontrolera przez długość próbek przekazanych do STT
-- [ ] Test: 7.2 — test kontrolera z fałszywą nagrywarką (STT dostaje skrócone pauzy) + `#[ignore]` prawdziwa transkrypcja fixture z 40 s ciszy (oba zdania, nic między nimi) (pr: #34)
-- [ ] Zadanie 7.3: Limit nagrania: domyślne `max_recording_secs` 600 (va-config); `Recorder` zgłasza osiągnięcie limitu (callback/kanał z wątku audio), kontroler dostaje `Message::LimitReached` → `Input::Stop` tą samą ścieżką co ctrl+cmd+s + `ControllerEvent::LimitReached` [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md)
+- [x] Test: 7.2 — test kontrolera z fałszywą nagrywarką (STT dostaje skrócone pauzy) + `#[ignore]` prawdziwa transkrypcja fixture z 40 s ciszy (oba zdania, nic między nimi) (pr: #34)
+- [ ] Zadanie 7.3: Limit nagrania: domyślne `max_recording_secs` 600 (va-config); `Recorder` zgłasza osiągnięcie limitu (callback/kanał z wątku audio), kontroler dostaje `Message::LimitReached` → `Input::Stop` tą samą ścieżką co ctrl+cmd+s + `ControllerEvent::LimitReached` [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md) (pr: #35)
   - Specky: (req: 01M4K06AXGNSZ9XEZ3E9VFYND0 v1 @97b27f2)
   - Specky kryteria: (crit: 01M4K06AY61DWRJ5R2DFNDJD6W) domyślnie 600 s, config nadal zmienia; (crit: 01M4K06AY60EVTQQ78X8RQ4RCK) auto-Stop → transkrypcja → schowek, ikona szara; (crit: 01M4K06AY6N6SB7WBZE4J4MM09) ręczny Stop jak dotąd
   - AC: wejście — zdarzenie limitu z nagrywarki (bez polecenia użytkownika) kończy nagranie: automat Recording → Transcribing → Idle, STT dostaje cały bufor do limitu, schowek otrzymuje tekst; ręczny Stop przed limitem bez zmian
-- [ ] Test: 7.3 — `Config::default().max_recording_secs == 600` i odczyt z pliku; test kontrolera: fałszywa nagrywarka emituje limit → Stop bez polecenia, STT i schowek wywołane, stan Idle; mutacja (ignorowanie limitu) czerwona
+- [ ] Test: 7.3 — `Config::default().max_recording_secs == 600` i odczyt z pliku; test kontrolera: fałszywa nagrywarka emituje limit → Stop bez polecenia, STT i schowek wywołane, stan Idle; mutacja (ignorowanie limitu) czerwona (pr: #35)
 - [ ] Zadanie 7.4: Aplikacja: `ControllerEvent::LimitReached` → powiadomienie systemowe „Osiągnięto limit długości nagrania” (messages.rs, tekst po polsku, nazwa limitu w minutach); README/RUNBOOK: limit 10 min i auto-Stop (wymaga: 7.3) [VA-REC-6] (zmiana: 2026-10-10-specky-9VFYND0.md)
   - Specky: (req: 01M4K06AXGNSZ9XEZ3E9VFYND0 v1 @97b27f2)
   - Specky kryteria: (crit: 01M4K06AY6B3424GJDBAQQK3WY) powiadomienie przy auto-Stop

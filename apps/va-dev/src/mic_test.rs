@@ -25,7 +25,10 @@ pub fn run(seconds: u32, save: Option<&Path>) -> anyhow::Result<()> {
     let choice = choose_device(&devices, config.microphone.as_deref())?;
     println!("Nagrywam {seconds} s z: {}", choice.name);
     let mut recorder = CpalRecorder::new(config.max_recording_secs);
-    recorder.start(&choice.name)?;
+    recorder.start(
+        &choice.name,
+        Box::new(|| eprintln!("Osiągnięto limit długości nagrania — dalsze próbki odrzucone")),
+    )?;
     std::thread::sleep(Duration::from_secs(u64::from(seconds)));
     let samples = recorder.stop()?;
     print_levels(&samples);

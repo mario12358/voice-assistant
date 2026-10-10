@@ -73,7 +73,7 @@ impl Default for Config {
             microphone: None,
             language: Language::Auto,
             model_path: None,
-            max_recording_secs: 300,
+            max_recording_secs: 600,
             silence: SilenceConfig::default(),
         }
     }
@@ -226,7 +226,17 @@ padding_ms = 100
         assert_eq!(config.language, Language::En);
         assert_eq!(config.silence.padding_ms, 50);
         assert_eq!(config.silence.threshold_rms, 0.01);
-        assert_eq!(config.max_recording_secs, 300);
+        assert_eq!(config.max_recording_secs, 600);
+    }
+
+    #[test]
+    // specky: crit 01M4K06AY61DWRJ5R2DFNDJD6W
+    fn default_recording_limit_is_ten_minutes_and_file_overrides_it() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = write_config(&dir, "max_recording_secs = 20\n");
+
+        assert_eq!(Config::default().max_recording_secs, 600);
+        assert_eq!(Config::load(&path).unwrap().max_recording_secs, 20);
     }
 
     #[test]

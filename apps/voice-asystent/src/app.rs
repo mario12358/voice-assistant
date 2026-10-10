@@ -91,6 +91,9 @@ pub fn run(
                         notify(&Problem::RecordingFailed(reason.clone()))
                     }
                     ControllerEvent::Delivered(_) => {}
+                    ControllerEvent::LimitReached => {
+                        tracing::info!("limit długości nagrania — zakończone automatycznie");
+                    }
                 }
                 tracing::debug!(?event, "zdarzenie kontrolera");
             }

@@ -10,19 +10,24 @@ use cpal::{FromSample, SampleFormat, SizedSample};
 use crate::convert::normalize;
 use crate::{Error, Result};
 
+/// Wołane raz, z wątku audio, gdy bufor osiągnie limit długości (VA-REC-6) — dalsze próbki
+/// są odrzucane, więc odbiorca powinien zakończyć nagranie.
+pub type LimitNotifier = Box<dyn FnOnce() + Send>;
+
 /// Nagranie z mikrofonu: start, potem stop zwracający 16 kHz mono f32.
 pub trait Recorder: Send {
-    fn start(&mut self, device_name: &str) -> Result<()>;
+    fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> Result<()>;
     fn stop(&mut self) -> Result<Vec<f32>>;
 }
 
 /// Surowe próbki w formacie urządzenia, przed normalizacją.
-#[derive(Debug, Default)]
+#[derive(Default)]
 struct Captured {
     interleaved: Vec<f32>,
     channels: u16,
     sample_rate: u32,
     truncated: bool,
+    on_limit: Option<LimitNotifier>,
 }
 
 struct ActiveRecording {
@@ -46,7 +51,7 @@ impl CpalRecorder {
 }
 
 impl Recorder for CpalRecorder {
-    fn start(&mut self, device_name: &str) -> Result<()> {
+    fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> Result<()> {
         if self.active.is_some() {
             return Err(Error::AlreadyRecording);
         }
@@ -56,7 +61,7 @@ impl Recorder for CpalRecorder {
         let max_seconds = self.max_seconds;
         let worker = std::thread::Builder::new()
             .name("va-audio-capture".into())
-            .spawn(move || capture(&device_name, max_seconds, &ready, &stop_signal))
+            .spawn(move || capture(&device_name, max_seconds, on_limit, &ready, &stop_signal))
             .map_err(|error| Error::Backend(error.to_string()))?;
         match started.recv() {
             Ok(Ok(())) => {
@@ -99,10 +104,14 @@ fn join_error(worker: JoinHandle<Result<Captured>>) -> Error {
 fn capture(
     device_name: &str,
     max_seconds: u32,
+    on_limit: LimitNotifier,
     ready: &mpsc::Sender<Result<()>>,
     stop_signal: &mpsc::Receiver<()>,
 ) -> Result<Captured> {
-    let buffer = Arc::new(Mutex::new(Captured::default()));
+    let buffer = Arc::new(Mutex::new(Captured {
+        on_limit: Some(on_limit),
+        ..Captured::default()
+    }));
     let stream = match open_stream(device_name, max_seconds, &buffer) {
         Ok(stream) => stream,
         Err(error) => {
@@ -183,18 +192,29 @@ where
     T: SizedSample,
     f32: FromSample<T>,
 {
-    let Ok(mut captured) = buffer.lock() else {
-        return;
+    let notify_limit = {
+        let Ok(mut captured) = buffer.lock() else {
+            return;
+        };
+        let room = limit.saturating_sub(captured.interleaved.len());
+        let overflow = data.len() > room;
+        if overflow {
+            captured.truncated = true;
+        }
+        captured.interleaved.extend(
+            data.iter()
+                .take(room)
+                .map(|sample| sample.to_sample::<f32>()),
+        );
+        if overflow {
+            captured.on_limit.take()
+        } else {
+            None
+        }
     };
-    let room = limit.saturating_sub(captured.interleaved.len());
-    if data.len() > room {
-        captured.truncated = true;
+    if let Some(notify) = notify_limit {
+        notify();
     }
-    captured.interleaved.extend(
-        data.iter()
-            .take(room)
-            .map(|sample| sample.to_sample::<f32>()),
-    );
 }
 
 fn backend(error: impl std::fmt::Display) -> Error {
@@ -206,15 +226,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn samples_beyond_limit_are_dropped_and_flagged() {
-        let buffer = Mutex::new(Captured::default());
+    fn samples_beyond_limit_are_dropped_and_flagged_and_limit_is_reported_once() {
+        let notifications = Arc::new(Mutex::new(0_u32));
+        let counter = Arc::clone(&notifications);
+        let buffer = Mutex::new(Captured {
+            on_limit: Some(Box::new(move || *counter.lock().unwrap() += 1)),
+            ..Captured::default()
+        });
 
         append_limited(&buffer, &[0.1_f32, 0.2, 0.3], 4);
+        assert_eq!(*notifications.lock().unwrap(), 0);
         append_limited(&buffer, &[0.4_f32, 0.5, 0.6], 4);
+        append_limited(&buffer, &[0.7_f32], 4);
 
         let captured = buffer.into_inner().unwrap();
         assert_eq!(captured.interleaved, vec![0.1, 0.2, 0.3, 0.4]);
         assert!(captured.truncated);
+        assert_eq!(*notifications.lock().unwrap(), 1);
     }
 
     #[test]
@@ -241,10 +269,33 @@ mod tests {
     fn unknown_device_fails_at_start() {
         let mut recorder = CpalRecorder::new(5);
 
-        let error = recorder.start("Nie ma takiego mikrofonu").unwrap_err();
+        let error = recorder
+            .start("Nie ma takiego mikrofonu", Box::new(|| {}))
+            .unwrap_err();
 
         assert!(matches!(error, Error::DeviceUnavailable(_)), "{error:?}");
         assert!(matches!(recorder.stop(), Err(Error::NotRecording)));
+    }
+
+    #[test]
+    #[ignore = "wymaga mikrofonu i zgody na dostęp do niego"]
+    fn real_microphone_reports_limit_from_audio_thread() {
+        use crate::{AudioHost, CpalHost, choose_device};
+        let devices = CpalHost::new().input_devices().unwrap();
+        let device = choose_device(&devices, None).unwrap();
+        let (limit_tx, limit_rx) = mpsc::channel();
+        let mut recorder = CpalRecorder::new(1);
+
+        recorder
+            .start(&device.name, Box::new(move || limit_tx.send(()).unwrap()))
+            .unwrap();
+        let reported = limit_rx
+            .recv_timeout(std::time::Duration::from_secs(5))
+            .is_ok();
+        let samples = recorder.stop().unwrap();
+
+        assert!(reported, "wątek audio nie zgłosił limitu 1 s");
+        assert!(samples.len() <= 16_000 + 1_600, "{} próbek", samples.len());
     }
 
     #[test]
@@ -255,7 +306,7 @@ mod tests {
         let device = choose_device(&devices, None).unwrap();
         let mut recorder = CpalRecorder::new(5);
 
-        recorder.start(&device.name).unwrap();
+        recorder.start(&device.name, Box::new(|| {})).unwrap();
         std::thread::sleep(std::time::Duration::from_millis(500));
         let samples = recorder.stop().unwrap();
 

@@ -5,7 +5,7 @@ use std::sync::mpsc::{self, Receiver};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use va_audio::{Recorder, SilenceParams};
+use va_audio::{LimitNotifier, Recorder, SilenceParams};
 use va_clipboard::testing::MemoryClipboard;
 use va_clipboard::{ClipboardSink, Delivery};
 use va_core::controller::{Command, ControllerEvent, ControllerHandle, ControllerParts, spawn};
@@ -34,6 +34,7 @@ fn fixture(name: &str) -> Vec<f32> {
 struct FakeRecorder {
     recording: Arc<Mutex<Vec<f32>>>,
     starts: Arc<Mutex<Vec<String>>>,
+    limit_notifiers: Arc<Mutex<Vec<Option<LimitNotifier>>>>,
     fail_start: bool,
     active: bool,
 }
@@ -49,10 +50,18 @@ impl FakeRecorder {
     fn starts(&self) -> Vec<String> {
         self.starts.lock().unwrap().clone()
     }
+
+    /// Udaje zapełnienie bufora w nagraniu o podanym numerze (od 1), jak wątek audio.
+    fn reach_limit_of(&self, recording_number: usize) {
+        let notifier = self.limit_notifiers.lock().unwrap()[recording_number - 1]
+            .take()
+            .expect("sygnał limitu już zużyty");
+        notifier();
+    }
 }
 
 impl Recorder for FakeRecorder {
-    fn start(&mut self, device_name: &str) -> va_audio::Result<()> {
+    fn start(&mut self, device_name: &str, on_limit: LimitNotifier) -> va_audio::Result<()> {
         if self.fail_start {
             return Err(va_audio::Error::NoInputDevice);
         }
@@ -61,6 +70,7 @@ impl Recorder for FakeRecorder {
         }
         self.active = true;
         self.starts.lock().unwrap().push(device_name.to_owned());
+        self.limit_notifiers.lock().unwrap().push(Some(on_limit));
         Ok(())
     }
 
@@ -137,6 +147,7 @@ impl Harness {
 }
 
 #[test]
+// specky: crit 01M4K06AY6N6SB7WBZE4J4MM09
 fn stop_puts_transcript_in_clipboard_and_reports_states_to_ui() {
     let speech = fixture("speech_with_silence.wav");
     let harness = Harness::new(
@@ -286,6 +297,71 @@ fn digital_silence_reports_no_signal_instead_of_transcribing() {
     assert!(events.contains(&ControllerEvent::StateChanged(State::Error)));
     assert!(harness.stt.received().is_empty());
     assert_eq!(harness.clipboard.contents().as_deref(), Some("bez zmian"));
+}
+
+#[test]
+// specky: crit 01M4K06AY60EVTQQ78X8RQ4RCK
+fn limit_reached_stops_recording_and_transcribes_without_stop_command() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("tekst do limitu".into())]),
+        MemoryClipboard::containing("stare"),
+    );
+
+    harness.handle.send(Command::Start);
+    assert_eq!(
+        harness.next_event(),
+        ControllerEvent::StateChanged(State::Recording)
+    );
+    harness.recorder.reach_limit_of(1);
+    let events = harness.events_until_idle();
+
+    assert_eq!(
+        events,
+        vec![
+            ControllerEvent::LimitReached,
+            ControllerEvent::StateChanged(State::Transcribing),
+            ControllerEvent::Delivered(Delivery::Written),
+            ControllerEvent::StateChanged(State::Idle),
+        ]
+    );
+    assert_eq!(
+        harness.clipboard.contents().as_deref(),
+        Some("tekst do limitu")
+    );
+    assert_eq!(harness.stt.received().len(), 1);
+}
+
+#[test]
+fn stale_limit_signal_from_previous_recording_is_ignored() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("pierwsze".into()), Ok("drugie".into())]),
+        MemoryClipboard::default(),
+    );
+    harness.record_and_stop();
+    harness.handle.send(Command::Start);
+    assert_eq!(
+        harness.next_event(),
+        ControllerEvent::StateChanged(State::Recording)
+    );
+
+    harness.recorder.reach_limit_of(1);
+
+    assert!(
+        harness
+            .events
+            .recv_timeout(Duration::from_millis(200))
+            .is_err(),
+        "spóźniony limit poprzedniego nagrania zakończył bieżące"
+    );
+    harness.handle.send(Command::Stop);
+    let events = harness.events_until_idle();
+    assert!(
+        !events.contains(&ControllerEvent::LimitReached),
+        "{events:?}"
+    );
+    assert_eq!(harness.clipboard.contents().as_deref(), Some("drugie"));
 }
 
 #[test]
