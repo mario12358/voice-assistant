@@ -1,8 +1,8 @@
 # ralph/SPECKY.md — stan synchronizacji z Specky
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
-- **since_seq**: 736
-- **Ostatnia synchronizacja**: 2026-10-10 (pozycje 722–736: migawka v0.6.0, akceptacja wsadu Fazy 9 (8 wymagań) → changes/ → Faza 9)
+- **since_seq**: 737
+- **Ostatnia synchronizacja**: 2026-10-11 (pozycja 737: migawka v0.7.0, informacyjnie; kolejka pusta, 21 `code_ready` + 4 `done`)
 - **Stan projektu w Specky**: 25 zaakceptowanych wymagań (12 z 2026-10-08 + 13 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela. Migawki: v0.1.0–v0.6.0.
 
 ## Mapa wymagań → zadania
