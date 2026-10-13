@@ -14,8 +14,8 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: W trakcie — kod Faz 7, 8 i 9 zmergowany (Faza 9: PR #49–#58), wszystkie wymagania Faz 7–9 `code_ready`; czekają tylko testy ręczne właściciela ⛔ 7.7, ⛔ 8.5 i ⛔ 9.10
-- **Postęp**: 87/90 pozycji ukończonych (zostały ⛔ 7.7, ⛔ 8.5, ⛔ 9.10)
+- **Status**: Kod Faz 7–9 zmergowany, testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10 wykonane przez właściciela 2026-10-13 — wszystko działa poza powiadomieniami systemowymi (błąd → changes/2026-10-13-powiadomienia-niewidoczne.md); VA-UI-1 zmienione w Specky (żółte kółko w trakcie transkrypcji) — wejdzie przy synchronizacji
+- **Postęp**: 90/90 pozycji ukończonych; czekają: regresja Faz 7–9 na main (tagi `ralph/faza-7..9`), błąd powiadomień, zmiana VA-UI-1
 - Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-11 (kursor 737): tylko migawka v0.7.0 (informacyjnie), kolejka pusta, 21 wymagań `code_ready` + 4 `done`; brak nowych plików w changes/.
 - Otwarte PR: brak. Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
@@ -52,6 +52,9 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Zadanie | Status | Testy | Próby | Commit | Czas |
 |---------|--------|-------|-------|--------|------|
+| 7.7 Test ręczny właściciela (historia, pauzy, limit) | ✅ | ręcznie OK poza powiadomieniem przy limicie (błąd w changes/) | 1 | — | 2026-10-13 |
+| 8.5 Test ręczny właściciela (podmenu Model, usuwanie, pobieranie, model_path) | ✅ | ręcznie OK | 1 | — | 2026-10-13 |
+| 9.10 Test ręczny właściciela (Ustawienia, autostart, logi, q5_0, wydanie z CI v0.7.0) | ✅ | ręcznie OK poza powiadomieniem „Transkrypcja w schowku” (błąd w changes/) | 1 | — | 2026-10-13 |
 | 9.8 Wybór wariantu w podmenu „Model” (pozycje Pełny 1,6 GB / q5_0 0,6 GB z zaznaczeniem, przełączenie: zapis `model_variant` → `DownloadEvent::Switch` → pobranie albo samo załadowanie → `ModelLoaded`, „Usuń nieużywany wariant”), rozmiary zaokrąglane do najbliższej dziesiątej; README/RUNBOOK fazy 9 + test 9.8 | ✅ PR #56 | 194/0 + 14 ignored; mutacja (przełączenie bez zapisu do konfiguracji) czerwona; aplikacja startuje lokalnie | 1 | e97da01 | 2026-10-10 |
 | 9.7 Wariant q5_0: `ModelVariant` (`model_variant` w config.toml, domyślnie full), `LARGE_V3_TURBO_Q5_0` (574 041 195 B, SHA-256 z LFS HF) i `spec_for`, `ModelSource::Store(store, wariant)`, pobieranie i usuwanie per wariant, `va-dev model-download --variant` + test 9.7 | ✅ PR #55 | 189/0 + 14 ignored; q5_0 pobrany (54 s) i rozpoznaje speech_pl; mutacja (wariant ignorowany) czerwona | 1 | af22fbb | 2026-10-10 |
 | 9.6 „Uruchamiaj przy logowaniu”: `login_item.rs` (plist LaunchAgent `io.github.mario12358.voiceasystent`, RunAtLoad, ścieżka bundla z `current_exe`, escape XML), pozycja z zaznaczeniem w podmenu Ustawienia, nieaktywna poza bundlem; `Paths::launch_agents_dir` + test 9.6 | ✅ PR #54 | 186/0 + 13 ignored; plist przechodzi `plutil -lint`; mutacja (zaznaczenie bez sprawdzania ścieżki) czerwona | 1 | 0b4a713 | 2026-10-10 |
@@ -200,6 +203,7 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 
 <!-- Format: [data] Zadanie X.X: opis problemu - rozwiązanie/status -->
 <!-- Listy zmienionych plików NIE prowadzimy — git zna ją lepiej: git log --stat -->
+- [2026-10-13] Zadania 7.7/9.10: powiadomienia systemowe (gotowa transkrypcja, limit) nie pojawiają się wcale, także w Centrum powiadomień, bez ostrzeżenia w logach — `messages.rs` (5.5) wysyła przez mac-notification-sys bez `set_application`, czyli jako com.apple.Finder; macOS 26.6 je gubi. Zgłoszone jako błąd: changes/2026-10-13-powiadomienia-niewidoczne.md. Testy automatyczne tego nie widziały (sprawdzają mapowanie zdarzenie → powiadomienie, nie dostarczenie).
 - [2026-10-10] Zadanie 8.2: `DownloadEvent::Removed` i `DownloadState::can_remove` mają tymczasowo `#[allow(dead_code)]` — konstruowane/używane dopiero przez podmenu „Model” (8.3) i usuwanie (8.4); atrybuty do zdjęcia w tych zadaniach (clippy `-D warnings` nie przepuszcza nieużywanych symboli, a dzielenie automatu między PR-y bez tego byłoby niemożliwe).
 - [2026-10-10] Zadanie 8.1: `menu_notice` zwraca teraz `Option<String>` (komunikat ze ścieżką) — test `missing_model_stays_in_menu` porównuje przez `as_deref()`, asercja bez zmian. Własna ścieżka modelu nie jest sprawdzana sumą SHA-256 (plik użytkownika, nieznana suma) — przy błędnym pliku błąd ładowania modelu zgłosi `WhisperStt::load` jak dotąd.
 - [2026-10-10] Zadanie 7.6: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, history_menu.rs, main.rs, tray_menu.rs) — testy w `#[cfg(test)] mod tests` tych samych plików (znana pułapka). Wygląd podmenu „Historia”, kliknięcie pozycji i „Wyczyść historię” w prawdziwym menu — test ręczny 7.7; przebudowa podmenu przez `remove_at(0)` w pętli jak przy mikrofonach.
