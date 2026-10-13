@@ -14,10 +14,10 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: W TOKU (2026-10-13) — blokada cargo rozwiązana (komendy cargo w allowliście). Regresja Faz 7–9 na main zielona, tagi `ralph/faza-7..9`. Zadanie 5.Z1.1 (żółte kółko) w PR; potem zostaje ⛔ 5.Z1.2 (test ręczny właściciela).
-- **Postęp**: 90/93 pozycji ukończonych; czekają: 5.Z1.1 + test (PR), ⛔ 5.Z1.2
-- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-13 (kursor 745, bez nowych pozycji); VA-UI-1 v2 `in_progress`.
-- Otwarte PR: #67 (5.Z1.1). Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- **Status**: CZEKA NA CZŁOWIEKA (2026-10-13) — blokada cargo rozwiązana. Regresja Faz 7–9 na main zielona, tagi `ralph/faza-7..9`. Zadanie 5.Z1.1 (żółte kółko) zmergowane (PR #67). Zostaje tylko ⛔ 5.Z1.2 (test ręczny właściciela), po nim regresja i tag `ralph/faza-5.Z1`.
+- **Postęp**: 92/93 pozycji ukończonych; czeka: ⛔ 5.Z1.2
+- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-13 (kursor 745, bez nowych pozycji); VA-UI-1 v2 `code_ready` (2026-10-13).
+- Otwarte PR: brak (poza aktualizacją stanu). Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -54,6 +54,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Zadanie | Status | Testy | Próby | Commit | Czas |
 |---------|--------|-------|-------|--------|------|
+| 5.Z1.1 `Dot::Yellow` w Transcribing (systemowy żółty 255/204/0), szare po zapisie do schowka / ciszy / błędzie; testy kolejności zdarzeń i Startu w trakcie transkrypcji (atrapa STT z bramką) + test 5.Z1.1 | ✅ PR #67 | 203/0 + 14 ignored; CI zielone; 3 mutacje czerwone | 1 | 206955a | 2026-10-13 |
 | 7.7 Test ręczny właściciela (historia, pauzy, limit) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
 | 8.5 Test ręczny właściciela (podmenu Model, usuwanie, pobieranie, model_path) | ✅ | ręcznie OK | 1 | — | 2026-10-13 |
 | 9.10 Test ręczny właściciela (Ustawienia, autostart, logi, q5_0, wydanie z CI v0.7.0) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
