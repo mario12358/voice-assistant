@@ -15,6 +15,7 @@ use va_core::controller::{
 use va_core::history::{FileHistoryStore, History, HistoryEntry};
 use va_core::state::State;
 use va_stt::testing::ScriptedStt;
+use va_stt::{SpeechToText, Transcript};
 
 const SILENCE: SilenceParams = SilenceParams {
     threshold_rms: 0.01,
@@ -363,6 +364,7 @@ fn digital_silence_reports_no_signal_instead_of_transcribing() {
 
 #[test]
 // specky: crit 01M4K06AY60EVTQQ78X8RQ4RCK
+// specky: crit 01M4EKHD1PJ32E01218FSE9G8F
 fn limit_reached_stops_recording_and_transcribes_without_stop_command() {
     let harness = Harness::new(
         FakeRecorder::playing(fixture("speech_with_silence.wav")),
@@ -619,4 +621,132 @@ fn long_pause_inside_recording_is_shortened_before_stt() {
         recording.len()
     );
     assert!(received[0].len() > 2 * 16_000, "mowa została wycięta");
+}
+
+/// Transcribing (żółte kółko) trwa aż do `ending`; dopiero po nim stan wraca do Idle.
+fn assert_transcribing_until(events: &[ControllerEvent], ending: &ControllerEvent) {
+    let position = |wanted: &ControllerEvent| {
+        events
+            .iter()
+            .position(|event| event == wanted)
+            .unwrap_or_else(|| panic!("brak {wanted:?} w {events:?}"))
+    };
+    let transcribing = position(&ControllerEvent::StateChanged(State::Transcribing));
+    let ended = position(ending);
+    assert!(transcribing < ended, "{events:?}");
+    assert!(
+        !events[transcribing + 1..ended]
+            .iter()
+            .any(|event| matches!(event, ControllerEvent::StateChanged(_))),
+        "stan zmienił się przed końcem transkrypcji: {events:?}"
+    );
+    assert_eq!(
+        events.last(),
+        Some(&ControllerEvent::StateChanged(State::Idle))
+    );
+}
+
+#[test]
+// specky: crit 01M4EKHD1PJ32E01218FSE9G8F
+// specky: crit 01M4TFDKBW8V3E5M743BZ6JXN2
+fn state_stays_transcribing_until_text_is_in_clipboard() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Ok("tekst".into())]),
+        MemoryClipboard::containing("stare"),
+    );
+
+    let events = harness.record_and_stop();
+
+    assert_transcribing_until(&events, &ControllerEvent::Delivered(Delivery::Written));
+    assert_eq!(harness.clipboard.contents().as_deref(), Some("tekst"));
+}
+
+#[test]
+// specky: crit 01M4TFDKBW8V3E5M743BZ6JXN2
+fn state_returns_to_idle_after_silence_only_transcription() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("silence_only.wav")),
+        ScriptedStt::answering([]),
+        MemoryClipboard::containing("poprzednia"),
+    );
+
+    let events = harness.record_and_stop();
+
+    assert_transcribing_until(&events, &ControllerEvent::Delivered(Delivery::SkippedEmpty));
+}
+
+#[test]
+// specky: crit 01M4TFDKBW8V3E5M743BZ6JXN2
+fn state_returns_to_idle_after_failed_transcription() {
+    let harness = Harness::new(
+        FakeRecorder::playing(fixture("speech_with_silence.wav")),
+        ScriptedStt::answering([Err(())]),
+        MemoryClipboard::containing("bez zmian"),
+    );
+
+    let events = harness.record_and_stop();
+
+    assert_transcribing_until(&events, &ControllerEvent::StateChanged(State::Error));
+    assert_eq!(harness.clipboard.contents().as_deref(), Some("bez zmian"));
+}
+
+/// STT, które kończy transkrypcję dopiero na sygnał testu — Start w trakcie trafia
+/// do kontrolera na pewno, gdy stan to Transcribing.
+struct GatedStt {
+    release: Receiver<()>,
+}
+
+impl SpeechToText for GatedStt {
+    fn transcribe(&mut self, _samples: &[f32]) -> va_stt::Result<Transcript> {
+        self.release.recv().expect("sygnał końca transkrypcji");
+        Ok(Transcript {
+            text: "po transkrypcji".into(),
+            inference: Duration::ZERO,
+        })
+    }
+
+    fn set_language(&mut self, _language: Language) {}
+}
+
+#[test]
+// specky: crit 01M4TFDKGRFC1CYWGCXA5E8HQR
+fn start_during_transcription_does_not_start_new_recording() {
+    let dir = tempfile::tempdir().expect("katalog tymczasowy");
+    let recorder = FakeRecorder::playing(fixture("speech_with_silence.wav"));
+    let (release, gate) = mpsc::channel();
+    let (sender, events) = mpsc::channel();
+    let handle = spawn(
+        ControllerParts {
+            recorder: Box::new(recorder.clone()),
+            stt: Box::new(GatedStt { release: gate }),
+            sink: Box::new(ClipboardSink::new(MemoryClipboard::default())),
+            silence: SILENCE,
+            select_device: Box::new(|| Ok("PXC 550".to_owned())),
+            history: History::open(Box::new(FileHistoryStore::new(
+                dir.path().join("history.json"),
+            ))),
+        },
+        Box::new(move |event| {
+            let _ = sender.send(event);
+        }),
+    );
+    let next = || events.recv_timeout(WAIT).expect("zdarzenie kontrolera");
+    handle.send(Command::Start);
+    handle.send(Command::Stop);
+    while next() != ControllerEvent::StateChanged(State::Transcribing) {}
+
+    handle.send(Command::Start);
+    release.send(()).unwrap();
+    let mut after = Vec::new();
+    while after.last() != Some(&ControllerEvent::StateChanged(State::Idle)) {
+        after.push(next());
+    }
+
+    assert!(
+        !after.contains(&ControllerEvent::StateChanged(State::Recording)),
+        "{after:?}"
+    );
+    assert!(events.recv_timeout(Duration::from_millis(200)).is_err());
+    assert_eq!(recorder.starts().len(), 1);
 }

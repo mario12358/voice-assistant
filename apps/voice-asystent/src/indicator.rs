@@ -1,4 +1,5 @@
-//! Ikona stanu w pasku menu: szare kółko poza nagrywaniem, czerwone w trakcie (VA-UI-1).
+//! Ikona stanu w pasku menu (VA-UI-1): szare kółko, gdy aplikacja czeka, czerwone w trakcie
+//! nagrywania, żółte w trakcie transkrypcji.
 //!
 //! Kółka rysujemy w kodzie (RGBA 36×36 px = 18 pt na ekranie Retina), zamiast trzymać
 //! pliki PNG — ten sam efekt bez binarnych zasobów, a kolor i rozmiar są sprawdzalne testem.
@@ -9,11 +10,13 @@ pub const ICON_PIXELS: u32 = 36;
 
 const GRAY: [u8; 3] = [142, 142, 147];
 const RED: [u8; 3] = [255, 59, 48];
+const YELLOW: [u8; 3] = [255, 204, 0];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Dot {
     Gray,
     Red,
+    Yellow,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -33,7 +36,7 @@ pub fn indicator_for(state: State) -> Indicator {
             tooltip: "Nagrywanie… — kliknij albo ctrl+cmd+s, aby zakończyć",
         },
         State::Transcribing => Indicator {
-            dot: Dot::Gray,
+            dot: Dot::Yellow,
             tooltip: "Transkrypcja…",
         },
         State::Error => Indicator {
@@ -48,6 +51,7 @@ pub fn dot_rgba(dot: Dot) -> Vec<u8> {
     let [red, green, blue] = match dot {
         Dot::Gray => GRAY,
         Dot::Red => RED,
+        Dot::Yellow => YELLOW,
     };
     let size = ICON_PIXELS as f32;
     let center = size / 2.0;
@@ -87,8 +91,13 @@ mod tests {
 
     #[test]
     // specky: crit 01M4EKHD1PJ32E01218FSE9G8F
-    fn after_recording_the_dot_is_gray_again() {
-        assert_eq!(indicator_for(State::Transcribing).dot, Dot::Gray);
+    fn transcribing_shows_yellow_dot() {
+        assert_eq!(indicator_for(State::Transcribing).dot, Dot::Yellow);
+    }
+
+    #[test]
+    // specky: crit 01M4TFDKBW8V3E5M743BZ6JXN2
+    fn after_transcription_or_failure_the_dot_is_gray_again() {
         assert_eq!(indicator_for(State::Idle).dot, Dot::Gray);
         assert_eq!(indicator_for(State::Error).dot, Dot::Gray);
     }
@@ -107,5 +116,17 @@ mod tests {
         assert_eq!(pixel(&red, 0, 0)[3], 0);
         assert_eq!(pixel(&red, 35, 35)[3], 0);
         assert_eq!(pixel(&dot_rgba(Dot::Gray), 18, 18), [142, 142, 147, 255]);
+    }
+
+    #[test]
+    // specky: crit 01M4EKHD1PJ32E01218FSE9G8F
+    fn yellow_dot_is_drawn_in_system_yellow_like_the_others() {
+        let yellow = dot_rgba(Dot::Yellow);
+
+        assert_eq!(yellow.len(), (ICON_PIXELS * ICON_PIXELS * 4) as usize);
+        assert_eq!(pixel(&yellow, 18, 18), [255, 204, 0, 255]);
+        assert_eq!(pixel(&yellow, 0, 0)[3], 0);
+        let alpha = |rgba: &[u8]| rgba.chunks(4).map(|p| p[3]).collect::<Vec<_>>();
+        assert_eq!(alpha(&yellow), alpha(&dot_rgba(Dot::Red)));
     }
 }

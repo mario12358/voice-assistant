@@ -472,11 +472,18 @@
   <!-- nie = wpisy zostają dokładnie takie, jak zatwierdzono                             -->
 
 - **Dozwolone komendy**:
+  - Bash(cargo --version)
+  - Bash(cargo build:\*)
+  - Bash(cargo check:\*)
+  - Bash(cargo clippy:\*)
+  - Bash(cargo fmt:\*)
+  - Bash(cargo test:\*)
   - Bash(gh auth status)
   - Bash(gh pr checks:*)
   - Bash(gh pr create:*)
   - Bash(gh pr diff:*)
   - Bash(gh pr list:*)
+  - Bash(gh pr merge:\*)
   - Bash(gh pr status:*)
   - Bash(gh pr view:*)
   - Bash(gh repo view:*)
@@ -509,12 +516,18 @@
   - Bash(npx:*)
   - Bash(pytest:*)
   - WebFetch(domain:claude.ai)
+  - mcp\_\_claude_ai_Specky
+  - mcp\_\_plugin_specky_specky
   - mcp__claude_ai_Specky
   - mcp__plugin_specky_specky
 
 - **Zabronione komendy**:
   - Bash(git push --force:*)
+  - Bash(git push --force:\*)
   - Bash(git reset --hard:*)
+  - Bash(git reset --hard:\*)
   - Bash(rm -rf:*)
+  - Bash(rm -rf:\*)
   - Bash(sudo:*)
+  - Bash(sudo:\*)
 

@@ -215,3 +215,20 @@ Write-only — plik nie jest ładowany do żadnego promptu.
 ### Log problemów
 
 - [2026-10-10] Zadanie 8.2: `DownloadEvent::Removed` i `DownloadState::can_remove` mają tymczasowo `#[allow(dead_code)]` — konstruowane/używane dopiero przez podmenu „Model” (8.3) i usuwanie (8.4); atrybuty do zdjęcia w tych zadaniach (clippy `-D warnings` nie przepuszcza nieużywanych symboli, a dzielenie automatu między PR-y bez tego byłoby niemożliwe).
+
+## Rotacja 2026-10-13
+
+### Historia zmian
+
+### 2026-10-10 2026-10-10-specky-S3WPKBD.md
+- **Rodzaj**: rozwój
+- **Priorytet**: normalny
+- **Dotyczy**: ogólne (VA-SET-2; login_item.rs, tray_menu.rs, app.rs)
+- **Streszczenie**: „Uruchamiaj przy logowaniu” przez LaunchAgent, zaznaczenie odzwierciedla stan, nieaktywne poza bundlem.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: brak
+- **Nowe zadania**: 9.6, 9.10 (Faza 9)
+
+### Log problemów
+
+- [2026-10-10] Zadanie 8.1: `menu_notice` zwraca teraz `Option<String>` (komunikat ze ścieżką) — test `missing_model_stays_in_menu` porównuje przez `as_deref()`, asercja bez zmian. Własna ścieżka modelu nie jest sprawdzana sumą SHA-256 (plik użytkownika, nieznana suma) — przy błędnym pliku błąd ładowania modelu zgłosi `WhisperStt::load` jak dotąd.

@@ -14,10 +14,10 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: RALPH BLOCKED (2026-10-13) — `cargo` wymaga zgody człowieka w tej sesji, więc ani regresja Faz 7–9 na main, ani zadanie 5.Z1.1 nie mogą ruszyć. Zmiana VA-UI-1 v2 (żółte kółko w trakcie transkrypcji) przetworzona do Fazy 5.Z1.
-- **Postęp**: 90/93 pozycji ukończonych; czekają: regresja Faz 7–9 na main (tagi `ralph/faza-7..9`), Faza 5.Z1 (5.Z1.1 + test, ⛔ 5.Z1.2)
-- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-13 (kursor 737 → 745): VA-UI-1 v2 `to_fix` (zmiana treści po `code_ready`) → changes/2026-10-13-specky-5FJTRC.md; 20 `code_ready` + 4 `done`.
-- Otwarte PR: brak. Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
+- **Status**: W TOKU (2026-10-13) — blokada cargo rozwiązana (komendy cargo w allowliście). Regresja Faz 7–9 na main zielona, tagi `ralph/faza-7..9`. Zadanie 5.Z1.1 (żółte kółko) w PR; potem zostaje ⛔ 5.Z1.2 (test ręczny właściciela).
+- **Postęp**: 90/93 pozycji ukończonych; czekają: 5.Z1.1 + test (PR), ⛔ 5.Z1.2
+- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-13 (kursor 745, bez nowych pozycji); VA-UI-1 v2 `in_progress`.
+- Otwarte PR: #67 (5.Z1.1). Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
 
@@ -34,6 +34,8 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Regresja po Fazach 7, 8 i 9 (2026-10-13) — ZIELONA:** na main (3eaedc8) `cargo test --workspace -- --include-ignored` 211/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; testy ręczne ⛔ 7.7, 8.5, 9.10 właściciela OK (2026-10-13). Bez zmian liczby testów od przebiegu po 9.11. Tagi `ralph/faza-7`, `ralph/faza-8`, `ralph/faza-9`.
+
 **Przebieg po zadaniach 8.1–8.4 (2026-10-10) — ZIELONY (main c7cd4d6, nie regresja fazy — czekają ⛔ 7.7 i ⛔ 8.5):** `cargo test --workspace -- --include-ignored` 171/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 156/0 po 7.6: +15 testów (model_path, remove/size w va-model, automat pobierania, podmenu Model, potwierdzenie). Bez tagów `ralph/faza-7` i `ralph/faza-8` do wyników testów ręcznych.
 
 **Przebieg po zadaniach 7.1–7.6 (2026-10-10) — ZIELONY (main 6627cc3, nie regresja fazy — czeka ⛔ 7.7):** `cargo test --workspace -- --include-ignored` 156/0 (w tym prawdziwa transkrypcja fixture z 40 s pauzy, limit z prawdziwego mikrofonu, historia z plikiem, build release i .dmg), clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 126/0 po Fazie 6: +30 testów. Bez tagu `ralph/faza-7` do wyniku testu ręcznego 7.7.
@@ -46,7 +48,7 @@ na zawsze i rośnie w prompcie każdej sesji.
 | Pass | 211 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-10 (pełny suite na main po 9.11, 4e23e64) |
+| Ostatnie uruchomienie | 2026-10-13 (pełny suite na main, 3eaedc8; na gałęzi 5.Z1.1 smoke 203/0 + 14 ignored = 217) |
 
 ## Historia realizacji
 
@@ -93,14 +95,6 @@ Plik źródłowy zmiany żyje w changes/processed/<nazwa-pliku>.md (audyt w gici
 - **Nowa faza rework**: Faza 5.Z1 z 2 zadaniami (5.Z1.1 + test, ⛔ 5.Z1.2)
 - **Nowe zadania**: brak
 
-### 2026-10-10 2026-10-10-specky-S3WPKBD.md
-- **Rodzaj**: rozwój
-- **Priorytet**: normalny
-- **Dotyczy**: ogólne (VA-SET-2; login_item.rs, tray_menu.rs, app.rs)
-- **Streszczenie**: „Uruchamiaj przy logowaniu” przez LaunchAgent, zaznaczenie odzwierciedla stan, nieaktywne poza bundlem.
-- **Zmodyfikowane zadania pending**: brak
-- **Nowa faza rework**: brak
-- **Nowe zadania**: 9.6, 9.10 (Faza 9)
 
 ### 2026-10-10 2026-10-10-specky-PV3NVAC.md
 - **Rodzaj**: rozwój
@@ -209,9 +203,10 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 
 <!-- Format: [data] Zadanie X.X: opis problemu - rozwiązanie/status -->
 <!-- Listy zmienionych plików NIE prowadzimy — git zna ją lepiej: git log --stat -->
+- [2026-10-13] Zadanie 5.Z1.1: zmiana testu `after_recording_the_dot_is_gray_again` (indicator.rs) → `transcribing_shows_yellow_dot` + `after_transcription_or_failure_the_dot_is_gray_again`. Powód: VA-UI-1 v2 kryterium 01M4EKHD1PJ32E01218FSE9G8F (changes/processed/2026-10-13-specky-5FJTRC.md) — w trakcie transkrypcji kółko żółte, nie szare. Kod kontrolera bez zmian: kolejność (Idle dopiero po zapisie do schowka) i ignorowanie Startu w Transcribing już działały, doszły testy ze znacznikami; mutacje (szare w Transcribing, Start w Transcribing, Idle przed zapisem) czerwone.
+- [2026-10-13] Blokada z poprzedniej sesji rozwiązana: właściciel dopisał cargo (test, clippy, fmt, check, build) i `gh pr merge` do allowlisty; ralph/BLOCKED.md usunięty.
 - [2026-10-13] Start sesji: każde wywołanie `cargo` (także `cargo --version`, z `export PATH` i pełną ścieżką `~/.cargo/bin/cargo`) zwraca „requires approval” od sędziego uprawnień; w trybie bez nadzoru nie ma kto zatwierdzić. Regresja Faz 7–9 i 5.Z1.1 wstrzymane — RALPH BLOCKED (ralph/BLOCKED.md).
 - [2026-10-13] Zadania 7.7/9.10: powiadomienia (gotowa transkrypcja, limit) nie pojawiały się, także w Centrum powiadomień — przyczyna: powiadomienia zablokowane w ustawieniach macOS u właściciela; po odblokowaniu widoczne. Zgłoszenie błędu (changes/2026-10-13-powiadomienia-niewidoczne.md) wycofane przed przetworzeniem. Powiadomienia są podpisane jako VoiceAsystent (osobna pozycja w Ustawieniach → Powiadomienia, potwierdzone zrzutem właściciela).
-- [2026-10-10] Zadanie 8.1: `menu_notice` zwraca teraz `Option<String>` (komunikat ze ścieżką) — test `missing_model_stays_in_menu` porównuje przez `as_deref()`, asercja bez zmian. Własna ścieżka modelu nie jest sprawdzana sumą SHA-256 (plik użytkownika, nieznana suma) — przy błędnym pliku błąd ładowania modelu zgłosi `WhisperStt::load` jak dotąd.
 - [2026-10-10] Zadanie 7.6: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, history_menu.rs, main.rs, tray_menu.rs) — testy w `#[cfg(test)] mod tests` tych samych plików (znana pułapka). Wygląd podmenu „Historia”, kliknięcie pozycji i „Wyczyść historię” w prawdziwym menu — test ręczny 7.7; przebudowa podmenu przez `remove_at(0)` w pętli jak przy mikrofonach.
 - [2026-10-10] Zadanie 7.5: zmiana testów kontrolera `stop_puts_transcript_in_clipboard_and_reports_states_to_ui` i `limit_reached_stops_recording_and_transcribes_without_stop_command` — w sekwencji zdarzeń doszło `HistoryChanged` po `Delivered` (VA-HIST-1 kryterium 01M4K06AH032985T6JXJX7EE3W: wpis po każdej niepustej transkrypcji), asercje stanów i schowka bez zmian. Nowe zależności: `chrono` (czas lokalny wpisu, bez `unsafe`) i `serde_json` (plik historii) — Cargo.lock zaktualizowany.
 - [2026-10-10] Zadanie 7.4: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, main.rs, messages.rs) — testy są w `#[cfg(test)] mod tests` tych samych plików (znana pułapka), nie do naprawy przenoszeniem. Powiadomienie systemowe przy limicie niezweryfikowane wizualnie — test ręczny 7.7 (limit 20 s w config.toml).

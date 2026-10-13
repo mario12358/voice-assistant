@@ -63,6 +63,7 @@ mod tests {
     }
 
     #[test]
+    // specky: crit 01M4TFDKGRFC1CYWGCXA5E8HQR
     fn click_during_transcription_does_nothing() {
         assert_eq!(command_for(&left_click(), State::Transcribing), None);
     }
