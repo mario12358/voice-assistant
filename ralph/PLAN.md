@@ -194,7 +194,7 @@
   - Specky kryteria: (crit: 01M4K06AH0CZS3Z7N0FXXSKE1T) podmenu z godziną i początkiem tekstu, od najnowszego; (crit: 01M4K06AH09HZHH764X48P4GM4) kliknięcie kopiuje pełny tekst bez nagrywania
   - AC: wejście — kliknięcie pozycji podmenu w pętli tao (`UserEvent::Menu`) wysyła `CopyHistoryEntry` z właściwym id; funkcja budująca etykiety i parsująca id menu testowana jednostkowo (jak `microphone_items`)
 - [x] Test: 7.6 — testy etykiet (skrót 40 znaków, godzina, kolejność, pusta lista) i mapowania id menu → polecenie; mutacja kolejności czerwona (pr: #38)
-- [ ] ⛔ Zadanie 7.7: Test manualny właściciela: historia (wpisy po nagraniach, kopiowanie starszego wpisu, restart, „Wyczyść historię”), nagranie z pauzami po 30–40 s bez śmieci w tekście, limit (tymczasowo `max_recording_secs = 20`: auto-Stop, powiadomienie, tekst w schowku) — wynik do REPORT.md (wymaga: 7.2, 7.4, 7.6)
+- [x] ⛔ Zadanie 7.7: Test manualny właściciela: historia (wpisy po nagraniach, kopiowanie starszego wpisu, restart, „Wyczyść historię”), nagranie z pauzami po 30–40 s bez śmieci w tekście, limit (tymczasowo `max_recording_secs = 20`: auto-Stop, powiadomienie, tekst w schowku) — wynik do REPORT.md (wymaga: 7.2, 7.4, 7.6)
 
 ### Faza 8: Podmenu „Model” i własna ścieżka modelu
 
@@ -219,7 +219,7 @@
   - Specky kryteria: (crit: 01M4K6M2ZYTC7D38NMHZJXF1FV) potwierdzenie, kasowanie, „brak”, komunikat, pobieranie z postępem; (crit: 01M4K6M2ZYHSYT6K38YWRG54RT) po pobraniu nagrywanie bez restartu
   - AC: wejście — kliknięcia pozycji podmenu w pętli tao (`UserEvent::Menu`): automat potwierdzenia (`ConfirmState`) testowany jednostkowo; test startu: po usunięciu plików modelu `--self-check` raportuje `Missing`; ścieżka Pobierz ponownie → ModelLoaded to istniejąca ścieżka 5.6
 - [x] Test: 8.4 — testy automatu potwierdzenia (klik, potwierdź, anuluj, timeout przez inne zdarzenie) i mapowania id → akcja; mutacja (usunięcie bez potwierdzenia) czerwona (pr: #45)
-- [ ] ⛔ Zadanie 8.5: Test manualny właściciela: podmenu „Model” (stan, rozmiar, Pokaż w Finderze), Usuń model → potwierdzenie → „brak” i komunikat przy Start → Pobierz ponownie → nagranie bez restartu; `model_path` w config.toml na istniejący i nieistniejący plik — wynik do REPORT.md (wymaga: 8.4)
+- [x] ⛔ Zadanie 8.5: Test manualny właściciela: podmenu „Model” (stan, rozmiar, Pokaż w Finderze), Usuń model → potwierdzenie → „brak” i komunikat przy Start → Pobierz ponownie → nagranie bez restartu; `model_path` w config.toml na istniejący i nieistniejący plik — wynik do REPORT.md (wymaga: 8.4)
 
 ### Faza 9: Sygnał gotowe, szybki start, ustawienia, autostart, logi, jakość STT, wariant q5_0, wydanie w CI
 
@@ -271,7 +271,7 @@
 - [x] Zadanie 9.11: Naprawa niestabilnego testu `model_loads_once_on_metal_and_transcribes_polish_and_english` — przeniesiony do osobnego pliku `crates/stt/tests/whisper_metal.rs` (osobny proces), wspólne pomocniki w `tests/common/mod.rs`; w pełnym suicie po 9.9 test padał 4/4 razy przy równoległych testach modelu z 9.4/9.7; do tego ponawianie `hdiutil attach`/`create` (3 próby z widocznym błędem) w `check-dmg.sh`, `build-dmg.sh` i teście montowania oraz szeregowanie testów obrazów (mutex + grupa nextest) — CI PR #58 padło na cichym `hdiutil attach -quiet` [VA-STT-1, VA-CI-1] (pr: #58)
   - AC: wejście — `cargo test --workspace -- --include-ignored`; trzy przebiegi pod rząd zielone, mutacja `use_gpu(false)` czerwona
 - [x] Test: 9.11 — trzy przebiegi `cargo test -p va-stt --features metal --tests -- --include-ignored` zielone; mutacja (`use_gpu(false)`) czerwona; test `release_check_fails_loudly_when_image_cannot_be_mounted`, mutacja (brak `exit 1` po nieudanym montowaniu) czerwona (pr: #58)
-- [ ] ⛔ Zadanie 9.10: Test manualny właściciela: powiadomienie po transkrypcji (i dźwięk po włączeniu), czas start → ikona ≤ 1,5 s, Ustawienia (język, limit, „inne”), Uruchamiaj przy logowaniu (wylogowanie/zalogowanie), Pokaż logi, przełączenie na q5_0 i z powrotem, wydanie z CI po wypchnięciu tagu — wynik do REPORT.md (wymaga: 9.3, 9.6, 9.8, 9.9)
+- [x] ⛔ Zadanie 9.10: Test manualny właściciela: powiadomienie po transkrypcji (i dźwięk po włączeniu), czas start → ikona ≤ 1,5 s, Ustawienia (język, limit, „inne”), Uruchamiaj przy logowaniu (wylogowanie/zalogowanie), Pokaż logi, przełączenie na q5_0 i z powrotem, wydanie z CI po wypchnięciu tagu — wynik do REPORT.md (wymaga: 9.3, 9.6, 9.8, 9.9)
 
 ## Pokrycie spec
 

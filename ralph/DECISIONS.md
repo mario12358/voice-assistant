@@ -245,3 +245,29 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel przyjął propozycję wydania („Tak”) po zielonym pełnym suicie po zadaniach 9.1–9.11 (testy ręczne 7.7, 8.5 i 9.10 jeszcze czekają).
 **Ustalenie**: Utworzono wersję v0.7.0 (tag z opisem na commicie 2dbd1db). Zakres: sygnał „transkrypcja gotowa”, szybki start, Ustawienia (język, limit, autostart), Pokaż logi i retencja, parametry Whispera, wariant q5_0, wydanie z CI. Scenariusze w docs/test-scenarios/v0.7.0.md (pokrywają zadanie 9.10), migawka Specky 01M4KNBCV4MJQ3SRSPZDH1MGGK. Tag tylko lokalnie do czasu git push origin v0.7.0; na GitHubie nie ma żadnego tagu v*, więc workflow wydania jeszcze się nie uruchomił.
 **Wpływ**: tag v0.7.0, Specky, zadanie 9.10
+
+## 2026-10-11 11:05 — Asystent mobilny: nowe repozytorium czy ten projekt
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel rozważa asystenta na Androida, który nasłuchuje, rozumie treść i odpowiada głosem w sposób jak najbliższy rozmowie z człowiekiem; pyta, czy dodać go do tego projektu, czy założyć nowe repozytorium.
+**Ustalenie**: Rekomendacja: nowe repozytorium i nowy projekt w Specky. Obecny projekt ma przypięte ograniczenia sprzeczne z nowym produktem (tylko macOS, tylko GPU Metal, zakres bez LLM i TTS), a wspólnego kodu jest niewiele: tylko algorytmy ciszy z va-audio, które łatwo skopiować albo wydzielić. Mobilny asystent rozmowy to inny produkt (pętla: wykrywanie mowy → STT → model językowy → TTS, przerywanie w pół zdania, opóźnienie poniżej ~1 s). Przed planem trzeba ustalić: model w chmurze czy na telefonie, stack aplikacji Android i prywatność nagrań.
+**Wpływ**: brak zmian w tym projekcie; decyzja o repozytorium czeka na właściciela
+
+## 2026-10-12 — Jak założyć nowy projekt (asystent Android)
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel zdecydował, że asystent mobilny będzie osobnym projektem, i zapytał, jak go założyć.
+**Ustalenie**: Ustaliliśmy, że asystent na Androida powstanie w osobnym repozytorium. Kroki: nowy katalog i repo na GitHubie, `ralph` w nowym katalogu (szkielet spec/ i ralph/), opis produktu w spec/, doprecyzowanie `ralph -i`, nowy projekt w Specky i podpięcie przez `ralph --integracje`. W ralph-guidelines/ brakuje wytycznych dla Kotlina/Androida — trzeba je dodać, zanim Ralph zacznie pisać kod (inaczej zadania z takim tagiem zablokują pętlę).
+**Wpływ**: brak zmian w tym projekcie
+
+## 2026-10-12 — Wydanie v0.7.0 z CI i publiczne repo bez Ralpha
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel wypchnął wersję v0.7.0 i szukał .dmg w dist/; potem zapytał, jak udostępniać repozytorium publicznie bez plików Ralpha (na razie pomysły do przekazania do projektu Ralph).
+**Ustalenie**: Workflow wydania przeszedł (testy, obraz, kontrola, wydanie GitHub z VoiceAsystent-0.7.0.dmg, 4,0 MB); .dmg jest w wydaniu na GitHubie, a dist/ zapełnia tylko lokalny build-dmg.sh. Rekomendowany kierunek: prywatne repo robocze z Ralphem + publiczne lustro generowane automatycznie (filtr ścieżek i komunikatów commitów) albo stan Ralpha poza repozytorium kodu. Historia publicznego repo już zawiera pliki Ralpha — samo usunięcie ich jej nie czyści.
+**Wpływ**: brak zmian w kodzie; pomysły dla frameworka Ralph
+
+## 2026-10-13 — Brak sygnału „można wklejać” i żółte kółko w trakcie transkrypcji
+**Rodzaj**: błąd
+**Źródło błędu**: zadanie 9.3
+**Wykryte przez**: scenariusz
+**Pytanie/kontekst**: Właściciel przeszedł testy ręczne (7.7, 8.5, 9.10) — wszystko działa poza tym, że po zatrzymaniu nagrania nie dostaje komunikatu, że może wklejać; proponuje żółte kółko na czas transkrypcji.
+**Ustalenie**: Powiadomienie „Transkrypcja w schowku” (VA-UX-1) jest wysyłane bez błędu w logach, ale biblioteka powiadomień podpisuje je jako Finder (aplikacja nie ustawia własnego identyfikatora), więc macOS może je chować — do potwierdzenia u właściciela, potem poprawka jako błąd 9.3. Żółte kółko to zmiana VA-UI-1: propozycja w Specky (wsad 01M4TF94V3G6Y996N62Q3N1M02: nowa treść, kryterium „żółte przez całą transkrypcję”, „po zakończeniu szare, także przy ciszy i błędzie”, „w trakcie nie da się zacząć nagrania”) czeka na akceptację właściciela.
+**Wpływ**: VA-UI-1, VA-UX-1, zadania 9.3, 9.10; nowa faza po akceptacji
