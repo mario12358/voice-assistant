@@ -14,9 +14,9 @@
 ## Podsumowanie
 
 - **Start**: 2026-10-08
-- **Status**: Kod Faz 7–9 zmergowany, testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10 wykonane przez właściciela 2026-10-13 — wszystko działa (brak powiadomień okazał się blokadą w ustawieniach macOS, nie błędem); VA-UI-1 zmienione w Specky (żółte kółko w trakcie transkrypcji) — wejdzie przy synchronizacji
-- **Postęp**: 90/90 pozycji ukończonych; czekają: regresja Faz 7–9 na main (tagi `ralph/faza-7..9`), zmiana VA-UI-1
-- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-11 (kursor 737): tylko migawka v0.7.0 (informacyjnie), kolejka pusta, 21 wymagań `code_ready` + 4 `done`; brak nowych plików w changes/.
+- **Status**: RALPH BLOCKED (2026-10-13) — `cargo` wymaga zgody człowieka w tej sesji, więc ani regresja Faz 7–9 na main, ani zadanie 5.Z1.1 nie mogą ruszyć. Zmiana VA-UI-1 v2 (żółte kółko w trakcie transkrypcji) przetworzona do Fazy 5.Z1.
+- **Postęp**: 90/93 pozycji ukończonych; czekają: regresja Faz 7–9 na main (tagi `ralph/faza-7..9`), Faza 5.Z1 (5.Z1.1 + test, ⛔ 5.Z1.2)
+- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization. Synchronizacja 2026-10-13 (kursor 737 → 745): VA-UI-1 v2 `to_fix` (zmiana treści po `code_ready`) → changes/2026-10-13-specky-5FJTRC.md; 20 `code_ready` + 4 `done`.
 - Otwarte PR: brak. Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`ralph/faza-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Stan testów
@@ -55,9 +55,6 @@ na zawsze i rośnie w prompcie każdej sesji.
 | 7.7 Test ręczny właściciela (historia, pauzy, limit) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
 | 8.5 Test ręczny właściciela (podmenu Model, usuwanie, pobieranie, model_path) | ✅ | ręcznie OK | 1 | — | 2026-10-13 |
 | 9.10 Test ręczny właściciela (Ustawienia, autostart, logi, q5_0, wydanie z CI v0.7.0) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
-| 9.8 Wybór wariantu w podmenu „Model” (pozycje Pełny 1,6 GB / q5_0 0,6 GB z zaznaczeniem, przełączenie: zapis `model_variant` → `DownloadEvent::Switch` → pobranie albo samo załadowanie → `ModelLoaded`, „Usuń nieużywany wariant”), rozmiary zaokrąglane do najbliższej dziesiątej; README/RUNBOOK fazy 9 + test 9.8 | ✅ PR #56 | 194/0 + 14 ignored; mutacja (przełączenie bez zapisu do konfiguracji) czerwona; aplikacja startuje lokalnie | 1 | e97da01 | 2026-10-10 |
-| 9.7 Wariant q5_0: `ModelVariant` (`model_variant` w config.toml, domyślnie full), `LARGE_V3_TURBO_Q5_0` (574 041 195 B, SHA-256 z LFS HF) i `spec_for`, `ModelSource::Store(store, wariant)`, pobieranie i usuwanie per wariant, `va-dev model-download --variant` + test 9.7 | ✅ PR #55 | 189/0 + 14 ignored; q5_0 pobrany (54 s) i rozpoznaje speech_pl; mutacja (wariant ignorowany) czerwona | 1 | af22fbb | 2026-10-10 |
-| 9.6 „Uruchamiaj przy logowaniu”: `login_item.rs` (plist LaunchAgent `io.github.mario12358.voiceasystent`, RunAtLoad, ścieżka bundla z `current_exe`, escape XML), pozycja z zaznaczeniem w podmenu Ustawienia, nieaktywna poza bundlem; `Paths::launch_agents_dir` + test 9.6 | ✅ PR #54 | 186/0 + 13 ignored; plist przechodzi `plutil -lint`; mutacja (zaznaczenie bez sprawdzania ścieżki) czerwona | 1 | 0b4a713 | 2026-10-10 |
 | 9.5 Podmenu „Ustawienia” (settings_menu.rs: Język auto/pl/en, Limit 5/10/20/30 min + „inne: N s”), zapis do config.toml, `Command::SetLanguage` → wątek STT, `Command::SetRecordingLimit` → `Recorder::set_limit`; po `ModelLoaded` nowy kontroler dostaje bieżące ustawienia + test 9.5 | ✅ PR #53 | 182/0 + 13 ignored; mutacja (limit nie trafia do nagrywarki) czerwona; aplikacja z podmenu startuje lokalnie | 1 | 7663327 | 2026-10-10 |
 | 9.4 `DecodingSettings`/`DECODING` (suppress blank/nst, temperatura 0 bez fallbacku, no_context, progi no-speech i pewności segmentu 0,3), filtr segmentów, `SpeechToText::set_language`; fixtures `noise_only.wav`, `speech_pl_mixed.wav` + test 9.4 | ✅ PR #52 | 176/0 + 13 ignored; prawdziwy model: szum → pusto, mieszane PL → polski, PL/EN/40 s pauzy bez regresji; mutacja progu pewności 0,3 → 0 czerwona | 1 | bf3371a | 2026-10-10 |
 | 9.3 Sygnał gotowe: `ControllerEvent::TranscriptReady(TranscriptPreview)` (60 znaków, Debug bez treści) po zapisie, pola `notify_on_transcript`/`sound_on_transcript`, `signal_ready` (powiadomienie + `afplay Glass.aiff`), log zdarzeń tylko z rodzajem; `AppSettings` dla `app::run` + test 9.3 | ✅ PR #51 | 174/0 + 10 ignored; mutacja (sygnał po pustej transkrypcji) czerwona; 1 poprawka CI (wyścig w atrapie z 7.3) | 2 | 5cae27d | 2026-10-10 |
@@ -86,6 +83,15 @@ Format wpisu (jeden ### na każdą zmianę):
 Plik źródłowy zmiany żyje w changes/processed/<nazwa-pliku>.md (audyt w gicie).
 -->
 
+
+### 2026-10-13 2026-10-13-specky-5FJTRC.md
+- **Rodzaj**: korekta
+- **Priorytet**: normalny
+- **Dotyczy**: zadanie 5.1 (indicator.rs), VA-UI-1 v1 → v2
+- **Streszczenie**: W trakcie transkrypcji ikona ma być żółtym kółkiem (dotąd szara); szare po żółtym oznacza tekst w schowku, także po ciszy i błędzie; klik/ctrl+cmd+r przy żółtym nie startują nagrania.
+- **Zmodyfikowane zadania pending**: brak
+- **Nowa faza rework**: Faza 5.Z1 z 2 zadaniami (5.Z1.1 + test, ⛔ 5.Z1.2)
+- **Nowe zadania**: brak
 
 ### 2026-10-10 2026-10-10-specky-S3WPKBD.md
 - **Rodzaj**: rozwój
@@ -203,8 +209,8 @@ poniżej tabeli z prefiksem `> ⚠ Info:` tak żeby user widział co poszło "po
 
 <!-- Format: [data] Zadanie X.X: opis problemu - rozwiązanie/status -->
 <!-- Listy zmienionych plików NIE prowadzimy — git zna ją lepiej: git log --stat -->
+- [2026-10-13] Start sesji: każde wywołanie `cargo` (także `cargo --version`, z `export PATH` i pełną ścieżką `~/.cargo/bin/cargo`) zwraca „requires approval” od sędziego uprawnień; w trybie bez nadzoru nie ma kto zatwierdzić. Regresja Faz 7–9 i 5.Z1.1 wstrzymane — RALPH BLOCKED (ralph/BLOCKED.md).
 - [2026-10-13] Zadania 7.7/9.10: powiadomienia (gotowa transkrypcja, limit) nie pojawiały się, także w Centrum powiadomień — przyczyna: powiadomienia zablokowane w ustawieniach macOS u właściciela; po odblokowaniu widoczne. Zgłoszenie błędu (changes/2026-10-13-powiadomienia-niewidoczne.md) wycofane przed przetworzeniem. Powiadomienia są podpisane jako VoiceAsystent (osobna pozycja w Ustawieniach → Powiadomienia, potwierdzone zrzutem właściciela).
-- [2026-10-10] Zadanie 8.2: `DownloadEvent::Removed` i `DownloadState::can_remove` mają tymczasowo `#[allow(dead_code)]` — konstruowane/używane dopiero przez podmenu „Model” (8.3) i usuwanie (8.4); atrybuty do zdjęcia w tych zadaniach (clippy `-D warnings` nie przepuszcza nieużywanych symboli, a dzielenie automatu między PR-y bez tego byłoby niemożliwe).
 - [2026-10-10] Zadanie 8.1: `menu_notice` zwraca teraz `Option<String>` (komunikat ze ścieżką) — test `missing_model_stays_in_menu` porównuje przez `as_deref()`, asercja bez zmian. Własna ścieżka modelu nie jest sprawdzana sumą SHA-256 (plik użytkownika, nieznana suma) — przy błędnym pliku błąd ładowania modelu zgłosi `WhisperStt::load` jak dotąd.
 - [2026-10-10] Zadanie 7.6: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, history_menu.rs, main.rs, tray_menu.rs) — testy w `#[cfg(test)] mod tests` tych samych plików (znana pułapka). Wygląd podmenu „Historia”, kliknięcie pozycji i „Wyczyść historię” w prawdziwym menu — test ręczny 7.7; przebudowa podmenu przez `remove_at(0)` w pętli jak przy mikrofonach.
 - [2026-10-10] Zadanie 7.5: zmiana testów kontrolera `stop_puts_transcript_in_clipboard_and_reports_states_to_ui` i `limit_reached_stops_recording_and_transcribes_without_stop_command` — w sekwencji zdarzeń doszło `HistoryChanged` po `Delivered` (VA-HIST-1 kryterium 01M4K06AH032985T6JXJX7EE3W: wpis po każdej niepustej transkrypcji), asercje stanów i schowka bez zmian. Nowe zależności: `chrono` (czas lokalny wpisu, bez `unsafe`) i `serde_json` (plik historii) — Cargo.lock zaktualizowany.

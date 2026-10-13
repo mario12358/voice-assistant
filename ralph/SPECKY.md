@@ -1,8 +1,8 @@
 # ralph/SPECKY.md — stan synchronizacji z Specky
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
-- **since_seq**: 737
-- **Ostatnia synchronizacja**: 2026-10-11 (pozycja 737: migawka v0.7.0, informacyjnie; kolejka pusta, 21 `code_ready` + 4 `done`)
+- **since_seq**: 745
+- **Ostatnia synchronizacja**: 2026-10-13 (pozycje 742–745: edycja VA-UI-1 → v2 @571b8a6, `to_fix`; changes/2026-10-13-specky-5FJTRC.md; 20 `code_ready` + 4 `done`)
 - **Stan projektu w Specky**: 25 zaakceptowanych wymagań (12 z 2026-10-08 + 13 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela. Migawki: v0.1.0–v0.6.0.
 
 ## Mapa wymagań → zadania
@@ -18,7 +18,7 @@
 | VA-REC-2 | 01M4EKHCVH9GSS063H0MNZX2F9 | v1 @1d726bc | 4.2, 4.3, 5.4 |
 | VA-REC-3 | 01M4EKHCXK9BETN4Q065X24ES9 | v1 @523b4a6 | 2.3, 4.1, 4.3 |
 | VA-REC-4 | 01M4EKHCZDHBRC6DY70CRB55G3 | v1 @956c038 | 1.3, 2.1, 5.3 |
-| VA-UI-1 | 01M4EKHD1BQYRNWBAVRA5FJTRC | v1 @df8032b | 5.1 |
+| VA-UI-1 | 01M4EKHD1BQYRNWBAVRA5FJTRC | v2 @571b8a6 | 5.1, 5.Z1.1, 5.Z1.2 |
 | VA-UI-2 | 01M4EKHD3Y6M9V9E01V27AH18Z | v1 @a4fdb35 | 4.2, 5.2 |
 | VA-MODEL-1 | 01M4EQH9D30871ZG5JMWK8VHFV | v1 @5a6280e | 3.2, 5.6, 6.1, 6.2 |
 | VA-HIST-1 | 01M4K06AGAV8G79RJMXCY0SQA5 | v1 @d3eecdb | 7.5, 7.6, 7.7 |
