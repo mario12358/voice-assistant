@@ -150,11 +150,11 @@
 
 ### Faza 5.Z1: Żółte kółko w trakcie transkrypcji (VA-UI-1 v2)
 
-- [ ] Zadanie 5.Z1.1: `Dot::Yellow` w `indicator.rs` dla `State::Transcribing` (kolor systemowy żółty, rysowany jak pozostałe); Idle/Error szare; szare po żółtym dopiero po zapisie do schowka, także po ciszy i błędzie (wymaga: 5.1) [VA-UI-1] (zmiana: 2026-10-13-specky-5FJTRC.md)
+- [ ] Zadanie 5.Z1.1: `Dot::Yellow` w `indicator.rs` dla `State::Transcribing` (kolor systemowy żółty, rysowany jak pozostałe); Idle/Error szare; szare po żółtym dopiero po zapisie do schowka, także po ciszy i błędzie (wymaga: 5.1) [VA-UI-1] (zmiana: 2026-10-13-specky-5FJTRC.md) (pr: #67)
   - Specky: (req: 01M4EKHD1BQYRNWBAVRA5FJTRC v2 @571b8a6)
   - AC: wejście — zdarzenia `StateChanged` z kontrolera (Stop skrótem, kliknięciem, limitem) → ikona w pasku menu
   - AC: Recording → Stop → żółte do końca transkrypcji; potem szare (tekst, pusty wynik, błąd); klik i ctrl+cmd+r w trakcie żółtego nie startują nagrania
-- [ ] Test: 5.Z1.1 — mapowanie stanów na kolor (żółte w Transcribing), piksel żółtego kółka, kolejność zdarzeń kontrolera (Idle po Delivered; Idle po pustej/błędzie), klik i Start w Transcribing ignorowane; znaczniki crit 1–5 (zmiana: 2026-10-13-specky-5FJTRC.md)
+- [ ] Test: 5.Z1.1 — mapowanie stanów na kolor (żółte w Transcribing), piksel żółtego kółka, kolejność zdarzeń kontrolera (Idle po Delivered; Idle po pustej/błędzie), klik i Start w Transcribing ignorowane; znaczniki crit 1–5 (zmiana: 2026-10-13-specky-5FJTRC.md) (pr: #67)
 - [ ] ⛔ Zadanie 5.Z1.2: Test manualny właściciela: nagranie skrótem, kliknięciem i limitem → żółte kółko przez transkrypcję → szare z tekstem w schowku; klik/ctrl+cmd+r przy żółtym nic nie robi — wynik do REPORT.md (wymaga: 5.Z1.1) (zmiana: 2026-10-13-specky-5FJTRC.md)
 
 ### Faza 6: Instalator .dmg i weryfikacja

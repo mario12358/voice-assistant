@@ -283,3 +283,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel pokazał zrzut Ustawień → Powiadomienia z osobną pozycją „VoiceAsystent”.
 **Ustalenie**: Moje wcześniejsze przypuszczenie, że powiadomienia są podpisywane jako Finder, było błędne (wyciągnięte z kodu biblioteki, bez sprawdzenia w systemie). Propozycja wpisu do BACKLOG odpada; notatka w REPORT.md poprawiona.
 **Wpływ**: brak
+
+## 2026-10-13 — Uruchomienie Ralpha w trybie 1 zablokowane na uprawnieniach
+**Rodzaj**: operacje
+**Pytanie/kontekst**: Właściciel poprosił o uruchomienie Ralpha w trybie 1; sesja w tle zsynchronizowała Specky (VA-UI-1 v2 → Faza 5.Z1, PR #66), ale stanęła na RALPH BLOCKED, bo bez sędziego uprawnień każde `cargo` i `gh pr merge` wymaga zgody człowieka.
+**Ustalenie**: PR #66 zmergowany ręcznie z tej sesji (checki zielone, Merge: agent). Do decyzji właściciela: dopisać komendy cargo (test, clippy, fmt, check, build) do allowlisty w ralph/config.md albo uruchamiać tryb 1 interaktywnie (`ralph -m 1 -i`).
+**Wpływ**: ralph/config.md (Dozwolone komendy), Faza 5.Z1
