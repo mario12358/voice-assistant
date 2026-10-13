@@ -271,3 +271,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel przeszedł testy ręczne (7.7, 8.5, 9.10) — wszystko działa poza tym, że po zatrzymaniu nagrania nie dostaje komunikatu, że może wklejać; proponuje żółte kółko na czas transkrypcji.
 **Ustalenie**: Powiadomienie „Transkrypcja w schowku” (VA-UX-1) jest wysyłane bez błędu w logach, ale biblioteka powiadomień podpisuje je jako Finder (aplikacja nie ustawia własnego identyfikatora), więc macOS może je chować — do potwierdzenia u właściciela, potem poprawka jako błąd 9.3. Żółte kółko to zmiana VA-UI-1: propozycja w Specky (wsad 01M4TF94V3G6Y996N62Q3N1M02: nowa treść, kryterium „żółte przez całą transkrypcję”, „po zakończeniu szare, także przy ciszy i błędzie”, „w trakcie nie da się zacząć nagrania”) czeka na akceptację właściciela.
 **Wpływ**: VA-UI-1, VA-UX-1, zadania 9.3, 9.10; nowa faza po akceptacji
+
+## 2026-10-13 — Powiadomienia: blokada w ustawieniach macOS, nie błąd
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel ustalił, że powiadomienia były zablokowane w ustawieniach macOS; po odblokowaniu widać je przy zegarku.
+**Ustalenie**: Zgłoszenie błędu powiadomień wycofane (plik usunięty z changes/ przed przetworzeniem), testy 7.7 i 9.10 zaliczone w całości. Zostaje do rozważenia drobna poprawka: powiadomienia są podpisywane jako Finder zamiast VoiceAsystent. Żółte kółko (VA-UI-1) zatwierdzone w Specky 2026-10-13 — wejdzie do planu przy następnej synchronizacji.
+**Wpływ**: changes/, VA-UI-1
