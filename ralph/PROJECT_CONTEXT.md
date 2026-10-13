@@ -110,10 +110,7 @@ Konwencje:
 <!-- rotuje się nic. Dopisywanie kolejnych akapitów „tura z 19.08 domknięta" zamienia tę   -->
 <!-- sekcję w drugi, nieograniczony raport w prompcie każdej sesji.                        -->
 
-- Ostatnie ukończone: Faza 5 (pasek menu, kliknięcie, menu mikrofonu, skróty, komunikaty, pobieranie w tle), tag `ralph/faza-5`
-- Ostatnie ukończone: Faza 6 w całości (6.4 test ręczny właściciela 2026-10-09 — wszystko OK), wersja v0.4.0 (lokalnie, bez pushu — decyzja właściciela)
-- Faza 7 (pauzy VA-REC-5, limit VA-REC-6, historia VA-HIST-1): kod zmergowany 2026-10-10 (PR #33–#38), wymagania `code_ready`, wersja v0.5.0; zostało ⛔ 7.7 (test ręczny właściciela) — tag `ralph/faza-7` po jego wyniku
-- Faza 8 (własna ścieżka modelu VA-MODEL-3, podmenu „Model” VA-MODEL-2): kod zmergowany 2026-10-10 (PR #42–#45), wymagania `code_ready`, wersja v0.6.0; zostało ⛔ 8.5 (test ręczny) — tag `ralph/faza-8` po jego wyniku
-- Faza 9 (logi VA-OPS-1, szybki start VA-PERF-1, sygnał gotowe VA-UX-1, jakość STT VA-STT-3, Ustawienia VA-SET-1, autostart VA-SET-2, wariant q5_0 VA-MODEL-4, wydanie w CI VA-CI-1): kod zmergowany 2026-10-10 (PR #49–#58), wymagania `code_ready`; zostało ⛔ 9.10 (test ręczny) — tag `ralph/faza-9` po jego wyniku
-- Następne: tylko testy ręczne ⛔ 7.7, ⛔ 8.5, ⛔ 9.10 (scenariusze 9.10 w docs/test-scenarios/v0.7.0.md); wersja v0.7.0 utworzona 2026-10-10 (2dbd1db, migawka Specky 01M4KNBCV4MJQ3SRSPZDH1MGGK); żaden tag v* nie jest wypchnięty — workflow wydania ruszy po `git push origin v0.7.0`
+- Fazy 1–9 ukończone i otagowane (`ralph/faza-1..9`; 7–9 po zielonej regresji na main 2026-10-13 i testach ręcznych właściciela). Wersja v0.7.0 wypchnięta (wydanie z CI).
+- Faza 5.Z1 (VA-UI-1 v2, żółte kółko w trakcie transkrypcji): 5.Z1.1 zmergowane 2026-10-13 (PR #67), VA-UI-1 `code_ready`; zostało ⛔ 5.Z1.2 (test ręczny właściciela) — po nim regresja na main i tag `ralph/faza-5.Z1`
+- Następne: tylko ⛔ 5.Z1.2; od v0.7.0 są nowe commity (żółte kółko) — kandydat na v0.8.0 po teście ręcznym
 - Blokery: brak
