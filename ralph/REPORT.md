@@ -34,6 +34,8 @@ jest traktowany jako ciąg dalszy przebiegu powyżej. Bez daty blok zostaje w pl
 na zawsze i rośnie w prompcie każdej sesji.
 -->
 
+**Przebieg przed wydaniem v0.8.0 (2026-10-13) — ZIELONY (main f504f30, nie regresja fazy — czeka ⛔ 5.Z1.2):** `cargo test --workspace -- --include-ignored` 217/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 211/0: +6 testów 5.Z1.1. Wersja v0.8.0 na prośbę właściciela.
+
 **Regresja po Fazach 7, 8 i 9 (2026-10-13) — ZIELONA:** na main (3eaedc8) `cargo test --workspace -- --include-ignored` 211/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; testy ręczne ⛔ 7.7, 8.5, 9.10 właściciela OK (2026-10-13). Bez zmian liczby testów od przebiegu po 9.11. Tagi `ralph/faza-7`, `ralph/faza-8`, `ralph/faza-9`.
 
 **Przebieg po zadaniach 8.1–8.4 (2026-10-10) — ZIELONY (main c7cd4d6, nie regresja fazy — czekają ⛔ 7.7 i ⛔ 8.5):** `cargo test --workspace -- --include-ignored` 171/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 156/0 po 7.6: +15 testów (model_path, remove/size w va-model, automat pobierania, podmenu Model, potwierdzenie). Bez tagów `ralph/faza-7` i `ralph/faza-8` do wyników testów ręcznych.
@@ -44,11 +46,11 @@ na zawsze i rośnie w prompcie każdej sesji.
 
 | Metryka | Wartość |
 |---------|---------|
-| Łącznie testów | 211 |
-| Pass | 211 |
+| Łącznie testów | 217 |
+| Pass | 217 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Ostatnie uruchomienie | 2026-10-13 (pełny suite na main, 3eaedc8; na gałęzi 5.Z1.1 smoke 203/0 + 14 ignored = 217) |
+| Ostatnie uruchomienie | 2026-10-13 (pełny suite na main przed v0.8.0, f504f30) |
 
 ## Historia realizacji
 
