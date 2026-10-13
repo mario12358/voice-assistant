@@ -277,3 +277,9 @@ To changelog dla człowieka, żeby pamiętać "co i dlaczego ustaliliśmy w trak
 **Pytanie/kontekst**: Właściciel ustalił, że powiadomienia były zablokowane w ustawieniach macOS; po odblokowaniu widać je przy zegarku.
 **Ustalenie**: Zgłoszenie błędu powiadomień wycofane (plik usunięty z changes/ przed przetworzeniem), testy 7.7 i 9.10 zaliczone w całości. Zostaje do rozważenia drobna poprawka: powiadomienia są podpisywane jako Finder zamiast VoiceAsystent. Żółte kółko (VA-UI-1) zatwierdzone w Specky 2026-10-13 — wejdzie do planu przy następnej synchronizacji.
 **Wpływ**: changes/, VA-UI-1
+
+## 2026-10-13 — Powiadomienia mają nazwę VoiceAsystent
+**Rodzaj**: pytanie
+**Pytanie/kontekst**: Właściciel pokazał zrzut Ustawień → Powiadomienia z osobną pozycją „VoiceAsystent”.
+**Ustalenie**: Moje wcześniejsze przypuszczenie, że powiadomienia są podpisywane jako Finder, było błędne (wyciągnięte z kodu biblioteki, bez sprawdzenia w systemie). Propozycja wpisu do BACKLOG odpada; notatka w REPORT.md poprawiona.
+**Wpływ**: brak
