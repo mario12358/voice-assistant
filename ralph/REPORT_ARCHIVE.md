@@ -199,3 +199,19 @@ Write-only — plik nie jest ładowany do żadnego promptu.
 - [2026-10-09] Zadanie 5.2: ostrzeżenie kontroli `testy/kod-bez-testu` — testy Rusta są w tym samym pliku (`#[cfg(test)] mod tests` w click.rs), czego kontrola nie widzi; podpięcie w app.rs (pętla tao) bez testu automatycznego — sprawdzi test ręczny (scenariusz po Fazie 5).
 
 - [2026-10-09] [check] PR #9 — Ralph: kontrole (lokalnie): kontrola `zaleznosci` nie wykonała się (UnicodeDecodeError) — `ralph-kontrole/zaleznosci/run.py:311-315` czyta każdy zmieniony plik jako UTF-8 przed sprawdzeniem, czy to manifest, i łapie tylko OSError; binarne WAV z fixtures ją wywracają (też przy tagu ralph/faza-2 i v0.1.0). Błąd frameworka, nie kodu — RALPH BLOCKED; 2026-10-09 właściciel naprawił kontrolę (pomija pliki niebędące manifestem) i PATH hooka (~/.cargo/bin), blokada usunięta.
+
+## Rotacja 2026-10-13
+
+### Historia realizacji
+
+| Zadanie | Status | Testy | Próby | Commit | Czas |
+|---------|--------|-------|-------|--------|------|
+| 9.8 Wybór wariantu w podmenu „Model” (pozycje Pełny 1,6 GB / q5_0 0,6 GB z zaznaczeniem, przełączenie: zapis `model_variant` → `DownloadEvent::Switch` → pobranie albo samo załadowanie → `ModelLoaded`, „Usuń nieużywany wariant”), rozmiary zaokrąglane do najbliższej dziesiątej; README/RUNBOOK fazy 9 + test 9.8 | ✅ PR #56 | 194/0 + 14 ignored; mutacja (przełączenie bez zapisu do konfiguracji) czerwona; aplikacja startuje lokalnie | 1 | e97da01 | 2026-10-10 |
+
+| 9.7 Wariant q5_0: `ModelVariant` (`model_variant` w config.toml, domyślnie full), `LARGE_V3_TURBO_Q5_0` (574 041 195 B, SHA-256 z LFS HF) i `spec_for`, `ModelSource::Store(store, wariant)`, pobieranie i usuwanie per wariant, `va-dev model-download --variant` + test 9.7 | ✅ PR #55 | 189/0 + 14 ignored; q5_0 pobrany (54 s) i rozpoznaje speech_pl; mutacja (wariant ignorowany) czerwona | 1 | af22fbb | 2026-10-10 |
+
+| 9.6 „Uruchamiaj przy logowaniu”: `login_item.rs` (plist LaunchAgent `io.github.mario12358.voiceasystent`, RunAtLoad, ścieżka bundla z `current_exe`, escape XML), pozycja z zaznaczeniem w podmenu Ustawienia, nieaktywna poza bundlem; `Paths::launch_agents_dir` + test 9.6 | ✅ PR #54 | 186/0 + 13 ignored; plist przechodzi `plutil -lint`; mutacja (zaznaczenie bez sprawdzania ścieżki) czerwona | 1 | 0b4a713 | 2026-10-10 |
+
+### Log problemów
+
+- [2026-10-10] Zadanie 8.2: `DownloadEvent::Removed` i `DownloadState::can_remove` mają tymczasowo `#[allow(dead_code)]` — konstruowane/używane dopiero przez podmenu „Model” (8.3) i usuwanie (8.4); atrybuty do zdjęcia w tych zadaniach (clippy `-D warnings` nie przepuszcza nieużywanych symboli, a dzielenie automatu między PR-y bez tego byłoby niemożliwe).

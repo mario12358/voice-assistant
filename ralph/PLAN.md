@@ -148,6 +148,15 @@
   - AC: po pobraniu aplikacja nie wykonuje ruchu sieciowego
 - [x] Test: 5.6 — automat stanów pobierania (brak → pobieranie → gotowy / błąd → ponów) z mockiem pobierania; Start podczas pobierania odrzucony (pr: #23)
 
+### Faza 5.Z1: Żółte kółko w trakcie transkrypcji (VA-UI-1 v2)
+
+- [ ] Zadanie 5.Z1.1: `Dot::Yellow` w `indicator.rs` dla `State::Transcribing` (kolor systemowy żółty, rysowany jak pozostałe); Idle/Error szare; szare po żółtym dopiero po zapisie do schowka, także po ciszy i błędzie (wymaga: 5.1) [VA-UI-1] (zmiana: 2026-10-13-specky-5FJTRC.md)
+  - Specky: (req: 01M4EKHD1BQYRNWBAVRA5FJTRC v2 @571b8a6)
+  - AC: wejście — zdarzenia `StateChanged` z kontrolera (Stop skrótem, kliknięciem, limitem) → ikona w pasku menu
+  - AC: Recording → Stop → żółte do końca transkrypcji; potem szare (tekst, pusty wynik, błąd); klik i ctrl+cmd+r w trakcie żółtego nie startują nagrania
+- [ ] Test: 5.Z1.1 — mapowanie stanów na kolor (żółte w Transcribing), piksel żółtego kółka, kolejność zdarzeń kontrolera (Idle po Delivered; Idle po pustej/błędzie), klik i Start w Transcribing ignorowane; znaczniki crit 1–5 (zmiana: 2026-10-13-specky-5FJTRC.md)
+- [ ] ⛔ Zadanie 5.Z1.2: Test manualny właściciela: nagranie skrótem, kliknięciem i limitem → żółte kółko przez transkrypcję → szare z tekstem w schowku; klik/ctrl+cmd+r przy żółtym nic nie robi — wynik do REPORT.md (wymaga: 5.Z1.1) (zmiana: 2026-10-13-specky-5FJTRC.md)
+
 ### Faza 6: Instalator .dmg i weryfikacja
 
 - [x] Zadanie 6.1: Bundle VoiceAsystent.app: Info.plist (CFBundleIdentifier, LSUIElement=true, NSMicrophoneUsageDescription po polsku, LSMinimumSystemVersion), ikona aplikacji, bez modelu (pobierany po instalacji — 5.6), podpis ad-hoc (`codesign -s -`); skrypt `scripts/build-app.sh` (release, `--features metal`) (wymaga: 5.6) [VA-PLAT-2, VA-MODEL-1] (pr: #26)
@@ -289,7 +298,7 @@
 | VA-REC-3 | transkrypcja w schowku, cmd+v | 2.3, 4.1, 4.3 |
 | VA-REC-4 | wybór mikrofonu | 1.3, 2.1, 5.3 |
 | VA-MODEL-1 | model pobierany po instalacji, SHA-256, wznawianie, potem zero ruchu sieciowego | 3.2, 5.6, 6.1, 6.2 |
-| VA-UI-1 | ikona szare/czerwone kółko | 5.1 |
+| VA-UI-1 | ikona szare/czerwone/żółte (transkrypcja) kółko | 5.1, 5.Z1.1, 5.Z1.2 |
 | VA-UI-2 | klik ikony start/stop | 4.2, 5.2 |
 | VA-HIST-1 | historia wypowiedzi: podmenu „Historia”, kopiowanie, zapis na dysku, wyczyść | 7.5, 7.6, 7.7 |
 | VA-REC-5 | skracanie pauz wewnętrznych > 1,5 s do 0,5 s przed transkrypcją | 7.1, 7.2, 7.7 |
