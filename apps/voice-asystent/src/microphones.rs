@@ -23,6 +23,7 @@ pub fn microphone_items(devices: &[InputDevice], configured: Option<&str>) -> Ve
         .map(|choice| choice.name);
     devices
         .iter()
+        .filter(|device| device.name != va_system_audio::MEETING_DEVICE_NAME)
         .map(|device| MicItem {
             id: format!("{MIC_ID_PREFIX}{}", device.name),
             label: device.name.clone(),
@@ -77,6 +78,22 @@ mod tests {
         let checked: Vec<_> = items.iter().filter(|item| item.checked).collect();
         assert_eq!(checked.len(), 1);
         assert_eq!(checked[0].label, "PXC 550");
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RQVS9DSRZ08B9G21FX4
+    fn private_meeting_device_is_not_offered_as_microphone() {
+        let mut listed = devices();
+        listed.push(device(va_system_audio::MEETING_DEVICE_NAME, false));
+
+        let items = microphone_items(&listed, None);
+
+        assert!(
+            items
+                .iter()
+                .all(|item| item.label != va_system_audio::MEETING_DEVICE_NAME)
+        );
+        assert_eq!(items.len(), 3);
     }
 
     #[test]

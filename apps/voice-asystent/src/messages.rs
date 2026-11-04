@@ -17,6 +17,12 @@ pub enum Problem {
     RecordingFailed(String),
     /// Nagranie zakończone automatycznie po osiągnięciu limitu długości (VA-REC-6).
     RecordingLimitReached { limit_secs: u32 },
+    /// Nagranie spotkania zakończone automatycznie po osiągnięciu jego limitu (VA-CONF-3).
+    MeetingLimitReached { limit_secs: u32 },
+    /// Brak zgody na nagrywanie dźwięku systemowego (VA-CONF-2).
+    MeetingDenied,
+    /// macOS starszy niż 14.2 — brak Core Audio process tap (VA-CONF-2).
+    MeetingUnsupported,
 }
 
 /// Tytuł i treść powiadomienia / pozycji menu.
@@ -59,8 +65,31 @@ pub fn message(problem: &Problem) -> (&'static str, String) {
                 duration_label(*limit_secs)
             ),
         ),
+        Problem::MeetingLimitReached { limit_secs } => (
+            "Osiągnięto limit długości nagrania spotkania",
+            format!(
+                "Nagranie spotkania zakończono automatycznie po {} — tekst trafi do schowka. \
+                 Limit zmienisz w config.toml (max_meeting_secs).",
+                duration_label(*limit_secs)
+            ),
+        ),
+        Problem::MeetingDenied => (
+            "Brak zgody na nagrywanie dźwięku systemowego",
+            "Nagranie spotkania nie zostało rozpoczęte. Zezwól: Ustawienia systemowe → \
+             Prywatność i ochrona → Nagrywanie ekranu i dźwięku systemowego → włącz \
+             VoiceAsystent, potem spróbuj ponownie. Zwykłe nagrywanie działa bez tej zgody."
+                .to_owned(),
+        ),
+        Problem::MeetingUnsupported => (
+            "Nagrywanie spotkań niedostępne",
+            MEETING_UNSUPPORTED.to_owned(),
+        ),
     }
 }
+
+/// Podpowiedź przy nieaktywnej pozycji „Nagrywaj spotkanie” i treść powiadomienia po skrócie.
+pub const MEETING_UNSUPPORTED: &str =
+    "Nagrywanie spotkań wymaga macOS 14.2 lub nowszego (dźwięk systemowy).";
 
 /// „10 min” dla pełnych minut, inaczej „90 s”.
 fn duration_label(seconds: u32) -> String {
@@ -82,7 +111,10 @@ pub fn menu_notice(problem: &Problem) -> Option<String> {
         Problem::MicrophoneSilent
         | Problem::ModelNotReady(_)
         | Problem::RecordingFailed(_)
-        | Problem::RecordingLimitReached { .. } => None,
+        | Problem::RecordingLimitReached { .. }
+        | Problem::MeetingLimitReached { .. }
+        | Problem::MeetingDenied
+        | Problem::MeetingUnsupported => None,
     }
 }
 

@@ -62,7 +62,13 @@ fn sound_played_by_another_app_is_captured_without_new_audio_device() {
     assert!(played.success());
     let samples = captured.lock().unwrap().clone();
     let seconds = samples.len() as f32 / (format.sample_rate as f32 * f32::from(format.channels));
-    assert!(seconds > 1.0, "przechwycono tylko {seconds:.2} s");
+    // speech_en.wav trwa 3,6 s: przy złej częstotliwości (format tapu zamiast zegara
+    // urządzenia) wychodzi ułamek tego czasu, a transkrypcja to szum.
+    assert!(
+        (3.4..6.0).contains(&seconds),
+        "przechwycono {seconds:.2} s przy {} Hz",
+        format.sample_rate
+    );
     assert!(
         rms(&samples) > 0.001,
         "sama cisza (RMS {}) — brak zgody?",

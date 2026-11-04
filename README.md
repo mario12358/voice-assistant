@@ -46,6 +46,7 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Start nagrywania            | `ctrl+cmd+r` (w dowolnej aplikacji) albo kliknięcie szarego kółka                                                                                                |
 | Stop i transkrypcja         | `ctrl+cmd+s` albo kliknięcie czerwonego kółka                                                                                                                    |
+| Nagranie spotkania          | `ctrl+cmd+m` albo prawy przycisk → **Nagrywaj spotkanie**; kończysz jak zwykłe nagranie (`ctrl+cmd+s` / kliknięcie)                                              |
 | Wklejenie tekstu            | `cmd+v` w miejscu z kursorem — schowek zawiera ostatnią transkrypcję                                                                                             |
 | Wcześniejsza wypowiedź      | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`)                                                    |
 | Wyczyszczenie historii      | prawy przycisk na ikonie → **Historia** → **Wyczyść historię**                                                                                                   |
@@ -89,6 +90,26 @@ Pusta transkrypcja (cisza) nie zmienia zawartości schowka. Długie przerwy w m�
 zdaniami. Nagranie ma limit długości, domyślnie 10 minut: po jego osiągnięciu kończy się
 samo, dostajesz powiadomienie, a nagrany materiał jest transkrybowany do schowka tak samo
 jak po `ctrl+cmd+s`.
+
+**Nagrywanie spotkań (Google Meet, Teams i inne).** W trakcie rozmowy naciśnij `ctrl+cmd+m`
+albo wybierz **Nagrywaj spotkanie**: aplikacja nagrywa jednocześnie Twój mikrofon i dźwięk
+odtwarzany przez komputer (głosy rozmówców). Rozmówcy słyszą Cię bez zmian, a Ty słyszysz ich
+jak zwykle — nic nie trzeba przestawiać w ustawieniach dźwięku ani instalować wirtualnych
+urządzeń. Po `ctrl+cmd+s` obie ścieżki są transkrybowane osobno i scalane w kolejności czasu:
+
+```text
+Ja: Dzień dobry, zaczynamy od budżetu?
+Rozmówcy: Tak, mam przygotowane liczby.
+```
+
+Przy pierwszym użyciu macOS pyta o zgodę na **nagrywanie dźwięku systemowego**; po odmowie
+nagranie spotkania nie startuje, a powiadomienie mówi, gdzie zgodę włączyć (Ustawienia
+systemowe → Prywatność i ochrona → Nagrywanie ekranu i dźwięku systemowego). Tryb wymaga
+macOS 14.2 lub nowszego. Nagranie spotkania ma własny limit (domyślnie 2 godziny,
+`max_meeting_secs`) i w trakcie jest zapisywane do pliku tymczasowego w katalogu danych
+aplikacji zamiast w pamięci; plik znika po transkrypcji. Etykiety „Ja:”/„Rozmówcy:” wyłączysz
+w `config.toml` (`meeting_speaker_labels = false`). Pamiętaj o poinformowaniu uczestników, że
+rozmowa jest nagrywana.
 
 Jeśli skrót jest już zajęty przez inną aplikację, menu ikony pokazuje o tym komunikat —
 kliknięcie ikony działa wtedy nadal.

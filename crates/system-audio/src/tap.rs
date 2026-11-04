@@ -20,9 +20,10 @@ use objc2_core_audio::{
     kAudioAggregateDeviceMainSubDeviceKey, kAudioAggregateDeviceNameKey,
     kAudioAggregateDeviceSubDeviceListKey, kAudioAggregateDeviceTapAutoStartKey,
     kAudioAggregateDeviceTapListKey, kAudioAggregateDeviceUIDKey, kAudioDevicePropertyDeviceUID,
-    kAudioHardwarePropertyDefaultSystemOutputDevice, kAudioObjectPropertyElementMain,
-    kAudioObjectPropertyScopeGlobal, kAudioObjectSystemObject, kAudioSubDeviceUIDKey,
-    kAudioSubTapDriftCompensationKey, kAudioSubTapUIDKey, kAudioTapPropertyFormat,
+    kAudioDevicePropertyNominalSampleRate, kAudioHardwarePropertyDefaultSystemOutputDevice,
+    kAudioObjectPropertyElementMain, kAudioObjectPropertyScopeGlobal, kAudioObjectSystemObject,
+    kAudioSubDeviceUIDKey, kAudioSubTapDriftCompensationKey, kAudioSubTapUIDKey,
+    kAudioTapPropertyFormat,
 };
 use objc2_core_audio_types::{
     AudioBuffer, AudioBufferList, AudioStreamBasicDescription, AudioTimeStamp,
@@ -82,9 +83,22 @@ impl ProcessTap {
         sink: SampleSink,
     ) -> Result<Self> {
         let stream = tap_stream_format(tap)?;
-        let format = capture_format(&stream)?;
+        let tap_format = capture_format(&stream)?;
         let non_interleaved = stream.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0;
         let device = create_private_device(description)?;
+        // Urządzenie zagregowane taktuje się zegarem wyjścia systemowego: blok IO dostaje próbki
+        // w częstotliwości urządzenia (np. 16 kHz słuchawek Bluetooth), nie w tej z formatu tapu.
+        let format = match property::<f64>(device, kAudioDevicePropertyNominalSampleRate, 0.0) {
+            Ok(rate) if rate > 0.0 => CaptureFormat {
+                sample_rate: rate.round() as u32,
+                ..tap_format
+            },
+            Ok(_) => tap_format,
+            Err(error) => {
+                destroy_device(device);
+                return Err(error);
+            }
+        };
         let block = io_block(sink, format.channels, non_interleaved);
         let io_proc = match create_io_proc(device, &block) {
             Ok(io_proc) => io_proc,
@@ -143,7 +157,7 @@ fn global_tap_description() -> Retained<CATapDescription> {
     unsafe {
         description.setPrivate(true);
         description.setMuteBehavior(CATapMuteBehavior::Unmuted);
-        description.setName(&NSString::from_str("VoiceAsystent — spotkanie"));
+        description.setName(&NSString::from_str(crate::MEETING_DEVICE_NAME));
     }
     description
 }
@@ -291,7 +305,7 @@ fn create_private_device(description: &CATapDescription) -> Result<AudioObjectID
     let device = dictionary(vec![
         (
             key(kAudioAggregateDeviceNameKey),
-            string(NSString::from_str("VoiceAsystent — spotkanie")),
+            string(NSString::from_str(crate::MEETING_DEVICE_NAME)),
         ),
         (
             key(kAudioAggregateDeviceUIDKey),

@@ -47,6 +47,16 @@ pub fn indicator_for(state: State) -> Indicator {
 }
 
 /// Wypełnione kółko z wygładzoną krawędzią na przezroczystym tle, RGBA wierszami.
+/// Ikona w trakcie nagrania spotkania (VA-CONF-1): czerwone kółko z własną podpowiedzią.
+pub fn meeting_indicator() -> Indicator {
+    Indicator {
+        dot: Dot::Red,
+        tooltip: MEETING_TOOLTIP,
+    }
+}
+
+pub const MEETING_TOOLTIP: &str = "Nagrywanie spotkania — kliknij albo ctrl+cmd+s, aby zakończyć";
+
 pub fn dot_rgba(dot: Dot) -> Vec<u8> {
     let [red, green, blue] = match dot {
         Dot::Gray => GRAY,
@@ -100,6 +110,16 @@ mod tests {
     fn after_transcription_or_failure_the_dot_is_gray_again() {
         assert_eq!(indicator_for(State::Idle).dot, Dot::Gray);
         assert_eq!(indicator_for(State::Error).dot, Dot::Gray);
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RG2PENSS9E2MSPDRJJZ
+    fn meeting_recording_shows_red_dot_with_meeting_tooltip() {
+        let indicator = meeting_indicator();
+
+        assert_eq!(indicator.dot, Dot::Red);
+        assert!(indicator.tooltip.starts_with("Nagrywanie spotkania"));
+        assert_ne!(indicator, indicator_for(State::Recording));
     }
 
     #[test]

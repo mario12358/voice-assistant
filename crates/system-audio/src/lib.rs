@@ -16,6 +16,9 @@ use objc2_foundation::{NSOperatingSystemVersion, NSProcessInfo};
 
 pub use tap::ProcessTap;
 
+/// Nazwa prywatnego urządzenia tapu: widzi je tylko ta aplikacja (lista mikrofonów je pomija).
+pub const MEETING_DEVICE_NAME: &str = "VoiceAsystent — spotkanie";
+
 /// Najstarszy macOS z Core Audio process tap.
 pub const MIN_MACOS: (isize, isize) = (14, 2);
 

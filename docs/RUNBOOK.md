@@ -33,6 +33,7 @@ Aplikacja nie potrzebuje żadnych sekretów ani kluczy.
 | Model | `~/Library/Application Support/VoiceAsystent/models/ggml-large-v3-turbo.bin` (1 624 555 275 B, SHA-256 `1fc70f77…e2bc69`); wariant q5_0: `ggml-large-v3-turbo-q5_0.bin` (574 041 195 B, SHA-256 `39422170…ffa7e2`); częściowe pobranie: `.part` obok; znacznik weryfikacji: `<model>.verified` (rozmiar, mtime, suma — usunięcie wymusza ponowne liczenie sumy) |
 | Uruchamianie przy logowaniu | `~/Library/LaunchAgents/io.github.mario12358.voiceasystent.plist` (tworzony i usuwany z menu Ustawienia) |
 | Logi | `~/Library/Logs/VoiceAsystent/voice-asystent.log.*` (JSON, dziennie) + tekst na stderr |
+| Nagranie spotkania w toku | `~/Library/Application Support/VoiceAsystent/meeting-<pid>-<n>-{mic,system}.pcm` (16 kHz mono f32, 0600); usuwane po transkrypcji, pozostałości po awarii przy starcie |
 
 Portów sieciowych, bazy danych, migracji ani kont testowych nie ma. Jedyne połączenie
 sieciowe to pobranie modelu z `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin`.
@@ -89,7 +90,9 @@ Testy oznaczone `#[ignore = "wymaga …"]` potrzebują mikrofonu, GPU Metal, pob
 prawdziwego schowka albo builda release (kilka minut). CI (`.github/workflows/specky-ci.yml`,
 `macos-latest`) uruchamia tylko testy bez `#[ignore]`; pełny zestaw uruchamiaj lokalnie przed
 wydaniem. Testy bundla i obrazu (`apps/voice-asystent/tests/bundle.rs`, `dmg.rs`) składają
-aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
+aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`. Test prawdziwego
+tapu (`crates/system-audio/tests/process_tap.rs`) wymaga zgody na nagrywanie dźwięku
+systemowego dla aplikacji, z której uruchamiasz testy (Terminal / edytor).
 
 ## Wydanie wersji
 
@@ -114,7 +117,10 @@ aplikację z binarki debug i montują obraz przez `hdiutil attach -nobrowse`.
 | Menu: „Brak modelu — nagrywanie niedostępne" / „Pobieranie modelu nieudane: …" | wybierz **Pobierz ponownie** w podmenu **Model** (albo **Ponów pobieranie** na górze menu, albo `cargo run -p va-dev -- model-download`). Uszkodzony plik (zła suma) jest usuwany automatycznie; z menu: **Model → Usuń model…** |
 | Menu: „Brak modelu: /ścieżka/… — nagrywanie niedostępne" | `model_path` w `config.toml` wskazuje nieistniejący plik; aplikacja celowo nic nie pobiera. Popraw ścieżkę albo usuń pole (wraca model domyślny z pobieraniem) |
 | Powiadomienie „Brak dostępu do mikrofonu" | nagranie dało same zera: brak zgody (Ustawienia → Prywatność i ochrona → Mikrofon) albo wirtualne wejście bez sygnału. Diagnoza: `cargo run -p va-dev -- mic-test` |
-| Skrót nie działa, w menu komunikat o konflikcie | kombinacja `ctrl+cmd+r`/`ctrl+cmd+s` zajęta przez inną aplikację; zwolnij ją tam albo używaj kliknięcia ikony |
+| Skrót nie działa, w menu komunikat o konflikcie | kombinacja `ctrl+cmd+r`/`ctrl+cmd+s`/`ctrl+cmd+m` zajęta przez inną aplikację; zwolnij ją tam albo używaj kliknięcia ikony i menu |
+| Powiadomienie „Brak zgody na nagrywanie dźwięku systemowego" | zgoda TCC `kTCCServiceAudioCapture` odrzucona: Ustawienia systemowe → Prywatność i ochrona → Nagrywanie ekranu i dźwięku systemowego → VoiceAsystent. Ponowne pytanie: `tccutil reset AudioCapture io.github.mario12358.voiceasystent` |
+| W transkrypcji spotkania brak „Rozmówcy:” | dźwięk rozmowy nie przeszedł przez wyjście systemowe albo zgoda daje ciszę; sprawdź `cargo test -p va-system-audio --test process_tap -- --include-ignored` (afplay fixture → sygnał) |
+| „Nagrywaj spotkanie” nieaktywne | macOS starszy niż 14.2 — brak Core Audio process tap |
 | Nagranie skończyło się samo, powiadomienie „Osiągnięto limit długości nagrania" | limit `max_recording_secs` (domyślnie 600 s): materiał do limitu jest transkrybowany jak po Stop; dłuższe dyktowanie → podnieś wartość w `config.toml` |
 | Transkrypcja pusta, schowek bez zmian | nagranie było ciszą poniżej `silence.threshold_rms` (domyślnie 0.01) — obniż próg w `config.toml` albo sprawdź mikrofon `mic-test` |
 | Start aplikacji trwa kilka sekund | suma SHA-256 modelu (ok. 3–4 s) liczona jest tylko przy braku albo niezgodności znacznika `<model>.verified` (pierwszy start, podmiana pliku); zwykle start zajmuje ułamek sekundy plus ładowanie modelu na GPU |
