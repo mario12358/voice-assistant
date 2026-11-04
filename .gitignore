@@ -4,11 +4,11 @@
 *.tmp
 .DS_Store
 *.sqlite
-artifacts/
+telesma/artifacts/
 target/
 dist/
 models/
-ralph/PERMISSIONS.jsonl
-ralph/KONTROLE.jsonl
+telesma/state/PERMISSIONS.jsonl
+telesma/state/KONTROLE.jsonl
 .claude/settings.local.json
 __pycache__/
