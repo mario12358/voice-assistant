@@ -9,10 +9,7 @@ mod stream_recorder;
 pub use convert::{StreamNormalizer, TARGET_SAMPLE_RATE};
 pub use devices::{AudioHost, CpalHost, DeviceChoice, InputDevice, choose_device};
 pub use recorder::{CpalRecorder, LimitNotifier, Recorder};
-pub use silence::{
-    CompressedAudio, SilenceParams, TimeMap, compress_pauses, compress_pauses_mapped,
-    speech_bounds, trim_silence,
-};
+pub use silence::{SilenceParams, compress_pauses, speech_bounds, speech_regions, trim_silence};
 pub use stream_recorder::{CpalStreamRecorder, StreamFormat, StreamSink, StreamingRecorder};
 
 #[derive(Debug, thiserror::Error)]

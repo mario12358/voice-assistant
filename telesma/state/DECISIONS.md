@@ -333,3 +333,19 @@ It is a changelog for humans, to remember "what we agreed on and why".
 **Question/context**: W teście ręcznym trybu spotkania po zakończeniu nagrania macOS pokazał okno wyboru aplikacji „Gdzie jest use_default?”.
 **Outcome**: Przyczyna w bibliotece mac-notification-sys: bez ustawionego nadawcy przy pierwszym powiadomieniu w procesie uruchamia AppleScript `id of application "use_default"`, a macOS nie zna takiej aplikacji. Poprawka: przy starcie aplikacja ustawia nadawcę powiadomień (io.github.mario12358.voiceasystent z bundla, Terminal przy cargo run), więc AppleScript nie rusza; test pilnuje zgodności identyfikatora z Info.plist. Według kodu okno blokuje tylko wątek powiadomienia — tekst jest już wtedy w schowku (do potwierdzenia u właściciela).
 **Impact**: apps/voice-asystent/src/messages.rs, main.rs
+
+## 2026-11-04 10:09 — Zła kolejność wypowiedzi w transkrypcji spotkania
+**Kind**: bug
+**Bug source**: task 10.3
+**Detected by**: scenario
+**Question/context**: W testowej rozmowie w Meet wypowiedzi „Ja:”/„Rozmówcy:” były w innej kolejności niż w rzeczywistości; właściciel pyta dlaczego i czy da się to przetestować automatycznie.
+**Outcome**: No decision — awaits: zgoda właściciela na poprawkę. Odtworzone na sztucznej rozmowie (6 naprzemiennych wypowiedzi, `say` Zosia, prawdziwy model): Whisper skleja kilka wypowiedzi jednej osoby w jeden segment (rozmówcy: jeden segment 2,9–15,5 s z trzema wypowiedziami), a początki segmentów są nieprecyzyjne (moja druga wypowiedź od 5,9 s dostała 2,1 s), więc scalanie po początku segmentu przestawia wypowiedzi. Rekomendacja: wyznaczać tury mówców z detekcji mowy na obu ścieżkach przed transkrypcją (dokładne czasy z sygnału), transkrybować każdą turę osobno, plus test na sztucznej rozmowie jako fixture.
+**Impact**: crates/core/src/meeting.rs (merge_tracks/transcribe_track), VA-CONF-4
+
+## 2026-11-04 10:32 — Poprawka kolejności wypowiedzi w spotkaniu
+**Kind**: bug
+**Bug source**: task 10.3
+**Detected by**: scenario
+**Question/context**: Właściciel zgodził się na poprawkę kolejności wypowiedzi w transkrypcji spotkania.
+**Outcome**: Ustaliliśmy i wprowadziliśmy: tury mówców wyznaczane z detekcji mowy na obu ścieżkach (czas z sygnału, przerwa < 0,4 s nie dzieli odcinka), kolejne odcinki tego samego mówcy łączone w turę, każda tura transkrybowana osobno, wynik w kolejności tur. Znaczniki segmentów Whispera nie decydują już o kolejności; mapa czasu po skróceniu pauz (10.2) usunięta. Sztuczna rozmowa z 6 naprzemiennymi wypowiedziami (tests/fixtures/dialogue_*.wav) jako test z prawdziwym modelem — przechodzi; pełny zestaw 263/0. Koszt: jedno wywołanie modelu na turę.
+**Impact**: crates/core/src/meeting.rs, crates/audio/src/silence.rs (speech_regions), VA-CONF-4
