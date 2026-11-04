@@ -319,3 +319,9 @@ It is a changelog for humans, to remember "what we agreed on and why".
 **Question/context**: Właściciel wybrał rekomendowany sposób wywołania API Core Audio dla trybu spotkania: Rust zamiast pomocnika w Swifcie.
 **Outcome**: Ustaliliśmy: przechwytywanie dźwięku systemowego powstaje w nowym crate'cie `va-system-audio` (crates/system-audio) na objc2-core-audio 0.3 (CATapDescription, AudioHardwareCreateProcessTap, urządzenie zagregowane z tapem). To jedyne miejsce z `#![allow(unsafe_code)]`; każde wywołanie `unsafe` ma komentarz SAFETY, a reszta workspace zostaje przy `unsafe_code = deny`. Całość dalej w Ruście i cargo (VA-TECH-1). Pomocnik w Swifcie odrzucony: drugi język i osobne budowanie.
 **Impact**: nowa faza 10 (VA-CONF-1..4)
+
+## 2026-11-04 09:48 — Realizacja Fazy 10: tryb nagrywania spotkania
+**Kind**: feature
+**Question/context**: Właściciel polecił zrealizować tryb spotkania w Ruście według rekomendacji (izolowane unsafe zamiast pomocnika w Swifcie).
+**Outcome**: Faza 10 zaplanowana (PR #70) i zrealizowana zadaniami 10.1–10.7 (PR #71–#77): konfiguracja, znaczniki czasu segmentów, scalanie ścieżek z etykietami, plik tymczasowy, crate va-system-audio z Core Audio process tap, kontroler i aplikacja (menu, ctrl+cmd+m, zgoda, Info.plist). Pełny zestaw 260/0, w tym prawdziwy tap i cały tor z Whisperem; VA-CONF-1..4 `code_ready`. W trakcie znaleziono i naprawiono błąd częstotliwości przechwytywania (zegar urządzenia zagregowanego, 16 kHz przy słuchawkach Bluetooth). Zostaje test ręczny ⛔ 10.8.
+**Impact**: Faza 10; crates/system-audio, crates/core (meeting, meeting_capture, spool), apps/voice-asystent

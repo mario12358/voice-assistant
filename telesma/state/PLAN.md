@@ -311,11 +311,11 @@
   - Specky: (req: 01M6JR8RX0HYBEA57XWREDTSAM v1.0 @cf71279)
   - AC: entry — `Command::StartMeeting` z pętli UI (10.7); limit z wątku audio jak w VA-REC-6
 - [x] Test: 10.6 — atrapy: StartMeeting → Stop → tekst z etykietami w schowku i historii; osobny limit spotkania; Start/StartMeeting w trakcie ignorowane; odmowa → Idle; zwykłe nagranie bez źródła systemowego; spool usunięty po błędzie STT; znaczniki crit VA-CONF-1/2/3 (change: 2026-11-04-specky-YMXASGG.md) (pr: #76)
-- [ ] Task 10.7: aplikacja: „Nagrywaj spotkanie” w menu (nieaktywne < macOS 14.2), ctrl+cmd+m, podpowiedź „Nagrywanie spotkania”, powiadomienia o odmowie zgody i starym systemie, `NSAudioCaptureUsageDescription`, sprzątanie spool przy starcie (requires: 10.6) [VA-CONF-1, VA-CONF-2] (change: 2026-11-04-specky-YMXASGG.md) (change: 2026-11-04-specky-35SNPEN.md) (pr: #77)
+- [x] Task 10.7: aplikacja: „Nagrywaj spotkanie” w menu (nieaktywne < macOS 14.2), ctrl+cmd+m, podpowiedź „Nagrywanie spotkania”, powiadomienia o odmowie zgody i starym systemie, `NSAudioCaptureUsageDescription`, sprzątanie spool przy starcie (requires: 10.6) [VA-CONF-1, VA-CONF-2] (change: 2026-11-04-specky-YMXASGG.md) (change: 2026-11-04-specky-35SNPEN.md) (pr: #77)
   - Specky: (req: 01M6JR8RFDWVM1VM2PQYMXASGG v1.0 @c2e45ad)
   - Specky: (req: 01M6JR8RPT9TZGC0B8F35SNPEN v1.0 @c3973d5)
   - AC: entry — klik pozycji menu i ctrl+cmd+m → `Command::StartMeeting`
-- [ ] Test: 10.7 — mapowanie skrótu ctrl+cmd+m i pozycji menu na StartMeeting, podpowiedź ikony w trybie spotkania, menu nieaktywne poniżej 14.2, teksty powiadomień, Info.plist z opisem zgody (test bundla); crit 01M6JR8RG2PENSS9E2MSPDRJJZ, 01M6JR8RQV0R34CBNZ28FGHX6V, 01M6JR8RQV1RJ5S8KZ4BFWKVHE (change: 2026-11-04-specky-YMXASGG.md) (pr: #77)
+- [x] Test: 10.7 — mapowanie skrótu ctrl+cmd+m i pozycji menu na StartMeeting, podpowiedź ikony w trybie spotkania, menu nieaktywne poniżej 14.2, teksty powiadomień, Info.plist z opisem zgody (test bundla); crit 01M6JR8RG2PENSS9E2MSPDRJJZ, 01M6JR8RQV0R34CBNZ28FGHX6V, 01M6JR8RQV1RJ5S8KZ4BFWKVHE (change: 2026-11-04-specky-YMXASGG.md) (pr: #77)
 - [ ] ⛔ Task 10.8: Test manualny właściciela: zgoda TCC i odmowa, rozmowa w Meet (rozmówca słyszy), afplay przy wyciszonym mikrofonie, wyjście audio bez zmian, 60 min (pamięć, czas), etykiety mówców — wynik do REPORT.md (requires: 10.7) (change: 2026-11-04-specky-YMXASGG.md)
 
 ## Spec coverage
