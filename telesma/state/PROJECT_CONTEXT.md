@@ -22,6 +22,7 @@ Workspace Cargo: biblioteki w `crates/`, binarki w `apps/`. Kod (identyfikatory)
 | `va-stt` | crates/stt | trait `SpeechToText`, implementacja whisper-rs (feature `metal`), sprawdzenie GPU (`GpuProbe`), mock testowy |
 | `va-clipboard` | crates/clipboard | trait `TextSink`, implementacja arboard; pusty tekst nie zmienia schowka |
 | `va-core` | crates/core | automat stanów (Idle/Recording/Transcribing/Error), `Controller` łączący audio → STT → schowek, zdarzenia stanu dla UI; bez GUI |
+| `va-system-audio` | crates/system-audio | dźwięk systemowy dla trybu spotkania: Core Audio process tap w prywatnym urządzeniu zagregowanym, zgoda TCC, wersja macOS; trait `SystemAudioSource` (atrapa za feature `testing`); jedyny crate z `unsafe` |
 | `voice-asystent` | apps/voice-asystent | aplikacja paska menu: tao (wątek główny), tray-icon + muda, global-hotkey, okablowanie zależności |
 | `va-dev` | apps/va-dev | CLI deweloperskie (clap): `mic-test`, `transcribe`, `model-download` |
 
@@ -95,6 +96,7 @@ Konwencje:
 | Pierwszy commit gałęzi bez dowodu kontroli (status PR czerwony) | `git commit --amend --no-edit` + `git push --force-with-lease` (19.4) |
 | Kontrola `testy/kod-bez-testu` nie widzi testów Rusta w `#[cfg(test)] mod tests` tego samego pliku | ostrzeżenie do odnotowania w REPORT, nie do „naprawy” przenoszeniem testów |
 | Mutacje budowane w osobnym `CARGO_TARGET_DIR` (scratchpad) zjadają GB dysku | po serii mutacji `cargo clean --target-dir <scratchpad>/target`; pilnuj `df -h` |
+| Prywatne urządzenie zagregowane tapu (VA-CONF-2) jest niewidoczne dla innych aplikacji, ale widzi je proces, który je utworzył (cpal w tym samym procesie) | test „brak nowego urządzenia” sprawdza listę z osobnego procesu (`system_profiler`); lista mikrofonów w menu musi pomijać urządzenie „VoiceAsystent — spotkanie” (10.7) |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
 ## Component dependencies

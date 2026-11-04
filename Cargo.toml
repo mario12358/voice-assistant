@@ -7,6 +7,7 @@ members = [
     "crates/stt",
     "crates/clipboard",
     "crates/core",
+    "crates/system-audio",
     "apps/voice-asystent",
     "apps/va-dev",
 ]
@@ -25,6 +26,7 @@ va-model = { path = "crates/model" }
 va-stt = { path = "crates/stt" }
 va-clipboard = { path = "crates/clipboard" }
 va-core = { path = "crates/core" }
+va-system-audio = { path = "crates/system-audio" }
 anyhow = "1"
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
