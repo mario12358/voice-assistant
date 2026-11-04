@@ -88,7 +88,7 @@ impl LoginItem {
 }
 
 /// `…/VoiceAsystent.app/Contents/MacOS/VoiceAsystent` → ta sama ścieżka; inna → `None`.
-fn bundle_executable(current_exe: &Path) -> Option<PathBuf> {
+pub fn bundle_executable(current_exe: &Path) -> Option<PathBuf> {
     let macos = current_exe.parent()?;
     let contents = macos.parent()?;
     let bundle = contents.parent()?;

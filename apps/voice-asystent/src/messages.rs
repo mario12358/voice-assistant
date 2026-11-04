@@ -118,6 +118,30 @@ pub fn menu_notice(problem: &Problem) -> Option<String> {
     }
 }
 
+/// Identyfikator aplikacji z Info.plist (scripts/build-app.sh).
+pub const BUNDLE_ID: &str = "io.github.mario12358.voiceasystent";
+/// Nadawca powiadomień przy uruchomieniu spoza bundla (`cargo run` z Terminala).
+const TERMINAL_ID: &str = "com.apple.Terminal";
+
+/// Kto podpisuje powiadomienia: VoiceAsystent z bundla, Terminal przy `cargo run`.
+pub fn notification_sender(running_from_bundle: bool) -> &'static str {
+    if running_from_bundle {
+        BUNDLE_ID
+    } else {
+        TERMINAL_ID
+    }
+}
+
+/// Ustawia nadawcę powiadomień raz, przy starcie. Bez tego mac-notification-sys przy pierwszym
+/// powiadomieniu szuka aplikacji AppleScriptem `id of application "use_default"`, a macOS
+/// pokazuje wtedy okno „Gdzie jest use_default?”.
+pub fn init_notifications(running_from_bundle: bool) {
+    let sender = notification_sender(running_from_bundle);
+    if let Err(error) = mac_notification_sys::set_application(sender) {
+        tracing::warn!(%error, sender, "nie udało się ustawić nadawcy powiadomień");
+    }
+}
+
 /// Powiadomienie systemowe w osobnym wątku — wysyłka nie może blokować pętli zdarzeń.
 pub fn notify(problem: &Problem) {
     let (title, body) = message(problem);
@@ -163,6 +187,24 @@ fn send_in_background(title: &'static str, body: String) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn notifications_are_signed_by_the_app_bundle_or_terminal() {
+        assert_eq!(notification_sender(true), BUNDLE_ID);
+        assert_eq!(notification_sender(false), "com.apple.Terminal");
+    }
+
+    #[test]
+    fn notification_sender_matches_bundle_identifier_in_info_plist() {
+        let build_script = include_str!("../../../scripts/build-app.sh");
+
+        assert!(
+            build_script.contains(&format!(
+                "<key>CFBundleIdentifier</key>\n\t<string>{BUNDLE_ID}</string>"
+            )),
+            "BUNDLE_ID różni się od CFBundleIdentifier w build-app.sh"
+        );
+    }
 
     #[test]
     fn missing_microphone_permission_explains_where_to_grant_it() {
