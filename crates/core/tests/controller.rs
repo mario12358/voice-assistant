@@ -142,6 +142,7 @@ impl Harness {
                 silence: SILENCE,
                 select_device: Box::new(|| Ok("PXC 550".to_owned())),
                 history: History::open(Box::new(FileHistoryStore::new(&history_file))),
+                meeting: None,
             },
             Box::new(move |event| {
                 let _ = sender.send(event);
@@ -727,6 +728,7 @@ fn start_during_transcription_does_not_start_new_recording() {
             history: History::open(Box::new(FileHistoryStore::new(
                 dir.path().join("history.json"),
             ))),
+            meeting: None,
         },
         Box::new(move |event| {
             let _ = sender.send(event);

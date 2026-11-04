@@ -17,6 +17,8 @@ pub enum State {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Input {
     Start,
+    /// Start nagrania spotkania: mikrofon + dźwięk systemowy (VA-CONF-1).
+    StartMeeting,
     Stop,
     TranscriptionFinished,
     Failed,
@@ -27,6 +29,7 @@ pub enum Input {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Action {
     StartRecording,
+    StartMeetingRecording,
     StopRecordingAndTranscribe,
     ReportError,
     None,
@@ -83,6 +86,7 @@ fn next(state: State, input: Input) -> Option<(State, Action)> {
     use {Action as A, Input as I, State as S};
     match (state, input) {
         (S::Idle, I::Start) => Some((S::Recording, A::StartRecording)),
+        (S::Idle, I::StartMeeting) => Some((S::Recording, A::StartMeetingRecording)),
         (S::Recording, I::Stop) => Some((S::Transcribing, A::StopRecordingAndTranscribe)),
         (S::Transcribing, I::TranscriptionFinished) => Some((S::Idle, A::None)),
         (S::Recording | S::Transcribing, I::Failed) => Some((S::Error, A::ReportError)),
@@ -112,6 +116,12 @@ mod tests {
         let accepted = [
             (S::Idle, I::Start, S::Recording, A::StartRecording),
             (
+                S::Idle,
+                I::StartMeeting,
+                S::Recording,
+                A::StartMeetingRecording,
+            ),
+            (
                 S::Recording,
                 I::Stop,
                 S::Transcribing,
@@ -137,6 +147,7 @@ mod tests {
     fn every_other_combination_is_ignored_without_side_effects() {
         let inputs = [
             Input::Start,
+            Input::StartMeeting,
             Input::Stop,
             Input::TranscriptionFinished,
             Input::Failed,
@@ -189,6 +200,22 @@ mod tests {
 
         assert!(machine.handle(Input::Start).ignored);
         assert_eq!(machine.state(), State::Transcribing);
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RG2WP1XDDA0VP7BHVWG
+    fn meeting_start_during_recording_or_transcription_and_start_during_meeting_are_ignored() {
+        for state in [State::Recording, State::Transcribing] {
+            let mut machine = machine_in(state);
+
+            assert!(machine.handle(Input::StartMeeting).ignored, "{state:?}");
+            assert_eq!(machine.state(), state);
+        }
+        let mut meeting = StateMachine::default();
+        meeting.handle(Input::StartMeeting);
+
+        assert!(meeting.handle(Input::Start).ignored);
+        assert_eq!(meeting.state(), State::Recording);
     }
 
     #[test]

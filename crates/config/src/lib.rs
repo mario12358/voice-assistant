@@ -158,6 +158,8 @@ fn line_of(text: &str, offset: usize) -> usize {
 /// Ścieżki aplikacji w katalogu użytkownika macOS.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Paths {
+    /// Katalog danych aplikacji (pliki tymczasowe nagrań spotkań, VA-CONF-3).
+    pub data_dir: PathBuf,
     pub config_file: PathBuf,
     pub models_dir: PathBuf,
     pub logs_dir: PathBuf,
@@ -176,6 +178,7 @@ impl Paths {
             logs_dir: home.join("Library/Logs").join(APP_DIR),
             history_file: data_dir.join("history.json"),
             launch_agents_dir: home.join("Library/LaunchAgents"),
+            data_dir,
         }
     }
 

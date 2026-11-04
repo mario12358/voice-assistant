@@ -1,11 +1,15 @@
 //! Strażnik prywatności: biblioteka audio trzyma nagranie wyłącznie w pamięci.
 
-const SOURCES: [(&str, &str); 5] = [
+const SOURCES: [(&str, &str); 6] = [
     ("lib.rs", include_str!("../src/lib.rs")),
     ("devices.rs", include_str!("../src/devices.rs")),
     ("convert.rs", include_str!("../src/convert.rs")),
     ("recorder.rs", include_str!("../src/recorder.rs")),
     ("silence.rs", include_str!("../src/silence.rs")),
+    (
+        "stream_recorder.rs",
+        include_str!("../src/stream_recorder.rs"),
+    ),
 ];
 
 const FORBIDDEN: [&str; 5] = [
