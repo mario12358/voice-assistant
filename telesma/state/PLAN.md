@@ -289,18 +289,18 @@
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — odczyt config.toml przy starcie aplikacji (startup.rs) przekazuje oba pola do kontrolera spotkania (10.6)
 - [x] Test: 10.1 — wartości domyślne, nadpisanie z pliku, plik bez nowych pól; znaczniki crit (01M6JR8RXS6ZWMNJ6F3GJM6JM2) (change: 2026-11-04-specky-REDTSAM.md) (pr: #71)
-- [ ] Task 10.2: `va-stt`: `Transcript.segments` (start/koniec w ms + tekst) z whisper-rs po filtrach VA-STT-3; `va-audio`: `compress_pauses_mapped` zwraca mapę czasu skróconej osi na oryginalną [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
+- [x] Task 10.2: `va-stt`: `Transcript.segments` (start/koniec w ms + tekst) z whisper-rs po filtrach VA-STT-3; `va-audio`: `compress_pauses_mapped` zwraca mapę czasu skróconej osi na oryginalną [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — transkrypcja ścieżek spotkania w kontrolerze (10.6) mapuje znaczniki segmentów na oś nagrania
-- [ ] Test: 10.2 — mapa czasu po skróceniu pauz (próbki przed/po pauzie), segmenty prawdziwego modelu speech_pl.wav rosnące i w granicach nagrania (`#[ignore]` model/GPU); crit 01M6JR8S2RWX49RC3BZ7YSK3HW (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
+- [x] Test: 10.2 — mapa czasu po skróceniu pauz (próbki przed/po pauzie), segmenty prawdziwego modelu speech_pl.wav rosnące i w granicach nagrania (`#[ignore]` model/GPU); crit 01M6JR8S2RWX49RC3BZ7YSK3HW (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
 - [ ] Task 10.3: `va-core::meeting::merge_tracks(mic, system, labels)` — scalanie segmentów obu ścieżek po czasie, „Ja:”/„Rozmówcy:” tylko przy zmianie mówcy, wypowiedzi w nowych liniach, pusta ścieżka bez etykiety, `labels=false` bez etykiet (requires: 10.2) [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md)
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — kontroler spotkania (10.6) po transkrypcji obu ścieżek
 - [ ] Test: 10.3 — kolejność po przesunięciach 0 s/10 s i odwrotnie (segmenty z atrapy), brak powtórzonej etykiety, cisza bez etykiety, bez etykiet; test z prawdziwym modelem na speech_pl/speech_en (`#[ignore]`); crit 01M6JR8S2RJ391FHM6BF9C8PS1, 01M6JR8S2RRK4A1VQD6ECZY8E9, 01M6JR8S2RHN883WPQB8YQBSPK, 01M6JR8S2RF2G1JMEW0CM3FJTY (change: 2026-11-04-specky-D6FG0MQ.md)
-- [ ] Task 10.4: `va-audio::spool` — plik tymczasowy nagrania w katalogu danych (0600, 16 kHz mono f32, przepróbkowanie strumieniowe), odczyt po Stop, usuwanie po transkrypcji i po błędzie, sprzątanie pozostałości `meeting-*.pcm` przy starcie [VA-CONF-3] (change: 2026-11-04-specky-REDTSAM.md)
+- [ ] Task 10.4: `va-audio::spool` — plik tymczasowy nagrania w katalogu danych (0600, 16 kHz mono f32, przepróbkowanie strumieniowe), odczyt po Stop, usuwanie po transkrypcji i po błędzie, sprzątanie pozostałości `meeting-*.pcm` przy starcie [VA-CONF-3] (change: 2026-11-04-specky-REDTSAM.md) (pr: #73)
   - Specky: (req: 01M6JR8RX0HYBEA57XWREDTSAM v1.0 @cf71279)
   - AC: entry — nagrywarka spotkania (10.6) pisze obie ścieżki do spool; startup.rs wywołuje sprzątanie przy starcie
-- [ ] Test: 10.4 — zapis i odczyt 16 kHz mono z 48 kHz stereo, uprawnienia 0600, plik usunięty po odczycie/porzuceniu, sprzątanie tylko `meeting-*.pcm`; crit 01M6JR8RXS734Y55256W14CWPJ, 01M6JR8RXSJBV4P9TSK2Y03F2Z (change: 2026-11-04-specky-REDTSAM.md)
+- [ ] Test: 10.4 — zapis i odczyt 16 kHz mono z 48 kHz stereo, uprawnienia 0600, plik usunięty po odczycie/porzuceniu, sprzątanie tylko `meeting-*.pcm`; crit 01M6JR8RXS734Y55256W14CWPJ, 01M6JR8RXSJBV4P9TSK2Y03F2Z (change: 2026-11-04-specky-REDTSAM.md) (pr: #73)
 - [ ] Task 10.5: nowy crate `va-system-audio` (crates/system-audio, jedyne `#![allow(unsafe_code)]`, SAFETY przy każdym wywołaniu): Core Audio process tap (CATapDescription globalny stereo, prywatny, bez wyciszania) + urządzenie zagregowane prywatne z tapem + IOProc → próbki do wywołania zwrotnego; stan zgody (TCC) i wersja macOS ≥ 14.2 [VA-CONF-2] (change: 2026-11-04-specky-35SNPEN.md)
   - Specky: (req: 01M6JR8RPT9TZGC0B8F35SNPEN v1.0 @c3973d5)
   - AC: entry — `Command::StartMeeting` w kontrolerze (10.6) uruchamia przechwytywanie przez trait `SystemAudioSource`

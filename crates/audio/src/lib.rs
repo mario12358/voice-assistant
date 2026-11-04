@@ -5,7 +5,7 @@ mod devices;
 mod recorder;
 pub mod silence;
 
-pub use convert::TARGET_SAMPLE_RATE;
+pub use convert::{StreamNormalizer, TARGET_SAMPLE_RATE};
 pub use devices::{AudioHost, CpalHost, DeviceChoice, InputDevice, choose_device};
 pub use recorder::{CpalRecorder, LimitNotifier, Recorder};
 pub use silence::{

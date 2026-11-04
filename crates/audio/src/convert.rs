@@ -43,6 +43,102 @@ pub fn normalize(interleaved: &[f32], channels: u16, sample_rate: u32) -> Result
     resample_to_target(&downmix_to_mono(interleaved, channels), sample_rate)
 }
 
+/// Normalizacja na bieżąco dla długich nagrań (VA-CONF-3): kolejne porcje z urządzenia
+/// wychodzą jako 16 kHz mono bez trzymania całego nagrania w pamięci.
+pub struct StreamNormalizer {
+    channels: u16,
+    resampler: Option<Fft<f32>>,
+    pending: Vec<f32>,
+    delay_to_skip: usize,
+    input_frames: u64,
+    output_frames: u64,
+    ratio: f64,
+}
+
+impl StreamNormalizer {
+    pub fn new(channels: u16, sample_rate: u32) -> Result<Self> {
+        let resampler = if sample_rate == TARGET_SAMPLE_RATE {
+            None
+        } else {
+            Some(
+                Fft::<f32>::new(
+                    sample_rate as usize,
+                    TARGET_SAMPLE_RATE as usize,
+                    RESAMPLER_CHUNK_FRAMES,
+                    1,
+                    FixedSync::Input,
+                )
+                .map_err(resampling)?,
+            )
+        };
+        let delay_to_skip = resampler.as_ref().map_or(0, Resampler::output_delay);
+        Ok(Self {
+            channels,
+            resampler,
+            pending: Vec::new(),
+            delay_to_skip,
+            input_frames: 0,
+            output_frames: 0,
+            ratio: f64::from(TARGET_SAMPLE_RATE) / f64::from(sample_rate),
+        })
+    }
+
+    /// Porcja próbek przeplatanych z urządzenia → gotowe próbki 16 kHz mono.
+    pub fn push(&mut self, interleaved: &[f32]) -> Result<Vec<f32>> {
+        let mono = downmix_to_mono(interleaved, self.channels);
+        self.input_frames += mono.len() as u64;
+        if self.resampler.is_none() {
+            self.output_frames += mono.len() as u64;
+            return Ok(mono);
+        }
+        self.pending.extend_from_slice(&mono);
+        self.drain_full_chunks()
+    }
+
+    /// Reszta sygnału po ostatniej porcji; długość całości = wejście × proporcja częstotliwości.
+    pub fn finish(&mut self) -> Result<Vec<f32>> {
+        let expected = (self.input_frames as f64 * self.ratio).round() as u64;
+        let mut output = Vec::new();
+        while self.resampler.is_some() && self.output_frames < expected {
+            let needed = self.next_chunk_len();
+            self.pending.resize(needed.max(self.pending.len()), 0.0);
+            output.extend(self.drain_full_chunks()?);
+        }
+        let excess = (self.output_frames.saturating_sub(expected)) as usize;
+        output.truncate(output.len().saturating_sub(excess));
+        self.output_frames = expected;
+        Ok(output)
+    }
+
+    fn next_chunk_len(&self) -> usize {
+        self.resampler
+            .as_ref()
+            .map_or(RESAMPLER_CHUNK_FRAMES, Resampler::input_frames_next)
+    }
+
+    fn drain_full_chunks(&mut self) -> Result<Vec<f32>> {
+        let mut output = Vec::new();
+        let Some(resampler) = self.resampler.as_mut() else {
+            return Ok(output);
+        };
+        while self.pending.len() >= resampler.input_frames_next() {
+            let needed = resampler.input_frames_next();
+            let chunk: Vec<f32> = self.pending.drain(..needed).collect();
+            let input = InterleavedSlice::new(&chunk, 1, chunk.len()).map_err(resampling)?;
+            let mut produced = resampler
+                .process(&input, None)
+                .map_err(resampling)?
+                .take_data();
+            let skipped = self.delay_to_skip.min(produced.len());
+            produced.drain(..skipped);
+            self.delay_to_skip -= skipped;
+            self.output_frames += produced.len() as u64;
+            output.extend(produced);
+        }
+        Ok(output)
+    }
+}
+
 fn resampling(error: impl std::fmt::Display) -> Error {
     Error::Resampling(error.to_string())
 }
@@ -52,6 +148,38 @@ mod tests {
     use std::f32::consts::TAU;
 
     use super::*;
+
+    #[test]
+    fn streaming_normalizer_matches_whole_recording_length_and_level() {
+        let stereo: Vec<f32> = sine(440.0, 44_100, 3.0)
+            .into_iter()
+            .flat_map(|value| [value, value])
+            .collect();
+        let mut normalizer = StreamNormalizer::new(2, 44_100).unwrap();
+
+        let mut output = Vec::new();
+        for chunk in stereo.chunks(2 * 441) {
+            output.extend(normalizer.push(chunk).unwrap());
+        }
+        output.extend(normalizer.finish().unwrap());
+
+        assert_eq!(output.len(), 48_000);
+        let peak = output[2_000..46_000]
+            .iter()
+            .fold(0.0f32, |a, b| a.max(b.abs()));
+        assert!((peak - 0.5).abs() < 0.05, "amplituda {peak}");
+    }
+
+    #[test]
+    fn streaming_normalizer_at_target_rate_only_downmixes() {
+        let mut normalizer = StreamNormalizer::new(2, TARGET_SAMPLE_RATE).unwrap();
+
+        let output = normalizer.push(&[0.2, 0.4, -0.2, -0.4]).unwrap();
+
+        assert_eq!(output.len(), 2);
+        assert!((output[0] - 0.3).abs() < 1e-6 && (output[1] + 0.3).abs() < 1e-6);
+        assert!(normalizer.finish().unwrap().is_empty());
+    }
 
     fn sine(frequency: f32, sample_rate: u32, seconds: f32) -> Vec<f32> {
         let frames = (sample_rate as f32 * seconds) as usize;
