@@ -8,7 +8,7 @@ use whisper_rs::{
     FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters, WhisperState,
 };
 
-use crate::{Error, GpuReady, Result, SpeechToText, Transcript};
+use crate::{Error, GpuReady, Result, Segment, SpeechToText, Transcript};
 
 pub struct WhisperStt {
     // Kontekst trzyma wagi modelu; stan z niego utworzony musi go przeżyć.
@@ -130,14 +130,20 @@ impl SpeechToText for WhisperStt {
             let text = segment
                 .to_str_lossy()
                 .map_err(|error| Error::Inference(error.to_string()))?;
-            kept.push(text.into_owned());
+            kept.push(Segment {
+                start_ms: centiseconds_to_ms(segment.start_timestamp()),
+                end_ms: centiseconds_to_ms(segment.end_timestamp()),
+                text: text.into_owned(),
+            });
         }
         if dropped > 0 {
             tracing::info!(dropped, "odrzucone segmenty bez mowy");
         }
+        let text: String = kept.iter().map(|segment| segment.text.as_str()).collect();
         Ok(Transcript {
-            text: kept.concat().trim().to_owned(),
+            text: text.trim().to_owned(),
             inference: started.elapsed(),
+            segments: kept,
         })
     }
 
@@ -145,6 +151,11 @@ impl SpeechToText for WhisperStt {
         tracing::info!(?language, "język transkrypcji zmieniony");
         self.language = language;
     }
+}
+
+/// Whisper podaje czas segmentu w setnych sekundy; ujemny nie występuje, ale nie ufamy C.
+fn centiseconds_to_ms(centiseconds: i64) -> u64 {
+    u64::try_from(centiseconds).unwrap_or(0) * 10
 }
 
 fn language_code(language: Language) -> &'static str {
@@ -173,6 +184,12 @@ mod tests {
         );
         assert!(settings.no_context);
         assert!(settings.min_segment_confidence > 0.0 && settings.min_segment_confidence < 0.9);
+    }
+
+    #[test]
+    fn segment_times_are_converted_from_centiseconds() {
+        assert_eq!(centiseconds_to_ms(123), 1_230);
+        assert_eq!(centiseconds_to_ms(-5), 0);
     }
 
     #[test]

@@ -703,6 +703,7 @@ impl SpeechToText for GatedStt {
         Ok(Transcript {
             text: "po transkrypcji".into(),
             inference: Duration::ZERO,
+            segments: Vec::new(),
         })
     }
 

@@ -84,3 +84,36 @@ fn quantized_variant_recognises_the_same_polish_keywords() {
         "q5_0: {text}"
     );
 }
+
+#[test]
+#[ignore = "wymaga pobranego modelu (va-dev model-download) i GPU Metal"]
+// specky: crit 01M6JR8S2RWX49RC3BZ7YSK3HW
+fn segments_have_increasing_times_within_recording() {
+    let mut stt = loaded(Language::Auto);
+    let samples = fixture("speech_pl.wav");
+    let length_ms = samples.len() as u64 * 1000 / 16_000;
+
+    let transcript = stt.transcribe(&samples).unwrap();
+
+    assert!(!transcript.segments.is_empty(), "brak segmentów");
+    let joined: String = transcript
+        .segments
+        .iter()
+        .map(|s| s.text.as_str())
+        .collect();
+    assert_eq!(joined.trim(), transcript.text);
+    for pair in transcript.segments.windows(2) {
+        assert!(
+            pair[0].start_ms <= pair[1].start_ms,
+            "{:?}",
+            transcript.segments
+        );
+    }
+    for segment in &transcript.segments {
+        assert!(segment.start_ms < segment.end_ms, "{segment:?}");
+        assert!(
+            segment.end_ms <= length_ms + 100,
+            "{segment:?} > {length_ms} ms"
+        );
+    }
+}

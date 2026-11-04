@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use va_config::Language;
 
-use crate::{Error, Result, SpeechToText, Transcript};
+use crate::{Error, Result, Segment, SpeechToText, Transcript};
 
 /// Kolejne wywołania zwracają kolejne odpowiedzi; `Err(())` udaje błąd inferencji.
 #[derive(Clone, Default)]
@@ -43,6 +43,7 @@ impl SpeechToText for ScriptedStt {
             .push(samples.to_vec());
         match self.answers.lock().expect("odpowiedzi").pop_front() {
             Some(Ok(text)) => Ok(Transcript {
+                segments: whole_recording_segment(&text, samples.len()),
                 text,
                 inference: Duration::ZERO,
             }),
@@ -54,6 +55,18 @@ impl SpeechToText for ScriptedStt {
     fn set_language(&mut self, language: Language) {
         self.languages.lock().expect("lista języków").push(language);
     }
+}
+
+/// Atrapa nie zna granic słów: niepusty tekst to jeden segment na całe nagranie 16 kHz.
+fn whole_recording_segment(text: &str, samples: usize) -> Vec<Segment> {
+    if text.trim().is_empty() {
+        return Vec::new();
+    }
+    vec![Segment {
+        start_ms: 0,
+        end_ms: samples as u64 * 1000 / 16_000,
+        text: text.to_owned(),
+    }]
 }
 
 #[cfg(test)]

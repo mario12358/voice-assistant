@@ -284,15 +284,15 @@
 
 ### Phase 10: Tryb nagrywania spotkania (VA-CONF-1..4)
 
-- [ ] Task 10.1: `va-config`: pola `max_meeting_secs` (domyślnie 7200) i `meeting_speaker_labels` (domyślnie true), niezależne od `max_recording_secs`; README opisuje oba pola [VA-CONF-3, VA-CONF-4] (change: 2026-11-04-specky-REDTSAM.md) (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #71)
+- [x] Task 10.1: `va-config`: pola `max_meeting_secs` (domyślnie 7200) i `meeting_speaker_labels` (domyślnie true), niezależne od `max_recording_secs`; README opisuje oba pola [VA-CONF-3, VA-CONF-4] (change: 2026-11-04-specky-REDTSAM.md) (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #71)
   - Specky: (req: 01M6JR8RX0HYBEA57XWREDTSAM v1.0 @cf71279)
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — odczyt config.toml przy starcie aplikacji (startup.rs) przekazuje oba pola do kontrolera spotkania (10.6)
-- [ ] Test: 10.1 — wartości domyślne, nadpisanie z pliku, plik bez nowych pól; znaczniki crit (01M6JR8RXS6ZWMNJ6F3GJM6JM2) (change: 2026-11-04-specky-REDTSAM.md) (pr: #71)
-- [ ] Task 10.2: `va-stt`: `Transcript.segments` (start/koniec w ms + tekst) z whisper-rs po filtrach VA-STT-3; `va-audio`: `compress_pauses_mapped` zwraca mapę czasu skróconej osi na oryginalną [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md)
+- [x] Test: 10.1 — wartości domyślne, nadpisanie z pliku, plik bez nowych pól; znaczniki crit (01M6JR8RXS6ZWMNJ6F3GJM6JM2) (change: 2026-11-04-specky-REDTSAM.md) (pr: #71)
+- [ ] Task 10.2: `va-stt`: `Transcript.segments` (start/koniec w ms + tekst) z whisper-rs po filtrach VA-STT-3; `va-audio`: `compress_pauses_mapped` zwraca mapę czasu skróconej osi na oryginalną [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — transkrypcja ścieżek spotkania w kontrolerze (10.6) mapuje znaczniki segmentów na oś nagrania
-- [ ] Test: 10.2 — mapa czasu po skróceniu pauz (próbki przed/po pauzie), segmenty prawdziwego modelu speech_pl.wav rosnące i w granicach nagrania (`#[ignore]` model/GPU); crit 01M6JR8S2RWX49RC3BZ7YSK3HW (change: 2026-11-04-specky-D6FG0MQ.md)
+- [ ] Test: 10.2 — mapa czasu po skróceniu pauz (próbki przed/po pauzie), segmenty prawdziwego modelu speech_pl.wav rosnące i w granicach nagrania (`#[ignore]` model/GPU); crit 01M6JR8S2RWX49RC3BZ7YSK3HW (change: 2026-11-04-specky-D6FG0MQ.md) (pr: #72)
 - [ ] Task 10.3: `va-core::meeting::merge_tracks(mic, system, labels)` — scalanie segmentów obu ścieżek po czasie, „Ja:”/„Rozmówcy:” tylko przy zmianie mówcy, wypowiedzi w nowych liniach, pusta ścieżka bez etykiety, `labels=false` bez etykiet (requires: 10.2) [VA-CONF-4] (change: 2026-11-04-specky-D6FG0MQ.md)
   - Specky: (req: 01M6JR8S20R2A5MVXYDD6FG0MQ v1.0 @403da01)
   - AC: entry — kontroler spotkania (10.6) po transkrypcji obu ścieżek
