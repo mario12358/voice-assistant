@@ -22,8 +22,8 @@ Metal); nagranie ani tekst nie opuszczają komputera.
      **Ustawienia systemowe → Prywatność i ochrona**, przewiń do sekcji Ochrona
      i kliknij **Otwórz mimo to** przy VoiceAsystent;
    - macOS 13–14: kliknij aplikację prawym przyciskiem w Finderze → **Otwórz** → **Otwórz**.
-   Obraz zbudowany na tym samym komputerze (patrz „Budowanie ze źródeł") nie ma
-   atrybutu kwarantanny i uruchamia się bez ostrzeżenia.
+     Obraz zbudowany na tym samym komputerze (patrz „Budowanie ze źródeł") nie ma
+     atrybutu kwarantanny i uruchamia się bez ostrzeżenia.
 3. Po uruchomieniu w pasku menu (obok zegara) pojawia się **szare kółko**. Aplikacja nie
    ma okna ani ikony w Docku.
 
@@ -42,18 +42,18 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 
 ## Używanie
 
-| Działanie | Jak |
-|-----------|-----|
-| Start nagrywania | `ctrl+cmd+r` (w dowolnej aplikacji) albo kliknięcie szarego kółka |
-| Stop i transkrypcja | `ctrl+cmd+s` albo kliknięcie czerwonego kółka |
-| Wklejenie tekstu | `cmd+v` w miejscu z kursorem — schowek zawiera ostatnią transkrypcję |
-| Wcześniejsza wypowiedź | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`) |
-| Wyczyszczenie historii | prawy przycisk na ikonie → **Historia** → **Wyczyść historię** |
-| Wybór mikrofonu | prawy przycisk na ikonie → **Mikrofon** → urządzenie z listy |
-| Język i limit nagrania | prawy przycisk → **Ustawienia** → **Język** (automatycznie / polski / angielski) albo **Limit nagrania** (5–30 min); działa od następnego nagrania, bez restartu |
-| Uruchamianie przy logowaniu | prawy przycisk → **Ustawienia** → **Uruchamiaj przy logowaniu** (tylko w aplikacji z folderu Aplikacje) |
-| Logi | prawy przycisk → **Pokaż logi** (Finder; pliki starsze niż 7 dni są usuwane przy starcie) |
-| Zakończenie aplikacji | prawy przycisk na ikonie → **Zakończ** |
+| Działanie                   | Jak                                                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Start nagrywania            | `ctrl+cmd+r` (w dowolnej aplikacji) albo kliknięcie szarego kółka                                                                                                |
+| Stop i transkrypcja         | `ctrl+cmd+s` albo kliknięcie czerwonego kółka                                                                                                                    |
+| Wklejenie tekstu            | `cmd+v` w miejscu z kursorem — schowek zawiera ostatnią transkrypcję                                                                                             |
+| Wcześniejsza wypowiedź      | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`)                                                    |
+| Wyczyszczenie historii      | prawy przycisk na ikonie → **Historia** → **Wyczyść historię**                                                                                                   |
+| Wybór mikrofonu             | prawy przycisk na ikonie → **Mikrofon** → urządzenie z listy                                                                                                     |
+| Język i limit nagrania      | prawy przycisk → **Ustawienia** → **Język** (automatycznie / polski / angielski) albo **Limit nagrania** (5–30 min); działa od następnego nagrania, bez restartu |
+| Uruchamianie przy logowaniu | prawy przycisk → **Ustawienia** → **Uruchamiaj przy logowaniu** (tylko w aplikacji z folderu Aplikacje)                                                          |
+| Logi                        | prawy przycisk → **Pokaż logi** (Finder; pliki starsze niż 7 dni są usuwane przy starcie)                                                                        |
+| Zakończenie aplikacji       | prawy przycisk na ikonie → **Zakończ**                                                                                                                           |
 
 **Historia wypowiedzi.** Każda niepusta transkrypcja trafia na listę w podmenu **Historia**
 (godzina i początek tekstu, najnowsza na górze, 30 ostatnich). Lista jest zapisywana w pliku
