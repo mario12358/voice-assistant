@@ -102,6 +102,8 @@ zmianie mikrofonu; wszystkie pola są opcjonalne:
 microphone = "MacBook Pro Microphone"   # brak = mikrofon domyślny systemu
 language = "auto"                       # auto | pl | en
 max_recording_secs = 600                # limit długości nagrania (auto-Stop + powiadomienie)
+max_meeting_secs = 7200                 # limit nagrania spotkania (osobny od max_recording_secs)
+meeting_speaker_labels = true           # etykiety „Ja:” / „Rozmówcy:” w transkrypcji spotkania
 notify_on_transcript = true             # powiadomienie „Transkrypcja w schowku” z początkiem tekstu
 sound_on_transcript = false             # dźwięk systemowy po zapisie do schowka
 model_variant = "full"                  # full (1,6 GB) | q5_0 (0,6 GB) — też z menu Model
