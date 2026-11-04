@@ -2,7 +2,7 @@
 
 - **Projekt**: 01M4EJNFTHDZ3ECMHT7425APR0 (voice-assistant)
 - **since_seq**: 950
-- **Ostatnia synchronizacja**: 2026-11-04 (pozycje 948–950: akceptacja VA-CONF-1..4, wsad 01M6JR5MYW2TRS1V5MP4N0CQCG → 4 pliki telesma/changes/2026-11-04-specky-*.md; 21 `code_ready` + 4 `done` + 4 `open`)
+- **Ostatnia synchronizacja**: 2026-11-04 (pozycje 948–950: akceptacja VA-CONF-1..4, wsad 01M6JR5MYW2TRS1V5MP4N0CQCG → 4 pliki telesma/changes/2026-11-04-specky-*.md; VA-CONF-1..4 `code_ready` 2026-11-04; 25 `code_ready` + 4 `done`)
 - **Stan projektu w Specky**: 25 zaakceptowanych wymagań (12 z 2026-10-08 + 13 z 2026-10-10); wymaganie o Windows (01M4G3NMKKEBCK15MKCVXN4789) wycofane 2026-10-09 decyzją właściciela. Migawki: v0.1.0–v0.6.0.
 
 ## Mapa wymagań → zadania

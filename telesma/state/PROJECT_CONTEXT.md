@@ -115,7 +115,7 @@ Konwencje:
 <!-- rotates here. Appending more "turn of 08-19 closed" paragraphs turns this               -->
 <!-- section into a second, unbounded report in the prompt of every session.                 -->
 
-- Fazy 1–9 ukończone i otagowane (`telesma/phase-1..9`; 7–9 po zielonej regresji na main 2026-10-13 i testach ręcznych właściciela). Wersja v0.7.0 wypchnięta (wydanie z CI).
-- Faza 5.Z1 (VA-UI-1 v2, żółte kółko w trakcie transkrypcji): 5.Z1.1 zmergowane 2026-10-13 (PR #67), VA-UI-1 `code_ready`; zostało ⛔ 5.Z1.2 (test ręczny właściciela) — po nim regresja na main i tag `telesma/phase-5.Z1`
-- Następne: tylko ⛔ 5.Z1.2 (pokrywa się ze scenariuszami docs/test-scenarios/v0.8.0.md); wersja v0.8.0 utworzona 2026-10-13 (51c6e4f, migawka Specky 01M4TK6HTA9257GJR6WPTRW1F0), na razie tylko lokalnie
+- Fazy 1–9 ukończone i otagowane (`telesma/phase-1..9`). Wersja v0.7.0 wypchnięta (wydanie z CI); v0.8.0 utworzona 2026-10-13 (51c6e4f), na razie tylko lokalnie.
+- Faza 10 (tryb nagrywania spotkania, VA-CONF-1..4): 10.1–10.7 zmergowane 2026-11-04 (PR #71–#77), wymagania `code_ready`; nowy crate `va-system-audio` (jedyne `unsafe`). Zostało ⛔ 10.8 (test ręczny: Meet, zgoda TCC, 60 min) — po nim regresja na main i tag `telesma/phase-10`.
+- Faza 5.Z1: zostało ⛔ 5.Z1.2 (test ręczny żółtego kółka) — po nim regresja i tag `telesma/phase-5.Z1`.
 - Blokery: brak

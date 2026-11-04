@@ -14,9 +14,9 @@
 ## Summary
 
 - **Start**: 2026-10-08
-- **Status**: CZEKA NA CZŁOWIEKA (2026-11-04) — pętla nie ma zadań do wykonania sama. Zostaje tylko ⛔ 5.Z1.2 (test ręczny właściciela: żółte kółko w trakcie transkrypcji; scenariusze 1.1–2.2 w docs/test-scenarios/v0.8.0.md), po nim regresja na main i tag `telesma/phase-5.Z1`. Lokalny main jest 4 commity przed origin/main (stan po v0.8.0 + migracja na Telesmę + ten zapis), a wersja v0.8.0 jest tylko lokalnie — oba wymagają `git push` właściciela.
-- **Progress**: 92/108 pozycji ukończonych; czeka: ⛔ 5.Z1.2; Faza 10 (tryb spotkania, VA-CONF-1..4) zaplanowana 2026-11-04
-- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization, klient agent_interactive. Synchronizacja 2026-11-04 (kursor 746: tylko informacyjny wpis o migawce v0.8.0; kolejka pusta, 21 `code_ready` + 4 `done`). VA-UI-1 v2 `code_ready` (2026-10-13).
+- **Status**: CZEKA NA CZŁOWIEKA (2026-11-04) — Faza 10 (tryb nagrywania spotkania, VA-CONF-1..4) zaimplementowana i zmergowana (PR #70–#77), wszystkie cztery wymagania `code_ready`. Zostają testy ręczne właściciela: ⛔ 10.8 (spotkanie w Meet, zgoda TCC, 60 min) i ⛔ 5.Z1.2 (żółte kółko); po nich regresja na main i tagi `telesma/phase-10`, `telesma/phase-5.Z1`.
+- **Progress**: 106/108 pozycji ukończonych; czekają: ⛔ 5.Z1.2, ⛔ 10.8
+- Specky: pracuję jako mariusz.iskra (mariusz.iskra@gmail.com), organizacja mariusz.iskra's Organization, klient agent_interactive. Synchronizacja 2026-11-04 (kursor 950): VA-CONF-1..4 zaakceptowane na prośbę właściciela i `code_ready` (2026-11-04); 25 `code_ready` + 4 `done`.
 - Otwarte PR: brak (poza aktualizacją stanu). Faza 9: PR #49–#58 zmergowane; VA-OPS-1, VA-PERF-1, VA-UX-1, VA-STT-3, VA-SET-1, VA-SET-2, VA-MODEL-4, VA-CI-1 `code_ready` (2026-10-10). Faza 8: PR #42–#45 zmergowane; VA-MODEL-2, VA-MODEL-3 `code_ready` (2026-10-10). Faza 7: PR #33–#38 zmergowane; VA-REC-5, VA-REC-6, VA-HIST-1 `code_ready` (2026-10-10). Faza 6: VA-PLAT-2 i VA-MODEL-1 `code_ready` (2026-10-09). Faza 5 zmergowana i otagowana (`telesma/phase-5`). `code_ready`: VA-STT-2, VA-REC-1..4, VA-UI-1, VA-UI-2. Wersja v0.2.0 utworzona (migawka Specky 01M4EVJ3FKXBKZG942NG0KYFVM); VA-STT-1 `code_ready`. Blokada kontraktu Specky rozwiązana decyzją właściciela (Specky nie obsługuje Rusta — kryteria ręcznie). VA-MODEL-1 zaakceptowane. Wersja v0.1.0 utworzona (migawka Specky 01M4EP1HG6SQR1GC25CTTSJ18P). Specky 2026-10-08 (kursor 705): kolejka pusta, VA-MODEL-1 czeka na decyzję właściciela.
 
 ## Test status
@@ -34,6 +34,8 @@ is treated as a continuation of the run above it. A block without a date stays i
 forever and grows in the prompt of every session.
 -->
 
+**Preliminary run after Phase 10 (2026-11-04) — GREEN (branch zadanie-10.7-menu-spotkania, kod = main d41e56f; nie regresja fazy — czeka ⛔ 10.8):** `cargo test --workspace -- --include-ignored` 260/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 217/0: +43 testy Fazy 10 (w tym prawdziwy process tap, tor spotkania z Whisperem i scalanie ścieżek na modelu).
+
 **Przebieg przed wydaniem v0.8.0 (2026-10-13) — GREEN (main f504f30, nie regresja fazy — czeka ⛔ 5.Z1.2):** `cargo test --workspace -- --include-ignored` 217/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto. Względem 211/0: +6 testów 5.Z1.1. Wersja v0.8.0 na prośbę właściciela.
 
 **Regression after Phases 7, 8 i 9 (2026-10-13) — GREEN:** na main (3eaedc8) `cargo test --workspace -- --include-ignored` 211/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; testy ręczne ⛔ 7.7, 8.5, 9.10 właściciela OK (2026-10-13). Bez zmian liczby testów od przebiegu po 9.11. Tagi `telesma/phase-7`, `telesma/phase-8`, `telesma/phase-9`.
@@ -42,16 +44,17 @@ forever and grows in the prompt of every session.
 
 | Metric | Value |
 |---------|---------|
-| Total tests | 217 |
-| Pass | 217 |
+| Total tests | 260 |
+| Pass | 260 |
 | Fail | 0 |
 | Skip | 0 (z --include-ignored) |
-| Last run | 2026-10-13 (pełny suite na main przed v0.8.0, f504f30) |
+| Last run | 2026-11-04 (pełny suite przed testem ręcznym 10.8, kod = main d41e56f) |
 
 ## Task history
 
 | Task | Status | Tests | Tries | Commit | Time |
 |---------|--------|-------|-------|--------|------|
+| 10.7 aplikacja: „Nagrywaj spotkanie” (nieaktywne < macOS 14.2), ctrl+cmd+m, podpowiedź „Nagrywanie spotkania”, powiadomienia (odmowa zgody, stary system, limit spotkania), `NSAudioCaptureUsageDescription`, sprzątanie spool przy starcie, urządzenie tapu poza listą mikrofonów; poprawka częstotliwości tapu (zegar urządzenia) i dołączanie wątku transkrypcji + test 10.7 i test całego toru | ✅ PR #77 | 260/0 z --include-ignored; prawdziwy tor (mikrofon + tap + Whisper): afplay speech_en → „Rozmówcy: … park”; mutacje (filtr mikrofonów, blokada < 14.2) czerwone | 1 | d41e56f | 2026-11-04 |
 | 10.6 `Command::StartMeeting`/`Input::StartMeeting`, zgoda przed zmianą stanu (`MeetingDenied`), `MeetingRecording` (CpalStreamRecorder + tap → normalizacja → 2 spool, limit `max_meeting_secs`), transkrypcja obu ścieżek + `merge_tracks` w wątku roboczym; `MeetingParts` ze startu aplikacji + test 10.6 | ✅ PR #76 | 235/0; mutacje (pominięta zgoda, brak obcięcia do limitu) czerwone | 1 | e7afc09 | 2026-11-04 |
 | 10.5 crate `va-system-audio`: Core Audio process tap (globalny, prywatny, bez wyciszania) w prywatnym urządzeniu zagregowanym, zgoda TCC, macOS ≥ 14.2, `SystemAudioSource` + atrapa + test 10.5 | ✅ PR #75 | 227/0; prawdziwy tap: afplay speech_en.wav przechwycony, `system_profiler` bez nowego urządzenia; mutacja (urządzenie niepubliczne) czerwona | 1 | 262370c | 2026-11-04 |
 | 10.3 `va-core::meeting`: `transcribe_track` (cisza bez modelu, znaczniki na osi ścieżki) + `merge_tracks` („Ja:”/„Rozmówcy:” przy zmianie mówcy) + test 10.3 | ✅ PR #74 | 224/0; prawdziwy model: speech_pl 0 s + speech_en 10 s → „Ja:” potem „Rozmówcy:” i odwrotnie; mutacje (sortowanie bez czasu, etykieta przy każdym segmencie) czerwone | 1 | 6925e9a | 2026-11-04 |
