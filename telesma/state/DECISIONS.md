@@ -325,3 +325,11 @@ It is a changelog for humans, to remember "what we agreed on and why".
 **Question/context**: Właściciel polecił zrealizować tryb spotkania w Ruście według rekomendacji (izolowane unsafe zamiast pomocnika w Swifcie).
 **Outcome**: Faza 10 zaplanowana (PR #70) i zrealizowana zadaniami 10.1–10.7 (PR #71–#77): konfiguracja, znaczniki czasu segmentów, scalanie ścieżek z etykietami, plik tymczasowy, crate va-system-audio z Core Audio process tap, kontroler i aplikacja (menu, ctrl+cmd+m, zgoda, Info.plist). Pełny zestaw 260/0, w tym prawdziwy tap i cały tor z Whisperem; VA-CONF-1..4 `code_ready`. W trakcie znaleziono i naprawiono błąd częstotliwości przechwytywania (zegar urządzenia zagregowanego, 16 kHz przy słuchawkach Bluetooth). Zostaje test ręczny ⛔ 10.8.
 **Impact**: Faza 10; crates/system-audio, crates/core (meeting, meeting_capture, spool), apps/voice-asystent
+
+## 2026-11-04 09:57 — Okno „Gdzie jest use_default?” po spotkaniu
+**Kind**: bug
+**Bug source**: task 9.3
+**Detected by**: scenario
+**Question/context**: W teście ręcznym trybu spotkania po zakończeniu nagrania macOS pokazał okno wyboru aplikacji „Gdzie jest use_default?”.
+**Outcome**: Przyczyna w bibliotece mac-notification-sys: bez ustawionego nadawcy przy pierwszym powiadomieniu w procesie uruchamia AppleScript `id of application "use_default"`, a macOS nie zna takiej aplikacji. Poprawka: przy starcie aplikacja ustawia nadawcę powiadomień (io.github.mario12358.voiceasystent z bundla, Terminal przy cargo run), więc AppleScript nie rusza; test pilnuje zgodności identyfikatora z Info.plist. Według kodu okno blokuje tylko wątek powiadomienia — tekst jest już wtedy w schowku (do potwierdzenia u właściciela).
+**Impact**: apps/voice-asystent/src/messages.rs, main.rs

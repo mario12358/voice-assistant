@@ -28,6 +28,9 @@ fn main() -> anyhow::Result<()> {
         verbosity: 0,
     });
     tracing::info!(version = env!("CARGO_PKG_VERSION"), "start VoiceAsystent");
+    messages::init_notifications(
+        login_item::bundle_executable(&std::env::current_exe()?).is_some(),
+    );
     logging::prune_old_logs(&paths.logs_dir, logging::LOG_RETENTION);
     if let Err(error) = va_core::spool::remove_leftovers(&paths.data_dir) {
         tracing::warn!(%error, "sprzątanie pozostałości nagrań spotkań");
