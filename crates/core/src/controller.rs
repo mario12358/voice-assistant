@@ -19,7 +19,7 @@ use va_system_audio::Authorization;
 
 use crate::history::{History, HistoryEntry};
 use crate::logging;
-use crate::meeting::{merge_tracks, transcribe_track};
+use crate::meeting::{format_transcript, transcribe_turns};
 use crate::meeting_capture::{MeetingAudio, MeetingParts, MeetingRecording};
 use crate::state::{Action, Input, State, StateMachine};
 
@@ -520,8 +520,9 @@ fn transcribe_and_deliver(
     }
 }
 
-/// Spotkanie: każda ścieżka osobno przez model, wynik scalony po czasie z etykietami mówców.
-/// `audio` jest zwalniane na końcu, więc pliki tymczasowe znikają także po błędzie.
+/// Spotkanie: tury mówców z sygnału obu ścieżek, każda tura osobno przez model, wynik
+/// w kolejności tur z etykietami. `audio` jest zwalniane na końcu, więc pliki tymczasowe
+/// znikają także po błędzie.
 fn transcribe_meeting(
     stt: &mut dyn SpeechToText,
     sink: &mut dyn TextSink,
@@ -532,21 +533,19 @@ fn transcribe_meeting(
     let _span = tracing::info_span!("meeting_transcription").entered();
     let started = Instant::now();
     let microphone = audio.microphone.read().map_err(|error| error.to_string())?;
-    let mut segments = transcribe_track(stt, &microphone, silence).map_err(|e| e.to_string())?;
-    drop(microphone);
     let system = audio.system.read().map_err(|error| error.to_string())?;
-    let system_segments = transcribe_track(stt, &system, silence).map_err(|e| e.to_string())?;
-    let text = merge_tracks(&segments, &system_segments, labels);
+    let spoken = transcribe_turns(stt, &microphone, &system, silence).map_err(|e| e.to_string())?;
+    tracing::info!(turns = spoken.len(), "tury spotkania przetranskrybowane");
+    let text = format_transcript(&spoken, labels);
     if text.is_empty() {
         tracing::info!("spotkanie bez mowy — bez zmiany schowka");
         return Ok(None);
     }
-    segments.extend(system_segments);
     match sink.deliver(&text).map_err(|error| error.to_string())? {
         Delivery::Written => Ok(Some(Transcript {
             text,
             inference: started.elapsed(),
-            segments,
+            segments: Vec::new(),
         })),
         Delivery::SkippedEmpty => Ok(None),
     }
