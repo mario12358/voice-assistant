@@ -15,7 +15,7 @@ use va_core::controller::{
 use va_core::history::HistoryEntry;
 use va_core::state::State;
 
-use crate::click::command_for;
+use crate::click::{command_for, toggle_command};
 use crate::download::{DownloadEvent, DownloadState};
 use crate::history_menu::command_from_menu_id;
 use crate::hotkeys::Hotkeys;
@@ -30,7 +30,7 @@ use crate::model_menu::{
 };
 use crate::settings_menu::{SettingChange, change_from_menu_id, save_change, settings_menu};
 use crate::startup::{ModelDownload, variant_info};
-use crate::tray_menu::{MEETING_ID, RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
+use crate::tray_menu::{MEETING_ID, RECORD_ID, RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
 use va_model::{ModelStore, spec_for};
 
 enum UserEvent {
@@ -145,6 +145,7 @@ pub fn run(
                     }
                     if let Some((icon, menu)) = &tray {
                         show(icon, indicator_for(*state));
+                        menu.show_record(*state);
                         show_model(
                             menu,
                             &model_info,
@@ -236,6 +237,15 @@ pub fn run(
                 }
                 if id == QUIT_ID {
                     *control_flow = ControlFlow::Exit;
+                } else if id == RECORD_ID {
+                    if let Some(command) = toggle_command(shown) {
+                        send(
+                            controller.as_ref(),
+                            &download_state,
+                            unavailable.as_ref(),
+                            command,
+                        );
+                    }
                 } else if id == MEETING_ID {
                     if meeting_gate(Command::StartMeeting, meeting_supported) {
                         send(

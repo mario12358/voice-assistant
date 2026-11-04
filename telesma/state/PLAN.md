@@ -318,6 +318,12 @@
 - [x] Test: 10.7 — mapowanie skrótu ctrl+cmd+m i pozycji menu na StartMeeting, podpowiedź ikony w trybie spotkania, menu nieaktywne poniżej 14.2, teksty powiadomień, Info.plist z opisem zgody (test bundla); crit 01M6JR8RG2PENSS9E2MSPDRJJZ, 01M6JR8RQV0R34CBNZ28FGHX6V, 01M6JR8RQV1RJ5S8KZ4BFWKVHE (change: 2026-11-04-specky-YMXASGG.md) (pr: #77)
 - [ ] ⛔ Task 10.8: Test manualny właściciela: zgoda TCC i odmowa, rozmowa w Meet (rozmówca słyszy), afplay przy wyciszonym mikrofonie, wyjście audio bez zmian, 60 min (pamięć, czas), etykiety mówców — wynik do REPORT.md (requires: 10.7) (change: 2026-11-04-specky-YMXASGG.md)
 
+### Phase 10.Z1: Pozycja „Nagrywaj notatkę” w menu (VA-UI-3)
+
+- [x] Task 10.Z1.1: pozycja `RECORD_ID` na górze menu: w Idle/Error „Nagrywaj notatkę (ctrl+cmd+r)” → Start, w Recording (notatka albo spotkanie) „Zakończ nagrywanie (ctrl+cmd+s)” → Stop, w Transcribing nieaktywna; wspólne `toggle_command` z kliknięciem kółka (requires: 10.7) [VA-UI-3] (pr: #81)
+  - Specky: (req: 01M6K40BQ03BJX07CSSDXZC0PS v1 @3f3f721)
+- [x] Test: 10.Z1.1 — `record_item` i `toggle_command` dla wszystkich stanów; crit 01M6K40BQPBC84MXK5F8SKZZEF, 01M6K40BQP3T8YDHCDHZV9FRCT, 01M6K40BQQFRKWNBHF8QB1EJGJ (pr: #81)
+
 ## Spec coverage
 
 Źródłem wymagań jest Specky (projekt 01M4EJNFTHDZ3ECMHT7425APR0). `telesma/spec/` zawiera tylko WYTYCZNE_TECHNICZNE.md (Rust, large-v3-turbo, tylko GPU) i niewypełnione szablony.
@@ -336,6 +342,7 @@
 | VA-MODEL-1 | model pobierany po instalacji, SHA-256, wznawianie, potem zero ruchu sieciowego | 3.2, 5.6, 6.1, 6.2 |
 | VA-UI-1 | ikona szare/czerwone/żółte (transkrypcja) kółko | 5.1, 5.Z1.1, 5.Z1.2 |
 | VA-UI-2 | klik ikony start/stop | 4.2, 5.2 |
+| VA-UI-3 | pozycja menu „Nagrywaj notatkę” / „Zakończ nagrywanie” | 10.Z1.1 |
 | VA-HIST-1 | historia wypowiedzi: podmenu „Historia”, kopiowanie, zapis na dysku, wyczyść | 7.5, 7.6, 7.7 |
 | VA-REC-5 | skracanie pauz wewnętrznych > 1,5 s do 0,5 s przed transkrypcją | 7.1, 7.2, 7.7 |
 | VA-REC-6 | limit nagrania 600 s, auto-Stop z transkrypcją, powiadomienie | 7.3, 7.4, 7.7 |

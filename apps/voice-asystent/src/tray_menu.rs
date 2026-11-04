@@ -1,4 +1,5 @@
-//! Menu pod prawym kliknięciem: podmenu „Historia”, „Model”, „Mikrofon” i „Zakończ”.
+//! Menu pod prawym kliknięciem: „Nagrywaj notatkę”, „Nagrywaj spotkanie”, podmenu „Historia”,
+//! „Model”, „Mikrofon” i „Zakończ”.
 
 use std::path::PathBuf;
 
@@ -7,6 +8,7 @@ use tray_icon::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu
 use va_audio::{AudioHost, CpalHost};
 use va_config::Config;
 use va_core::history::HistoryEntry;
+use va_core::state::State;
 
 use crate::download::DownloadState;
 use crate::history_menu::{CLEAR_HISTORY_ID, history_items};
@@ -21,12 +23,15 @@ use crate::messages::MEETING_UNSUPPORTED;
 use crate::settings_menu::{SettingsMenu, settings_menu};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
+/// „Nagrywaj notatkę” / „Zakończ nagrywanie” (VA-UI-3).
+pub const RECORD_ID: &str = "record-note";
 /// „Nagrywaj spotkanie” (VA-CONF-1).
 pub const MEETING_ID: &str = "record-meeting";
 pub const SHOW_LOGS_ID: &str = "show-logs";
 
 pub struct TrayMenu {
     pub menu: Menu,
+    record: MenuItem,
     history: Submenu,
     model: Submenu,
     microphones: Submenu,
@@ -35,6 +40,16 @@ pub struct TrayMenu {
     login_item: CheckMenuItem,
     config_path: PathBuf,
     download: Option<(MenuItem, MenuItem)>,
+}
+
+/// Pozycja nagrania (VA-UI-3): etykieta i czy aktywna w danym stanie. W trakcie nagrania —
+/// notatki albo spotkania — kończy je; w trakcie transkrypcji nieaktywna.
+pub fn record_item(shown: State) -> (&'static str, bool) {
+    match shown {
+        State::Recording => ("Zakończ nagrywanie (ctrl+cmd+s)", true),
+        State::Transcribing => ("Nagrywaj notatkę (ctrl+cmd+r)", false),
+        State::Idle | State::Error => ("Nagrywaj notatkę (ctrl+cmd+r)", true),
+    }
 }
 
 /// Etykieta pozycji spotkania; na zbyt starym systemie z podpowiedzią, dlaczego nieaktywna.
@@ -75,6 +90,8 @@ impl TrayMenu {
             .context("podmenu Ustawienia")?;
         let show_logs = MenuItem::with_id(SHOW_LOGS_ID, "Pokaż logi", true, None);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
+        let (record_label, record_enabled) = record_item(State::Idle);
+        let record = MenuItem::with_id(RECORD_ID, record_label, record_enabled, None);
         let meeting = MenuItem::with_id(
             MEETING_ID,
             meeting_label(meeting_supported),
@@ -83,6 +100,7 @@ impl TrayMenu {
         );
         let menu = Menu::new();
         menu.append_items(&[
+            &record,
             &meeting,
             &PredefinedMenuItem::separator(),
             &history,
@@ -96,6 +114,7 @@ impl TrayMenu {
         .context("menu ikony")?;
         let tray_menu = Self {
             menu,
+            record,
             history,
             model,
             microphones,
@@ -111,6 +130,13 @@ impl TrayMenu {
             &Config::load_or_default(&tray_menu.config_path).0,
         ));
         Ok(tray_menu)
+    }
+
+    /// Pozycja nagrania zgodna ze stanem, który pokazuje ikona (VA-UI-3).
+    pub fn show_record(&self, shown: State) {
+        let (label, enabled) = record_item(shown);
+        self.record.set_text(label);
+        self.record.set_enabled(enabled);
     }
 
     /// Zaznaczenie „Uruchamiaj przy logowaniu” zgodne ze stanem pliku LaunchAgent.
@@ -285,5 +311,41 @@ impl TrayMenu {
                 tracing::error!(%error, "pozycja mikrofonu w menu");
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use va_core::controller::Command;
+
+    use super::*;
+    use crate::click::toggle_command;
+
+    #[test]
+    // specky: crit 01M6K40BQPBC84MXK5F8SKZZEF
+    fn idle_menu_offers_a_note_recording_that_starts_the_microphone() {
+        assert_eq!(
+            record_item(State::Idle),
+            ("Nagrywaj notatkę (ctrl+cmd+r)", true)
+        );
+        assert_eq!(toggle_command(State::Idle), Some(Command::Start));
+        assert_eq!(toggle_command(State::Error), Some(Command::Start));
+    }
+
+    #[test]
+    // specky: crit 01M6K40BQP3T8YDHCDHZV9FRCT
+    fn during_recording_the_item_stops_it() {
+        assert_eq!(
+            record_item(State::Recording),
+            ("Zakończ nagrywanie (ctrl+cmd+s)", true)
+        );
+        assert_eq!(toggle_command(State::Recording), Some(Command::Stop));
+    }
+
+    #[test]
+    // specky: crit 01M6K40BQQFRKWNBHF8QB1EJGJ
+    fn during_transcription_the_item_is_inactive() {
+        assert!(!record_item(State::Transcribing).1);
+        assert_eq!(toggle_command(State::Transcribing), None);
     }
 }

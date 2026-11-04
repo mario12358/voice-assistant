@@ -349,3 +349,8 @@ It is a changelog for humans, to remember "what we agreed on and why".
 **Question/context**: Właściciel zgodził się na poprawkę kolejności wypowiedzi w transkrypcji spotkania.
 **Outcome**: Ustaliliśmy i wprowadziliśmy: tury mówców wyznaczane z detekcji mowy na obu ścieżkach (czas z sygnału, przerwa < 0,4 s nie dzieli odcinka), kolejne odcinki tego samego mówcy łączone w turę, każda tura transkrybowana osobno, wynik w kolejności tur. Znaczniki segmentów Whispera nie decydują już o kolejności; mapa czasu po skróceniu pauz (10.2) usunięta. Sztuczna rozmowa z 6 naprzemiennymi wypowiedziami (tests/fixtures/dialogue_*.wav) jako test z prawdziwym modelem — przechodzi; pełny zestaw 263/0. Koszt: jedno wywołanie modelu na turę.
 **Impact**: crates/core/src/meeting.rs, crates/audio/src/silence.rs (speech_regions), VA-CONF-4
+
+## 2026-11-04 — VA-UI-3: „Nagrywaj notatkę” w menu
+- Właściciel (test Meet): kolejność wypowiedzi poprawna; brak w menu standardowego nagrania solo. Propozycja VA-UI-3 w Specky, zaakceptowana na wyraźną prośbę („zaakceptuj”).
+- Jedna pozycja przełączana stanem (Start / Zakończ / nieaktywna), logika wspólna z kliknięciem kółka (`click::toggle_command`).
+- Pierwsza linia „Rozmówcy: Dziękuje za oglądanie!” — halucynacja Whispera na krótkim dźwięku bez mowy; poprawka zaproponowana właścicielowi, czeka na decyzję.
