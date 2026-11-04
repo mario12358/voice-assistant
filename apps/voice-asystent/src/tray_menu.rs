@@ -17,9 +17,12 @@ use crate::model_menu::{
 };
 
 use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
+use crate::messages::MEETING_UNSUPPORTED;
 use crate::settings_menu::{SettingsMenu, settings_menu};
 
 pub const RETRY_DOWNLOAD_ID: &str = "retry-download";
+/// „Nagrywaj spotkanie” (VA-CONF-1).
+pub const MEETING_ID: &str = "record-meeting";
 pub const SHOW_LOGS_ID: &str = "show-logs";
 
 pub struct TrayMenu {
@@ -34,8 +37,21 @@ pub struct TrayMenu {
     download: Option<(MenuItem, MenuItem)>,
 }
 
+/// Etykieta pozycji spotkania; na zbyt starym systemie z podpowiedzią, dlaczego nieaktywna.
+pub fn meeting_label(supported: bool) -> String {
+    if supported {
+        "Nagrywaj spotkanie (ctrl+cmd+m)".to_owned()
+    } else {
+        format!("Nagrywaj spotkanie — {MEETING_UNSUPPORTED}")
+    }
+}
+
 impl TrayMenu {
-    pub fn new(config_path: PathBuf, login: &LoginItem) -> anyhow::Result<Self> {
+    pub fn new(
+        config_path: PathBuf,
+        login: &LoginItem,
+        meeting_supported: bool,
+    ) -> anyhow::Result<Self> {
         let history = Submenu::new("Historia", true);
         let model = Submenu::new("Model", true);
         let microphones = Submenu::new("Mikrofon", true);
@@ -59,8 +75,16 @@ impl TrayMenu {
             .context("podmenu Ustawienia")?;
         let show_logs = MenuItem::with_id(SHOW_LOGS_ID, "Pokaż logi", true, None);
         let quit = MenuItem::with_id(QUIT_ID, "Zakończ", true, None);
+        let meeting = MenuItem::with_id(
+            MEETING_ID,
+            meeting_label(meeting_supported),
+            meeting_supported,
+            None,
+        );
         let menu = Menu::new();
         menu.append_items(&[
+            &meeting,
+            &PredefinedMenuItem::separator(),
             &history,
             &model,
             &microphones,

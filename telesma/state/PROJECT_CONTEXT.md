@@ -97,6 +97,7 @@ Konwencje:
 | Kontrola `testy/kod-bez-testu` nie widzi testów Rusta w `#[cfg(test)] mod tests` tego samego pliku | ostrzeżenie do odnotowania w REPORT, nie do „naprawy” przenoszeniem testów |
 | Mutacje budowane w osobnym `CARGO_TARGET_DIR` (scratchpad) zjadają GB dysku | po serii mutacji `cargo clean --target-dir <scratchpad>/target`; pilnuj `df -h` |
 | Prywatne urządzenie zagregowane tapu (VA-CONF-2) jest niewidoczne dla innych aplikacji, ale widzi je proces, który je utworzył (cpal w tym samym procesie) | test „brak nowego urządzenia” sprawdza listę z osobnego procesu (`system_profiler`); lista mikrofonów w menu musi pomijać urządzenie „VoiceAsystent — spotkanie” (10.7) |
+| Process tap: blok IO urządzenia zagregowanego dostaje próbki w częstotliwości zegara urządzenia (wyjście systemowe, np. 16 kHz słuchawek Bluetooth), nie w tej z `kAudioTapPropertyFormat` | częstotliwość z `kAudioDevicePropertyNominalSampleRate` urządzenia; test `process_tap` sprawdza długość przechwycenia → guard: process_tap (3,4–6 s) |
 | Kontrola hooka odrzuca komendę, w której przed `git commit` stoi zapis plików | zapis plików i `git add && git commit` zawsze osobnymi wywołaniami |
 
 ## Component dependencies

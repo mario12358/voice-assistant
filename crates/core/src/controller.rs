@@ -401,8 +401,20 @@ fn has_no_signal(samples: &[f32]) -> bool {
 }
 
 /// Wątek roboczy z modelem i schowkiem: nagranie → tekst → schowek, albo gotowy tekst → schowek.
+/// Zniszczenie czeka na koniec wątku, więc model (zasoby Metal) jest zwalniany przed wyjściem
+/// z procesu, a nie w jego trakcie.
 struct TranscriptionWorker {
-    jobs: Sender<Job>,
+    jobs: Option<Sender<Job>>,
+    thread: Option<JoinHandle<()>>,
+}
+
+impl Drop for TranscriptionWorker {
+    fn drop(&mut self) {
+        self.jobs = None;
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
+    }
 }
 
 enum Job {
@@ -426,7 +438,7 @@ impl TranscriptionWorker {
         results: Sender<Message>,
     ) -> Self {
         let (jobs, queue) = mpsc::channel::<Job>();
-        std::thread::Builder::new()
+        let thread = std::thread::Builder::new()
             .name("va-transcription".into())
             .spawn(move || {
                 for job in queue {
@@ -458,23 +470,32 @@ impl TranscriptionWorker {
                 }
             })
             .expect("wątek transkrypcji");
-        Self { jobs }
+        Self {
+            jobs: Some(jobs),
+            thread: Some(thread),
+        }
+    }
+
+    fn submit(&self, job: Job) {
+        if let Some(jobs) = &self.jobs {
+            let _ = jobs.send(job);
+        }
     }
 
     fn transcribe(&self, speech: Vec<f32>) {
-        let _ = self.jobs.send(Job::Transcribe(speech));
+        self.submit(Job::Transcribe(speech));
     }
 
     fn transcribe_meeting(&self, audio: MeetingAudio, labels: bool) {
-        let _ = self.jobs.send(Job::TranscribeMeeting { audio, labels });
+        self.submit(Job::TranscribeMeeting { audio, labels });
     }
 
     fn set_language(&self, language: Language) {
-        let _ = self.jobs.send(Job::SetLanguage(language));
+        self.submit(Job::SetLanguage(language));
     }
 
     fn deliver(&self, text: String) {
-        let _ = self.jobs.send(Job::Deliver(text));
+        self.submit(Job::Deliver(text));
     }
 }
 

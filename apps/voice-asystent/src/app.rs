@@ -19,7 +19,7 @@ use crate::click::command_for;
 use crate::download::{DownloadEvent, DownloadState};
 use crate::history_menu::command_from_menu_id;
 use crate::hotkeys::Hotkeys;
-use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for};
+use crate::indicator::{ICON_PIXELS, Indicator, dot_rgba, indicator_for, meeting_indicator};
 use crate::login_item::{LOGIN_ITEM_ID, LoginItem};
 use crate::messages::{Problem, ReadySignal, menu_notice, notify, signal_ready};
 use crate::microphones::{QUIT_ID, microphone_from_menu_id, select_microphone};
@@ -30,7 +30,7 @@ use crate::model_menu::{
 };
 use crate::settings_menu::{SettingChange, change_from_menu_id, save_change, settings_menu};
 use crate::startup::{ModelDownload, variant_info};
-use crate::tray_menu::{RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
+use crate::tray_menu::{MEETING_ID, RETRY_DOWNLOAD_ID, SHOW_LOGS_ID, TrayMenu};
 use va_model::{ModelStore, spec_for};
 
 enum UserEvent {
@@ -47,8 +47,19 @@ pub struct AppSettings {
     pub config_path: PathBuf,
     pub logs_dir: PathBuf,
     pub recording_limit_secs: u32,
+    /// Limit nagrania spotkania (`max_meeting_secs`) — do treści powiadomienia o limicie.
+    pub meeting_limit_secs: u32,
+    /// macOS ma Core Audio process tap (≥ 14.2) — inaczej tryb spotkania jest nieaktywny.
+    pub meeting_supported: bool,
     pub ready_signal: ReadySignal,
     pub login: LoginItem,
+}
+
+/// Który limit obowiązuje trwające nagranie — od niego zależy treść powiadomienia.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ActiveLimit {
+    Recording(u32),
+    Meeting(u32),
 }
 
 /// `download` = zadanie pobierania, jeśli w ogóle możliwe (GPU, magazyn domyślny);
@@ -64,6 +75,8 @@ pub fn run(
         config_path,
         logs_dir,
         mut recording_limit_secs,
+        meeting_limit_secs,
+        meeting_supported,
         ready_signal,
         login,
     } = settings;
@@ -89,12 +102,13 @@ pub fn run(
     let mut remove_prompt = RemovePrompt::default();
     let mut tray: Option<(TrayIcon, TrayMenu)> = None;
     let mut shown = State::Idle;
+    let mut meeting_active = false;
     let mut history: Vec<HistoryEntry> = Vec::new();
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
         match event {
             Event::NewEvents(StartCause::Init) => {
-                match build_tray(State::Idle, &config_path, &login) {
+                match build_tray(State::Idle, &config_path, &login, meeting_supported) {
                     Ok(mut built) => {
                         if let Some(problem) = &hotkeys_problem {
                             tracing::error!(%problem, "rejestracja skrótów");
@@ -126,6 +140,9 @@ pub fn run(
             Event::UserEvent(UserEvent::Controller(event)) => {
                 if let ControllerEvent::StateChanged(state) = &event {
                     shown = *state;
+                    if *state != State::Recording {
+                        meeting_active = false;
+                    }
                     if let Some((icon, menu)) = &tray {
                         show(icon, indicator_for(*state));
                         show_model(
@@ -144,7 +161,18 @@ pub fn run(
                         menu.show_history(&history);
                     }
                 }
-                if let Some(problem) = problem_for(&event, recording_limit_secs) {
+                if event == ControllerEvent::MeetingRecording {
+                    meeting_active = true;
+                    if let Some((icon, _)) = &tray {
+                        show(icon, meeting_indicator());
+                    }
+                }
+                let limit = if meeting_active {
+                    ActiveLimit::Meeting(meeting_limit_secs)
+                } else {
+                    ActiveLimit::Recording(recording_limit_secs)
+                };
+                if let Some(problem) = problem_for(&event, limit) {
                     notify(&problem);
                 }
                 if let Some(preview) = ready_preview(&event, ready_signal) {
@@ -169,7 +197,9 @@ pub fn run(
             }
             Event::UserEvent(UserEvent::Hotkey(event)) => {
                 let _keep_registered = &hotkey_manager;
-                if let Some(command) = hotkeys.command_for(&event) {
+                if let Some(command) = hotkeys.command_for(&event)
+                    && meeting_gate(command, meeting_supported)
+                {
                     send(
                         controller.as_ref(),
                         &download_state,
@@ -206,6 +236,15 @@ pub fn run(
                 }
                 if id == QUIT_ID {
                     *control_flow = ControlFlow::Exit;
+                } else if id == MEETING_ID {
+                    if meeting_gate(Command::StartMeeting, meeting_supported) {
+                        send(
+                            controller.as_ref(),
+                            &download_state,
+                            unavailable.as_ref(),
+                            Command::StartMeeting,
+                        );
+                    }
                 } else if id == RETRY_DOWNLOAD_ID || id == REDOWNLOAD_MODEL_ID {
                     let before = download_state.clone();
                     download_state = before.clone().next(DownloadEvent::Retry);
@@ -343,19 +382,20 @@ pub fn run(
 }
 
 /// Które zdarzenia kontrolera kończą się powiadomieniem dla użytkownika.
-fn problem_for(event: &ControllerEvent, recording_limit_secs: u32) -> Option<Problem> {
+fn problem_for(event: &ControllerEvent, limit: ActiveLimit) -> Option<Problem> {
     match event {
         ControllerEvent::NoSignal => Some(Problem::MicrophoneSilent),
         ControllerEvent::Failed(reason) => Some(Problem::RecordingFailed(reason.clone())),
-        ControllerEvent::LimitReached => Some(Problem::RecordingLimitReached {
-            limit_secs: recording_limit_secs,
+        ControllerEvent::LimitReached => Some(match limit {
+            ActiveLimit::Recording(limit_secs) => Problem::RecordingLimitReached { limit_secs },
+            ActiveLimit::Meeting(limit_secs) => Problem::MeetingLimitReached { limit_secs },
         }),
+        ControllerEvent::MeetingDenied => Some(Problem::MeetingDenied),
         ControllerEvent::StateChanged(_)
         | ControllerEvent::Delivered(_)
         | ControllerEvent::HistoryChanged(_)
         | ControllerEvent::TranscriptReady(_)
-        | ControllerEvent::MeetingRecording
-        | ControllerEvent::MeetingDenied => None,
+        | ControllerEvent::MeetingRecording => None,
     }
 }
 
@@ -433,21 +473,35 @@ fn spawn_download(job: ModelDownload, proxy: EventLoopProxy<UserEvent>) {
 }
 
 /// Start/Stop: przy pobieraniu modelu i bez kontrolera — komunikat zamiast nagrania.
+/// Na macOS bez process tap skrót i menu spotkania tylko informują (VA-CONF-2); `true` = wyślij.
+fn meeting_gate(command: Command, meeting_supported: bool) -> bool {
+    match meeting_blocked(command, meeting_supported) {
+        Some(problem) => {
+            notify(&problem);
+            false
+        }
+        None => true,
+    }
+}
+
+fn meeting_blocked(command: Command, meeting_supported: bool) -> Option<Problem> {
+    (command == Command::StartMeeting && !meeting_supported).then_some(Problem::MeetingUnsupported)
+}
+
 fn send(
     controller: Option<&ControllerHandle>,
     download: &DownloadState,
     unavailable: Option<&Problem>,
     command: Command,
 ) {
-    if command == Command::Start
-        && let Some(message) = download.blocks_recording()
-    {
+    let starts = matches!(command, Command::Start | Command::StartMeeting);
+    if starts && let Some(message) = download.blocks_recording() {
         notify(&Problem::ModelNotReady(message));
         return;
     }
     match (controller, unavailable) {
         (Some(controller), _) => controller.send(command),
-        (None, Some(problem)) if command == Command::Start => notify(problem),
+        (None, Some(problem)) if starts => notify(problem),
         (None, _) => tracing::warn!(?command, "nagrywanie niedostępne"),
     }
 }
@@ -532,9 +586,10 @@ fn build_tray(
     state: State,
     config_path: &Path,
     login: &LoginItem,
+    meeting_supported: bool,
 ) -> anyhow::Result<(TrayIcon, TrayMenu)> {
     let indicator = indicator_for(state);
-    let menu = TrayMenu::new(config_path.to_owned(), login)?;
+    let menu = TrayMenu::new(config_path.to_owned(), login, meeting_supported)?;
     let icon = TrayIconBuilder::new()
         .with_icon(icon(indicator)?)
         .with_tooltip(indicator.tooltip)
@@ -571,8 +626,44 @@ mod tests {
     // specky: crit 01M4K06AY6B3424GJDBAQQK3WY
     fn limit_reached_event_becomes_a_notification_with_configured_limit() {
         assert_eq!(
-            problem_for(&ControllerEvent::LimitReached, 600),
+            problem_for(&ControllerEvent::LimitReached, ActiveLimit::Recording(600)),
             Some(Problem::RecordingLimitReached { limit_secs: 600 })
+        );
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RXSA5K1J1JTN5Q1GED2
+    fn meeting_limit_notification_names_the_meeting_limit() {
+        assert_eq!(
+            problem_for(&ControllerEvent::LimitReached, ActiveLimit::Meeting(7200)),
+            Some(Problem::MeetingLimitReached { limit_secs: 7200 })
+        );
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RQVZ2YBPQM5M57YKV2S
+    fn denied_system_audio_permission_is_reported_to_the_user() {
+        assert_eq!(
+            problem_for(&ControllerEvent::MeetingDenied, ActiveLimit::Recording(600)),
+            Some(Problem::MeetingDenied)
+        );
+        assert_eq!(
+            problem_for(
+                &ControllerEvent::MeetingRecording,
+                ActiveLimit::Meeting(7200)
+            ),
+            None
+        );
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RQV1RJ5S8KZ4BFWKVHE
+    fn meeting_command_is_blocked_on_unsupported_macos() {
+        assert_eq!(meeting_blocked(Command::StartMeeting, true), None);
+        assert_eq!(meeting_blocked(Command::Start, false), None);
+        assert_eq!(
+            meeting_blocked(Command::StartMeeting, false),
+            Some(Problem::MeetingUnsupported)
         );
     }
 
@@ -589,7 +680,11 @@ mod tests {
         let preview = ready_preview(&event, NOTIFY_ONLY).expect("sygnał gotowe");
 
         assert_eq!(preview.text(), "Gotowy tekst.");
-        assert_eq!(problem_for(&event, 600), None, "to nie jest problem");
+        assert_eq!(
+            problem_for(&event, ActiveLimit::Recording(600)),
+            None,
+            "to nie jest problem"
+        );
     }
 
     #[test]
@@ -627,15 +722,21 @@ mod tests {
     #[test]
     fn state_and_delivery_events_do_not_notify() {
         assert_eq!(
-            problem_for(&ControllerEvent::StateChanged(State::Recording), 600),
+            problem_for(
+                &ControllerEvent::StateChanged(State::Recording),
+                ActiveLimit::Recording(600)
+            ),
             None
         );
         assert_eq!(
-            problem_for(&ControllerEvent::Delivered(Delivery::Written), 600),
+            problem_for(
+                &ControllerEvent::Delivered(Delivery::Written),
+                ActiveLimit::Recording(600)
+            ),
             None
         );
         assert_eq!(
-            problem_for(&ControllerEvent::NoSignal, 600),
+            problem_for(&ControllerEvent::NoSignal, ActiveLimit::Recording(600)),
             Some(Problem::MicrophoneSilent)
         );
     }

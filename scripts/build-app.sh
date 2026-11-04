@@ -86,6 +86,8 @@ cat > "$CONTENTS/Info.plist" <<PLIST
 	<true/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>W trybie spotkania VoiceAsystent nagrywa dźwięk odtwarzany przez komputer (głosy rozmówców), aby zamienić rozmowę na tekst w schowku. Nagranie nie opuszcza tego komputera.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>VoiceAsystent nagrywa Twój głos z mikrofonu, aby zamienić go na tekst i skopiować do schowka. Nagranie nie opuszcza tego komputera.</string>
 </dict>

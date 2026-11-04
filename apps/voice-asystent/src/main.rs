@@ -29,6 +29,9 @@ fn main() -> anyhow::Result<()> {
     });
     tracing::info!(version = env!("CARGO_PKG_VERSION"), "start VoiceAsystent");
     logging::prune_old_logs(&paths.logs_dir, logging::LOG_RETENTION);
+    if let Err(error) = va_core::spool::remove_leftovers(&paths.data_dir) {
+        tracing::warn!(%error, "sprzątanie pozostałości nagrań spotkań");
+    }
     let (config, config_error) = Config::load_or_default(&paths.config_file);
     if let Some(error) = config_error {
         tracing::warn!(%error, "używam ustawień domyślnych");
@@ -54,6 +57,8 @@ fn main() -> anyhow::Result<()> {
             config_path: paths.config_file,
             logs_dir: paths.logs_dir,
             recording_limit_secs: config.max_recording_secs,
+            meeting_limit_secs: config.max_meeting_secs,
+            meeting_supported: va_system_audio::os_supports_process_tap(),
             ready_signal: messages::ReadySignal {
                 notify: config.notify_on_transcript,
                 sound: config.sound_on_transcript,

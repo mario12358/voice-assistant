@@ -111,6 +111,17 @@ fn info_plist_describes_menu_bar_app_with_microphone_usage() {
 }
 
 #[test]
+// specky: crit 01M6JR8RQV0R34CBNZ28FGHX6V
+fn info_plist_describes_system_audio_capture_for_meetings() {
+    let capture = plist_value("NSAudioCaptureUsageDescription");
+
+    assert!(
+        capture.contains("spotkania") && capture.contains("rozmówców"),
+        "opis zgody na dźwięk systemowy po polsku: {capture}"
+    );
+}
+
+#[test]
 fn bundle_contains_no_model_file() {
     let mut files = Vec::new();
     files_under(bundled_app(), &mut files);
