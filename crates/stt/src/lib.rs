@@ -15,6 +15,16 @@ pub use whisper::{DECODING, DecodingSettings, WhisperStt};
 pub struct Transcript {
     pub text: String,
     pub inference: Duration,
+    /// Zachowane segmenty (po filtrach) ze znacznikami czasu względem początku nagrania.
+    pub segments: Vec<Segment>,
+}
+
+/// Fragment transkrypcji z czasem w milisekundach od początku przekazanego nagrania.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Segment {
+    pub start_ms: u64,
+    pub end_ms: u64,
+    pub text: String,
 }
 
 /// Zamiana nagrania 16 kHz mono f32 na tekst.

@@ -52,6 +52,7 @@ forever and grows in the prompt of every session.
 
 | Task | Status | Tests | Tries | Commit | Time |
 |---------|--------|-------|-------|--------|------|
+| 10.1 `max_meeting_secs` (7200) i `meeting_speaker_labels` (true) w `va-config`, README + test 10.1 | ✅ PR #71 | 206/0; mutacja domyślnego limitu 7200 → 600 czerwona | 1 | 067a75d | 2026-11-04 |
 | 5.Z1.1 `Dot::Yellow` w Transcribing (systemowy żółty 255/204/0), szare po zapisie do schowka / ciszy / błędzie; testy kolejności zdarzeń i Startu w trakcie transkrypcji (atrapa STT z bramką) + test 5.Z1.1 | ✅ PR #67 | 203/0 + 14 ignored; CI zielone; 3 mutacje czerwone | 1 | 206955a | 2026-10-13 |
 | 7.7 Test ręczny właściciela (historia, pauzy, limit) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
 | 8.5 Test ręczny właściciela (podmenu Model, usuwanie, pobieranie, model_path) | ✅ | ręcznie OK | 1 | — | 2026-10-13 |
