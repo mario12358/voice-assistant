@@ -353,7 +353,9 @@ fn problem_for(event: &ControllerEvent, recording_limit_secs: u32) -> Option<Pro
         ControllerEvent::StateChanged(_)
         | ControllerEvent::Delivered(_)
         | ControllerEvent::HistoryChanged(_)
-        | ControllerEvent::TranscriptReady(_) => None,
+        | ControllerEvent::TranscriptReady(_)
+        | ControllerEvent::MeetingRecording
+        | ControllerEvent::MeetingDenied => None,
     }
 }
 
@@ -376,6 +378,8 @@ fn event_kind(event: &ControllerEvent) -> &'static str {
         ControllerEvent::LimitReached => "LimitReached",
         ControllerEvent::HistoryChanged(_) => "HistoryChanged",
         ControllerEvent::TranscriptReady(_) => "TranscriptReady",
+        ControllerEvent::MeetingRecording => "MeetingRecording",
+        ControllerEvent::MeetingDenied => "MeetingDenied",
     }
 }
 

@@ -301,16 +301,16 @@
   - Specky: (req: 01M6JR8RX0HYBEA57XWREDTSAM v1.0 @cf71279)
   - AC: entry — nagrywarka spotkania (10.6) pisze obie ścieżki do spool; startup.rs wywołuje sprzątanie przy starcie
 - [x] Test: 10.4 — zapis i odczyt 16 kHz mono z 48 kHz stereo, uprawnienia 0600, plik usunięty po odczycie/porzuceniu, sprzątanie tylko `meeting-*.pcm`; crit 01M6JR8RXS734Y55256W14CWPJ, 01M6JR8RXSJBV4P9TSK2Y03F2Z (change: 2026-11-04-specky-REDTSAM.md) (pr: #73)
-- [ ] Task 10.5: nowy crate `va-system-audio` (crates/system-audio, jedyne `#![allow(unsafe_code)]`, SAFETY przy każdym wywołaniu): Core Audio process tap (CATapDescription globalny stereo, prywatny, bez wyciszania) + urządzenie zagregowane prywatne z tapem + IOProc → próbki do wywołania zwrotnego; stan zgody (TCC) i wersja macOS ≥ 14.2 [VA-CONF-2] (change: 2026-11-04-specky-35SNPEN.md) (pr: #75)
+- [x] Task 10.5: nowy crate `va-system-audio` (crates/system-audio, jedyne `#![allow(unsafe_code)]`, SAFETY przy każdym wywołaniu): Core Audio process tap (CATapDescription globalny stereo, prywatny, bez wyciszania) + urządzenie zagregowane prywatne z tapem + IOProc → próbki do wywołania zwrotnego; stan zgody (TCC) i wersja macOS ≥ 14.2 [VA-CONF-2] (change: 2026-11-04-specky-35SNPEN.md) (pr: #75)
   - Specky: (req: 01M6JR8RPT9TZGC0B8F35SNPEN v1.0 @c3973d5)
   - AC: entry — `Command::StartMeeting` w kontrolerze (10.6) uruchamia przechwytywanie przez trait `SystemAudioSource`
-- [ ] Test: 10.5 — afplay speech_en.wav w trakcie przechwytywania daje niezerowy sygnał o długości nagrania, brak nowego urządzenia audio na liście cpal po zakończeniu (`#[ignore]` sesja graficzna/zgoda); wersja systemu; crit 01M6JR8RQVPD5PYDQF56SZ9YVT, 01M6JR8RQVS9DSRZ08B9G21FX4 (change: 2026-11-04-specky-35SNPEN.md) (pr: #75)
-- [ ] Task 10.6: `va-core`: `Command::StartMeeting`, rodzaj nagrania w automacie, mikrofon + system → dwa spool, limit `max_meeting_secs`, Stop → obie ścieżki przez STT → `merge_tracks` → schowek/historia; odmowa zgody → `MeetingDenied` (requires: 10.1, 10.3, 10.4, 10.5) [VA-CONF-1..3] (change: 2026-11-04-specky-YMXASGG.md)
+- [x] Test: 10.5 — afplay speech_en.wav w trakcie przechwytywania daje niezerowy sygnał o długości nagrania, brak nowego urządzenia audio na liście cpal po zakończeniu (`#[ignore]` sesja graficzna/zgoda); wersja systemu; crit 01M6JR8RQVPD5PYDQF56SZ9YVT, 01M6JR8RQVS9DSRZ08B9G21FX4 (change: 2026-11-04-specky-35SNPEN.md) (pr: #75)
+- [ ] Task 10.6: `va-core`: `Command::StartMeeting`, rodzaj nagrania w automacie, mikrofon + system → dwa spool, limit `max_meeting_secs`, Stop → obie ścieżki przez STT → `merge_tracks` → schowek/historia; odmowa zgody → `MeetingDenied` (requires: 10.1, 10.3, 10.4, 10.5) [VA-CONF-1..3] (change: 2026-11-04-specky-YMXASGG.md) (pr: #76)
   - Specky: (req: 01M6JR8RFDWVM1VM2PQYMXASGG v1.0 @c2e45ad)
   - Specky: (req: 01M6JR8RPT9TZGC0B8F35SNPEN v1.0 @c3973d5)
   - Specky: (req: 01M6JR8RX0HYBEA57XWREDTSAM v1.0 @cf71279)
   - AC: entry — `Command::StartMeeting` z pętli UI (10.7); limit z wątku audio jak w VA-REC-6
-- [ ] Test: 10.6 — atrapy: StartMeeting → Stop → tekst z etykietami w schowku i historii; osobny limit spotkania; Start/StartMeeting w trakcie ignorowane; odmowa → Idle; zwykłe nagranie bez źródła systemowego; spool usunięty po błędzie STT; znaczniki crit VA-CONF-1/2/3 (change: 2026-11-04-specky-YMXASGG.md)
+- [ ] Test: 10.6 — atrapy: StartMeeting → Stop → tekst z etykietami w schowku i historii; osobny limit spotkania; Start/StartMeeting w trakcie ignorowane; odmowa → Idle; zwykłe nagranie bez źródła systemowego; spool usunięty po błędzie STT; znaczniki crit VA-CONF-1/2/3 (change: 2026-11-04-specky-YMXASGG.md) (pr: #76)
 - [ ] Task 10.7: aplikacja: „Nagrywaj spotkanie” w menu (nieaktywne < macOS 14.2), ctrl+cmd+m, podpowiedź „Nagrywanie spotkania”, powiadomienia o odmowie zgody i starym systemie, `NSAudioCaptureUsageDescription`, sprzątanie spool przy starcie (requires: 10.6) [VA-CONF-1, VA-CONF-2] (change: 2026-11-04-specky-YMXASGG.md) (change: 2026-11-04-specky-35SNPEN.md)
   - Specky: (req: 01M6JR8RFDWVM1VM2PQYMXASGG v1.0 @c2e45ad)
   - Specky: (req: 01M6JR8RPT9TZGC0B8F35SNPEN v1.0 @c3973d5)

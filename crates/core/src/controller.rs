@@ -7,6 +7,7 @@
 
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread::JoinHandle;
+use std::time::Instant;
 
 use va_audio::{
     LimitNotifier, Recorder, SilenceParams, TARGET_SAMPLE_RATE, compress_pauses, trim_silence,
@@ -14,15 +15,20 @@ use va_audio::{
 use va_clipboard::{Delivery, TextSink};
 use va_config::Language;
 use va_stt::{SpeechToText, Transcript};
+use va_system_audio::Authorization;
 
 use crate::history::{History, HistoryEntry};
 use crate::logging;
+use crate::meeting::{merge_tracks, transcribe_track};
+use crate::meeting_capture::{MeetingAudio, MeetingParts, MeetingRecording};
 use crate::state::{Action, Input, State, StateMachine};
 
 /// Polecenie użytkownika — takie samo ze skrótu i z kliknięcia ikony.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Command {
     Start,
+    /// Nagranie spotkania: mikrofon + dźwięk systemowy (VA-CONF-1).
+    StartMeeting,
     Stop,
     /// Kopiuje wpis historii o tym id do schowka, bez nagrywania (VA-HIST-1).
     CopyHistoryEntry(u64),
@@ -49,6 +55,10 @@ pub enum ControllerEvent {
     HistoryChanged(Vec<HistoryEntry>),
     /// Niepusta transkrypcja trafiła do schowka (VA-UX-1): podgląd do powiadomienia.
     TranscriptReady(TranscriptPreview),
+    /// Trwające nagranie (po `StateChanged(Recording)`) to nagranie spotkania (VA-CONF-1).
+    MeetingRecording,
+    /// Brak zgody na nagrywanie dźwięku systemowego — nagranie spotkania nie wystartowało.
+    MeetingDenied,
 }
 
 /// Początek transkrypcji do powiadomienia „gotowe”; `Debug` nie pokazuje treści, żeby
@@ -95,6 +105,8 @@ pub struct ControllerParts {
     pub silence: SilenceParams,
     pub select_device: DeviceSelector,
     pub history: History,
+    /// Tryb spotkania; `None` = tylko zwykłe nagrania (np. brak pliku modelu w testach).
+    pub meeting: Option<MeetingParts>,
 }
 
 enum Message {
@@ -141,7 +153,7 @@ impl Drop for ControllerHandle {
 /// Uruchamia kontroler w osobnym wątku.
 pub fn spawn(parts: ControllerParts, publish: EventPublisher) -> ControllerHandle {
     let (messages, inbox) = mpsc::channel();
-    let worker = TranscriptionWorker::spawn(parts.stt, parts.sink, messages.clone());
+    let worker = TranscriptionWorker::spawn(parts.stt, parts.sink, parts.silence, messages.clone());
     let controller = Controller {
         machine: StateMachine::default(),
         recorder: parts.recorder,
@@ -152,6 +164,8 @@ pub fn spawn(parts: ControllerParts, publish: EventPublisher) -> ControllerHandl
         messages: messages.clone(),
         recording_number: 0,
         history: parts.history,
+        meeting: parts.meeting,
+        meeting_recording: None,
     };
     let thread = std::thread::Builder::new()
         .name("va-controller".into())
@@ -173,6 +187,8 @@ struct Controller {
     messages: Sender<Message>,
     recording_number: u64,
     history: History,
+    meeting: Option<MeetingParts>,
+    meeting_recording: Option<MeetingRecording>,
 }
 
 impl Controller {
@@ -182,6 +198,7 @@ impl Controller {
         while let Ok(message) = inbox.recv() {
             match message {
                 Message::Command(Command::Start) => self.apply(Input::Start),
+                Message::Command(Command::StartMeeting) => self.request_meeting(),
                 Message::Command(Command::Stop) => self.apply(Input::Stop),
                 Message::Command(Command::CopyHistoryEntry(id)) => self.copy_history_entry(id),
                 Message::Command(Command::ClearHistory) => {
@@ -246,18 +263,70 @@ impl Controller {
         (self.publish)(ControllerEvent::StateChanged(transition.to));
         match transition.action {
             Action::StartRecording => self.start_recording(),
+            Action::StartMeetingRecording => self.start_meeting_recording(),
             Action::StopRecordingAndTranscribe => self.stop_and_transcribe(),
             Action::ReportError | Action::None => {}
         }
     }
 
-    fn start_recording(&mut self) {
+    fn next_limit_notifier(&mut self) -> LimitNotifier {
         self.recording_number += 1;
         let number = self.recording_number;
         let messages = self.messages.clone();
-        let on_limit: LimitNotifier = Box::new(move || {
+        Box::new(move || {
             let _ = messages.send(Message::LimitReached(number));
+        })
+    }
+
+    /// Zgoda na dźwięk systemowy przed zmianą stanu: przy odmowie ikona zostaje szara.
+    fn request_meeting(&mut self) {
+        if self.machine.state() != State::Idle {
+            tracing::info!(state = ?self.machine.state(), "nagranie spotkania zignorowane w tym stanie");
+            return;
+        }
+        let Some(meeting) = self.meeting.as_mut() else {
+            tracing::warn!("tryb spotkania niedostępny w tej konfiguracji");
+            return;
+        };
+        if meeting.authorize() == Authorization::Denied {
+            tracing::warn!("brak zgody na nagrywanie dźwięku systemowego");
+            (self.publish)(ControllerEvent::MeetingDenied);
+            return;
+        }
+        self.apply(Input::StartMeeting);
+    }
+
+    fn start_meeting_recording(&mut self) {
+        let on_limit = self.next_limit_notifier();
+        let started = (self.select_device)().and_then(|device| {
+            let meeting = self
+                .meeting
+                .as_mut()
+                .ok_or_else(|| "tryb spotkania niedostępny".to_owned())?;
+            MeetingRecording::start(meeting, &device, on_limit)
         });
+        match started {
+            Ok(recording) => {
+                self.meeting_recording = Some(recording);
+                (self.publish)(ControllerEvent::MeetingRecording);
+            }
+            Err(message) => self.fail(message),
+        }
+    }
+
+    fn stop_meeting(&mut self, recording: MeetingRecording) {
+        let Some(meeting) = self.meeting.as_mut() else {
+            return;
+        };
+        let labels = meeting.speaker_labels;
+        match recording.stop(meeting) {
+            Ok(audio) => self.worker.transcribe_meeting(audio, labels),
+            Err(message) => self.fail(message),
+        }
+    }
+
+    fn start_recording(&mut self) {
+        let on_limit = self.next_limit_notifier();
         let started = (self.select_device)().and_then(|device| {
             self.recorder
                 .start(&device, on_limit)
@@ -269,6 +338,10 @@ impl Controller {
     }
 
     fn stop_and_transcribe(&mut self) {
+        if let Some(recording) = self.meeting_recording.take() {
+            self.stop_meeting(recording);
+            return;
+        }
         match self.recorder.stop() {
             Ok(samples) if has_no_signal(&samples) => self.no_signal(),
             Ok(samples) => {
@@ -334,6 +407,11 @@ struct TranscriptionWorker {
 
 enum Job {
     Transcribe(Vec<f32>),
+    /// Dwie ścieżki spotkania; pliki tymczasowe znikają po zakończeniu zadania (także po błędzie).
+    TranscribeMeeting {
+        audio: MeetingAudio,
+        labels: bool,
+    },
     Deliver(String),
     /// Model żyje w wątku roboczym, więc zmiana języka idzie tą samą kolejką co nagrania —
     /// nagranie wysłane po zmianie jest już w nowym języku.
@@ -344,6 +422,7 @@ impl TranscriptionWorker {
     fn spawn(
         mut stt: Box<dyn SpeechToText>,
         mut sink: Box<dyn TextSink>,
+        silence: SilenceParams,
         results: Sender<Message>,
     ) -> Self {
         let (jobs, queue) = mpsc::channel::<Job>();
@@ -356,6 +435,15 @@ impl TranscriptionWorker {
                             Job::Transcribe(speech) => Message::Transcribed(
                                 transcribe_and_deliver(stt.as_mut(), sink.as_mut(), &speech),
                             ),
+                            Job::TranscribeMeeting { audio, labels } => {
+                                Message::Transcribed(transcribe_meeting(
+                                    stt.as_mut(),
+                                    sink.as_mut(),
+                                    audio,
+                                    labels,
+                                    &silence,
+                                ))
+                            }
                             Job::Deliver(text) => Message::Copied(
                                 sink.deliver(&text).map_err(|error| error.to_string()),
                             ),
@@ -375,6 +463,10 @@ impl TranscriptionWorker {
 
     fn transcribe(&self, speech: Vec<f32>) {
         let _ = self.jobs.send(Job::Transcribe(speech));
+    }
+
+    fn transcribe_meeting(&self, audio: MeetingAudio, labels: bool) {
+        let _ = self.jobs.send(Job::TranscribeMeeting { audio, labels });
     }
 
     fn set_language(&self, language: Language) {
@@ -403,6 +495,38 @@ fn transcribe_and_deliver(
         .map_err(|error| error.to_string())?
     {
         Delivery::Written => Ok(Some(transcript)),
+        Delivery::SkippedEmpty => Ok(None),
+    }
+}
+
+/// Spotkanie: każda ścieżka osobno przez model, wynik scalony po czasie z etykietami mówców.
+/// `audio` jest zwalniane na końcu, więc pliki tymczasowe znikają także po błędzie.
+fn transcribe_meeting(
+    stt: &mut dyn SpeechToText,
+    sink: &mut dyn TextSink,
+    audio: MeetingAudio,
+    labels: bool,
+    silence: &SilenceParams,
+) -> Result<Option<Transcript>, String> {
+    let _span = tracing::info_span!("meeting_transcription").entered();
+    let started = Instant::now();
+    let microphone = audio.microphone.read().map_err(|error| error.to_string())?;
+    let mut segments = transcribe_track(stt, &microphone, silence).map_err(|e| e.to_string())?;
+    drop(microphone);
+    let system = audio.system.read().map_err(|error| error.to_string())?;
+    let system_segments = transcribe_track(stt, &system, silence).map_err(|e| e.to_string())?;
+    let text = merge_tracks(&segments, &system_segments, labels);
+    if text.is_empty() {
+        tracing::info!("spotkanie bez mowy — bez zmiany schowka");
+        return Ok(None);
+    }
+    segments.extend(system_segments);
+    match sink.deliver(&text).map_err(|error| error.to_string())? {
+        Delivery::Written => Ok(Some(Transcript {
+            text,
+            inference: started.elapsed(),
+            segments,
+        })),
         Delivery::SkippedEmpty => Ok(None),
     }
 }

@@ -12,6 +12,7 @@ va-audio.workspace = true
 va-config.workspace = true
 va-clipboard.workspace = true
 va-stt.workspace = true
+va-system-audio.workspace = true
 tracing.workspace = true
 tracing-appender.workspace = true
 tracing-subscriber.workspace = true
@@ -24,6 +25,7 @@ hound.workspace = true
 tempfile.workspace = true
 va-clipboard = { workspace = true, features = ["testing"] }
 va-stt = { workspace = true, features = ["testing"] }
+va-system-audio = { workspace = true, features = ["testing"] }
 
 [lints]
 workspace = true

@@ -52,6 +52,7 @@ forever and grows in the prompt of every session.
 
 | Task | Status | Tests | Tries | Commit | Time |
 |---------|--------|-------|-------|--------|------|
+| 10.5 crate `va-system-audio`: Core Audio process tap (globalny, prywatny, bez wyciszania) w prywatnym urządzeniu zagregowanym, zgoda TCC, macOS ≥ 14.2, `SystemAudioSource` + atrapa + test 10.5 | ✅ PR #75 | 227/0; prawdziwy tap: afplay speech_en.wav przechwycony, `system_profiler` bez nowego urządzenia; mutacja (urządzenie niepubliczne) czerwona | 1 | 262370c | 2026-11-04 |
 | 10.3 `va-core::meeting`: `transcribe_track` (cisza bez modelu, znaczniki na osi ścieżki) + `merge_tracks` („Ja:”/„Rozmówcy:” przy zmianie mówcy) + test 10.3 | ✅ PR #74 | 224/0; prawdziwy model: speech_pl 0 s + speech_en 10 s → „Ja:” potem „Rozmówcy:” i odwrotnie; mutacje (sortowanie bez czasu, etykieta przy każdym segmencie) czerwone | 1 | 6925e9a | 2026-11-04 |
 | 10.4 `va-audio::StreamNormalizer` + `va-core::spool` (SpoolWriter 0600 `meeting-*.pcm`, SpooledAudio usuwany przy zniszczeniu, `remove_leftovers`) + test 10.4 | ✅ PR #73 | 213/0; mutacje (0600 → 0644, brak usuwania po odczycie) czerwone | 1 | 8b40d57 | 2026-11-04 |
 | 10.2 `Transcript.segments` (ms, po filtrach VA-STT-3) + `compress_pauses_mapped`/`TimeMap` (skrócona oś → oryginalna, `shifted`) + test 10.2 | ✅ PR #72 | 207/0; prawdziwy model: segmenty speech_pl rosnące w granicach nagrania; mutacja przeliczenia setnych → ms czerwona | 1 | 753f7d1 | 2026-11-04 |

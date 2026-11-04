@@ -4,13 +4,17 @@ use std::path::{Path, PathBuf};
 
 use crate::messages::Problem;
 use crate::model_menu::ModelInfo;
-use va_audio::{AudioHost, CpalHost, CpalRecorder, SilenceParams, choose_device};
+use va_audio::{
+    AudioHost, CpalHost, CpalRecorder, CpalStreamRecorder, SilenceParams, choose_device,
+};
 use va_clipboard::system_sink;
 use va_config::{Config, ModelVariant, Paths};
 use va_core::controller::ControllerParts;
 use va_core::history::{FileHistoryStore, History};
+use va_core::meeting_capture::MeetingParts;
 use va_model::{ModelState, ModelStore, Progress, spec_for};
 use va_stt::{GpuReady, METAL_BUILT, MetalProbe, WhisperStt, require_metal};
+use va_system_audio::CoreAudioSource;
 
 /// Skąd aplikacja bierze model (VA-MODEL-3): magazyn domyślny (pobieranie, SHA-256) albo własna
 /// ścieżka z `config.toml` — plik użytkownika, bez pobierania i bez sprawdzania sumy.
@@ -164,7 +168,20 @@ fn parts_from_model(
                 .map(|choice| choice.name)
                 .map_err(|e| e.to_string())
         }),
+        meeting: Some(meeting_parts(config, paths)),
     })
+}
+
+/// Tryb spotkania (VA-CONF-1..4): mikrofon strumieniowo, dźwięk systemowy z process tap,
+/// pliki tymczasowe w katalogu danych aplikacji.
+fn meeting_parts(config: &Config, paths: &Paths) -> MeetingParts {
+    MeetingParts {
+        microphone: Box::new(CpalStreamRecorder::default()),
+        system: Box::new(CoreAudioSource::default()),
+        spool_dir: paths.data_dir.clone(),
+        max_seconds: config.max_meeting_secs,
+        speaker_labels: config.meeting_speaker_labels,
+    }
 }
 
 /// Wszystko, czego trzeba, by w tle pobrać model i złożyć z nim kontroler (5.6).

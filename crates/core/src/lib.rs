@@ -7,5 +7,6 @@ pub mod controller;
 pub mod history;
 pub mod logging;
 pub mod meeting;
+pub mod meeting_capture;
 pub mod spool;
 pub mod state;
