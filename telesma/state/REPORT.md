@@ -52,6 +52,7 @@ forever and grows in the prompt of every session.
 
 | Task | Status | Tests | Tries | Commit | Time |
 |---------|--------|-------|-------|--------|------|
+| 10.4 `va-audio::StreamNormalizer` + `va-core::spool` (SpoolWriter 0600 `meeting-*.pcm`, SpooledAudio usuwany przy zniszczeniu, `remove_leftovers`) + test 10.4 | ✅ PR #73 | 213/0; mutacje (0600 → 0644, brak usuwania po odczycie) czerwone | 1 | 8b40d57 | 2026-11-04 |
 | 10.2 `Transcript.segments` (ms, po filtrach VA-STT-3) + `compress_pauses_mapped`/`TimeMap` (skrócona oś → oryginalna, `shifted`) + test 10.2 | ✅ PR #72 | 207/0; prawdziwy model: segmenty speech_pl rosnące w granicach nagrania; mutacja przeliczenia setnych → ms czerwona | 1 | 753f7d1 | 2026-11-04 |
 | 10.1 `max_meeting_secs` (7200) i `meeting_speaker_labels` (true) w `va-config`, README + test 10.1 | ✅ PR #71 | 206/0; mutacja domyślnego limitu 7200 → 600 czerwona | 1 | 067a75d | 2026-11-04 |
 | 5.Z1.1 `Dot::Yellow` w Transcribing (systemowy żółty 255/204/0), szare po zapisie do schowka / ciszy / błędzie; testy kolejności zdarzeń i Startu w trakcie transkrypcji (atrapa STT z bramką) + test 5.Z1.1 | ✅ PR #67 | 203/0 + 14 ignored; CI zielone; 3 mutacje czerwone | 1 | 206955a | 2026-10-13 |
