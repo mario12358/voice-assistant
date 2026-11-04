@@ -83,6 +83,10 @@ pub struct Config {
     pub sound_on_transcript: bool,
     /// Wariant modelu z magazynu aplikacji; ignorowany przy `model_path` (VA-MODEL-4).
     pub model_variant: ModelVariant,
+    /// Limit długości nagrania spotkania w sekundach, osobny od `max_recording_secs` (VA-CONF-3).
+    pub max_meeting_secs: u32,
+    /// Etykiety „Ja:” / „Rozmówcy:” w transkrypcji spotkania (VA-CONF-4).
+    pub meeting_speaker_labels: bool,
 }
 
 impl Default for Config {
@@ -96,6 +100,8 @@ impl Default for Config {
             notify_on_transcript: true,
             sound_on_transcript: false,
             model_variant: ModelVariant::Full,
+            max_meeting_secs: 7200,
+            meeting_speaker_labels: true,
         }
     }
 }
@@ -222,6 +228,8 @@ max_recording_secs = 60
 notify_on_transcript = false
 sound_on_transcript = true
 model_variant = "q5_0"
+max_meeting_secs = 3600
+meeting_speaker_labels = false
 
 [silence]
 threshold_rms = 0.05
@@ -245,6 +253,8 @@ padding_ms = 100
                 notify_on_transcript: false,
                 sound_on_transcript: true,
                 model_variant: ModelVariant::Q5_0,
+                max_meeting_secs: 3600,
+                meeting_speaker_labels: false,
             }
         );
     }
@@ -279,6 +289,38 @@ padding_ms = 100
 
         assert_eq!(Config::default().max_recording_secs, 600);
         assert_eq!(Config::load(&path).unwrap().max_recording_secs, 20);
+    }
+
+    #[test]
+    // specky: crit 01M6JR8RXS6ZWMNJ6F3GJM6JM2
+    fn meeting_limit_defaults_to_two_hours_independently_of_recording_limit() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = write_config(&dir, "max_meeting_secs = 1800\n");
+
+        let defaults = Config::default();
+        let from_file = Config::load(&path).unwrap();
+
+        assert_eq!(defaults.max_meeting_secs, 7200);
+        assert_eq!(from_file.max_meeting_secs, 1800);
+        assert_eq!(from_file.max_recording_secs, 600);
+    }
+
+    #[test]
+    fn recording_limit_from_file_does_not_change_meeting_limit() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = write_config(&dir, "max_recording_secs = 300\n");
+
+        assert_eq!(Config::load(&path).unwrap().max_meeting_secs, 7200);
+    }
+
+    #[test]
+    // specky: crit 01M6JR8S2RF2G1JMEW0CM3FJTY
+    fn speaker_labels_are_on_by_default_and_can_be_disabled() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = write_config(&dir, "meeting_speaker_labels = false\n");
+
+        assert!(Config::default().meeting_speaker_labels);
+        assert!(!Config::load(&path).unwrap().meeting_speaker_labels);
     }
 
     #[test]
