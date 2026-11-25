@@ -16,6 +16,15 @@
   <!-- prompts, same files — only the language changes. `telesma.sh --new` (an interview that     -->
   <!-- writes the specification for you) sets it.                                                -->
 
+- **Adopted**: no
+  <!-- yes = an existing codebase Telesma took over with `telesma.sh --adopt`: Phase 0 of PLAN.md   -->
+  <!-- is the system as found (telesma/spec/AS_BUILT.md), the clarification plans from Phase 1,    -->
+  <!-- and the test baseline in REPORT.md tells a regression from an inherited failure. Set by     -->
+  <!-- the launcher, never by hand.                                                                 -->
+
+- **Adopted at**:
+  <!-- the commit the survey described: short SHA and date — set by the launcher -->
+
 ## Tests
 
 - **Test command**: cargo test --workspace
@@ -266,6 +275,34 @@
   <!-- Id = digit or digit+letter (case-sensitive, matched against the PLAN.md header) -->
   <!-- Telesma skips tasks from phases not on the list -->
 
+- **Compact context at**: 500k
+  <!-- Claude Code summarises the conversation once it passes this size (100k–1000k), instead   -->
+  <!-- of when the model's window is full. Every step re-reads the whole conversation, so a      -->
+  <!-- smaller value costs fewer tokens, and a larger one leaves a big task (a review of the     -->
+  <!-- whole project) uninterrupted; `telesma.sh --usage` shows the context per step.            -->
+  <!-- auto = leave it to Claude Code. A CLAUDE_CODE_AUTO_COMPACT_WINDOW you exported wins.      -->
+
+- **Max refusals per task**: 5
+  <!-- A hard stop counted by the task tool: this many refused `done` for one task end the       -->
+  <!-- session with TELESMA BLOCKED. "Max tries per task" is when Claude asks you; this is when   -->
+  <!-- the script stops it if it does not. none = no limit.                                       -->
+
+- **Max attempts per task**: 3
+  <!-- How many times `next` may hand out the same task without a finished `done` (a restart,     -->
+  <!-- a compaction, a lost session) before the script stops with TELESMA BLOCKED. none = no limit -->
+
+- **Max tasks per session**: none
+
+- **Max hours per session**: none
+  <!-- Session budget: after this many finished tasks / hours since the launcher started the     -->
+  <!-- session, `next` hands out nothing and writes telesma/state/BLOCKED.md. The next start      -->
+  <!-- shows the reason and asks you whether to go on. The values are read once, at the start.   -->
+
+- **Max tokens per session**: none
+  <!-- The same stop after this many tokens in the session (input + output + cache read + cache  -->
+  <!-- write, as Claude Code records them; e.g. 300M). Cache reads are most of it in a long       -->
+  <!-- session — look at `telesma.sh --usage` for what a session of yours takes before you set it. -->
+
 ## Working directories
 
 <!-- Directories OUTSIDE the repository that Claude may access without asking.           -->
@@ -465,66 +502,59 @@
 
 ## Permissions
 
-<!-- Telesma syncs this section with .claude/settings.local.json at every start:          -->
-<!-- 1. At startup: telesma/config.md ∪ settings.local.json → written to both files       -->
-<!-- 2. During the session: the Claude CLI itself appends "allow always" to settings.local.json -->
-<!-- 3. At the next start: new entries are merged back here                             -->
+<!-- Telesma syncs this section with .claude/settings.local.json on every start:        -->
+<!-- 1. At startup: telesma/config.md ∪ settings.local.json → written to both files     -->
+<!-- 2. During the session: the Claude CLI itself adds "allow always" to the settings -->
+<!-- 3. On the next start: the new entries are merged back in here                    -->
 
 - **Mode**: acceptEdits
-  <!-- default            = asks about every tool                          -->
-  <!-- acceptEdits        = auto-accepts Edit/Write, asks about Bash        -->
-  <!-- bypassPermissions  = no prompts at all (risky, e.g. rm -rf)          -->
-  <!-- plan               = planning mode without modifying files          -->
+  <!-- default            = asks about every tool                        -->
+  <!-- acceptEdits        = auto-accepts Edit/Write, asks about Bash     -->
+  <!-- bypassPermissions  = no questions at all (risky, e.g. rm -rf)     -->
+  <!-- plan               = planning mode without modifying files        -->
 
 - **Auto-sync new permissions**: yes
-  <!-- yes = permissions granted during a session ("allow always") are added to this list -->
-  <!-- at the next start, so you are not asked again                                      -->
-  <!-- no  = only this file is the source of truth, new entries from the session are ignored -->
+  <!-- yes = permissions granted in a session ("allow always") are added to this list -->
+  <!-- on the next start, so that they are not asked again                            -->
+  <!-- no = only this file is the source of truth, new session entries are ignored    -->
 
 - **Generalize permissions**: yes
-  <!-- yes = exact commands approved during a session are promoted to Bash(family:*) patterns -->
-  <!-- for a curated list of safe families (tests, linters, git add/commit, docker          -->
-  <!-- compose, ...). Example: approving "npm test -- --coverage" gives Bash(npm test:*).   -->
-  <!-- Destructive/network ones (rm, sudo, curl, git push) never — those always ask.        -->
-  <!-- no  = entries stay exactly as approved                                              -->
+  <!-- yes = exact commands accepted in a session are promoted to Bash(family:*)       -->
+  <!-- patterns for a curated list of safe families (tests, linters, git add/commit,    -->
+  <!-- docker compose, ...). Destructive/network ones (rm, sudo, curl, git push) never. -->
+  <!-- no = entries stay exactly as they were approved                                 -->
 
 - **Allowed commands**:
   - Bash(cargo --version)
-  - Bash(cargo build:\*)
-  - Bash(cargo check:\*)
-  - Bash(cargo clippy:\*)
-  - Bash(cargo fmt:\*)
-  - Bash(cargo test:\*)
+  - Bash(cargo build:*)
+  - Bash(cargo check:*)
+  - Bash(cargo clippy:*)
+  - Bash(cargo fmt:*)
+  - Bash(cargo test:*)
   - Bash(gh auth status)
   - Bash(gh pr checks:*)
-  - Bash(gh pr create:*)
   - Bash(gh pr diff:*)
   - Bash(gh pr list:*)
-  - Bash(gh pr merge:\*)
+  - Bash(gh pr merge:*)
   - Bash(gh pr status:*)
   - Bash(gh pr view:*)
   - Bash(gh repo view:*)
-  - Bash(git add:*)
   - Bash(git branch --list:*)
   - Bash(git branch -d:*)
   - Bash(git branch:*)
   - Bash(git checkout -b:*)
   - Bash(git checkout main)
-  - Bash(git commit:*)
   - Bash(git describe:*)
   - Bash(git diff:*)
   - Bash(git fetch:*)
   - Bash(git log:*)
   - Bash(git merge-base:*)
-  - Bash(git pull:*)
   - Bash(git push --force-with-lease origin zadanie-:*)
   - Bash(git push -u origin zadanie-:*)
   - Bash(git push origin zadanie-:*)
-  - Bash(git rebase:*)
   - Bash(git rev-parse:*)
   - Bash(git status:*)
   - Bash(git switch:*)
-  - Bash(git tag:*)
   - Bash(ls:*)
   - Bash(mkdir:*)
   - Bash(npm install:*)
@@ -547,3 +577,70 @@
   - Bash(rm -rf:\*)
   - Bash(sudo:*)
   - Bash(sudo:\*)
+
+## Review
+
+<!-- An independent review of every task before it is committed: `done` itself sends the task's   -->
+<!-- plan lines and its diff to a SECOND model, which knows nothing of the session, and reads the  -->
+<!-- verdict — the model that wrote the code does not judge it. Off by default: the diff leaves    -->
+<!-- this machine for the reviewer you name, with the files it changes in full and the committed   -->
+<!-- files the task names (nothing else does: no spec files beyond the fragments the task cites,   -->
+<!-- no state files, no file git does not hold). A blocker refuses `done`; the author fixes it or contests it -->
+<!-- with a reason that lands in the commit message. No answer (network, key, timeout) is "not     -->
+<!-- run", said in the commit message — never a pass, never a stop. Log: .git/telesma-review/.     -->
+
+- **Enabled**: no
+- **Reviewer**: api
+  <!-- api    = a chat endpoint in the OpenAI format (Endpoint, Model, API key below): Google,     -->
+  <!--          OpenAI, Anthropic, or a server of your own (Ollama, vLLM, LiteLLM).                -->
+  <!-- claude = a separate Claude Code session on your subscription, without tools (`claude -p`);  -->
+  <!--          only Model is used — choose a different model than the one that writes the code.   -->
+  <!-- gemini = Gemini CLI on your own sign-in, headless and read-only (`gemini -p -m <Model>`),   -->
+  <!--          started in an empty directory; only Model is used (`gemini --list-models`).        -->
+- **Endpoint**: none
+  <!-- Google:    https://generativelanguage.googleapis.com/v1beta/openai/chat/completions         -->
+  <!-- OpenAI:    https://api.openai.com/v1/chat/completions                                       -->
+  <!-- Anthropic: https://api.anthropic.com/v1/chat/completions                                    -->
+  <!-- local:     http://localhost:11434/v1/chat/completions   (Ollama; LM Studio: port 1234;      -->
+  <!--            llama.cpp, vLLM: their /v1/chat/completions) — nothing leaves this machine,      -->
+  <!--            API key: none. http:// only for localhost; another machine has to be https://.   -->
+- **Model**:
+  <!-- The model's id as the provider lists it.                                                    -->
+- **API key**: env:TELESMA_REVIEW_KEY
+  <!-- env:NAME · file:<path outside the repo, e.g. ~/.config/telesma/review.key> · cmd:<command> · -->
+  <!-- none (a local server). Never a literal: this file goes into git. With the sandbox on, the   -->
+  <!-- reviewer's host is added to the allowed hosts by Telesma.                                   -->
+- **Max diff**: 240000
+  <!-- Characters of diff a review reads; a bigger diff is "not run". A LOCAL model needs a number -->
+  <!-- that fits its context window with room for the answer: about 3 characters per token, so     -->
+  <!-- 20000 for a window of 8k tokens, 90000 for 32k. A server that cuts a long prompt silently    -->
+  <!-- (Ollama does, to its num_ctx) is caught by the token count it reports and is "not run".     -->
+  <!-- What the diff leaves of this number is filled with context: the changed files in full and -->
+  <!-- the committed files the task names in backticks. A smaller number = a cheaper review.       -->
+- **Timeout**: 180
+  <!-- Seconds to wait for the reviewer (10–480). A local model on a large diff may need more.    -->
+
+## Sandbox
+
+<!-- Claude Code's built-in sandbox under every Bash command (macOS, Linux, WSL2): a command     -->
+<!-- writes only inside the project, the extra directories above and the temporary directory,  -->
+<!-- reaches only the hosts listed for it, and cannot read ~/.ssh, ~/.aws and similar keys —   -->
+<!-- whatever the command claims to be. Questions and the judge stay as they are; a command is  -->
+<!-- never retried outside the sandbox. Telesma writes the settings into                        -->
+<!-- .claude/settings.local.json on every start; native Windows runs without it.               -->
+<!-- Hosts and caches of the project's stack (PyPI, npm, crates.io …, ~/.cache/uv, ~/.npm …),  -->
+<!-- of the checks and of the GitHub integration are added by Telesma — list only the extra.   -->
+
+- **Enabled**: no
+  <!-- no | yes | required (required = Claude Code does not start when the sandbox cannot run) -->
+- **Allowed hosts**:
+  <!-- One per line, e.g. `- api.example.com` or `- *.internal.example.com`. In the autonomous -->
+  <!-- modes (1, 4) any other host is refused; in a chat Claude Code asks you.                  -->
+- **Writable paths**:
+  <!-- Directories outside the project a command may write to, e.g. `- ~/.cache/my-tool`.     -->
+- **Excluded commands**:
+  <!-- Commands that run outside the sandbox, e.g. `- docker compose *` (Docker does not work  -->
+  <!-- inside it). Each one is a hole: it runs with all your rights.                            -->
+- **Limits asked**:
+  <!-- Known limits of the sandbox you already answered at a start (playwright, docker,        -->
+  <!-- watchman) — Telesma asks about each once, written here by the launcher.                 -->

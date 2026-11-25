@@ -252,3 +252,71 @@ Write-only — this file is not loaded into any prompt.
 - [2026-10-10] Task 7.6: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, history_menu.rs, main.rs, tray_menu.rs) — testy w `#[cfg(test)] mod tests` tych samych plików (znana pułapka). Wygląd podmenu „Historia”, kliknięcie pozycji i „Wyczyść historię” w prawdziwym menu — test ręczny 7.7; przebudowa podmenu przez `remove_at(0)` w pętli jak przy mikrofonach.
 
 - [2026-10-10] Task 7.5: zmiana testów kontrolera `stop_puts_transcript_in_clipboard_and_reports_states_to_ui` i `limit_reached_stops_recording_and_transcribes_without_stop_command` — w sekwencji zdarzeń doszło `HistoryChanged` po `Delivered` (VA-HIST-1 kryterium 01M4K06AH032985T6JXJX7EE3W: wpis po każdej niepustej transkrypcji), asercje stanów i schowka bez zmian. Nowe zależności: `chrono` (czas lokalny wpisu, bez `unsafe`) i `serde_json` (plik historii) — Cargo.lock zaktualizowany.
+
+## Rotation 2026-11-25
+
+### Test status
+
+**Regression after Phase 6 (2026-10-10) — GREEN:** na main (1ae141a) `cargo test --workspace -- --include-ignored` 126/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; test ręczny 6.4 właściciela (2026-10-09) bez uwag. Bez zmian liczby testów od przebiegu po 6.3. Tag `telesma/phase-6`.
+
+### Change history
+
+### 2026-10-10 2026-10-10-specky-PV3NVAC.md
+- **Kind**: feature
+- **Priority**: normal
+- **Affects**: general (VA-OPS-1; logging.rs, tray_menu.rs, main.rs)
+- **Summary**: „Pokaż logi” w menu i usuwanie logów starszych niż 7 dni przy starcie.
+- **Modified pending tasks**: none
+- **New rework phase**: none
+- **New tasks**: 9.1, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-F01XRR5.md
+- **Kind**: feature
+- **Priority**: normal
+- **Affects**: general (VA-STT-3; crates/stt, fixtures)
+- **Summary**: Parametry Whispera przeciw halucynacjom i zmiana języka w działającym modelu; szum daje pusty wynik.
+- **Modified pending tasks**: none
+- **New rework phase**: none
+- **New tasks**: 9.4, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-1JBKCWR.md
+- **Kind**: feature
+- **Priority**: normal
+- **Affects**: general (VA-MODEL-4; crates/model, va-config, startup.rs, model_menu.rs, app.rs)
+- **Summary**: Wariant skwantyzowany q5_0 (~0,6 GB) do wyboru w podmenu „Model” z pobieraniem i przeładowaniem bez restartu; VA-STT-1 bez zmian.
+- **Modified pending tasks**: none
+- **New rework phase**: none
+- **New tasks**: 9.7, 9.8, 9.10 (Faza 9)
+
+### 2026-10-10 2026-10-10-specky-47S54D5.md
+- **Kind**: feature
+- **Priority**: normal
+- **Affects**: general (VA-CI-1; .github/workflows/release.yml, scripts/)
+- **Summary**: Tag v* buduje .dmg w CI i publikuje wydanie GitHub z opisem z tagu; obraz < 20 MB bez modelu.
+- **Modified pending tasks**: none
+- **New rework phase**: none
+- **New tasks**: 9.9, 9.10 (Faza 9)
+
+### Task history
+
+| Task | Status | Tests | Tries | Commit | Time |
+|------|--------|-------|-------|--------|------|
+| 5.Z1.1 `Dot::Yellow` w Transcribing (systemowy żółty 255/204/0), szare po zapisie do schowka / ciszy / błędzie; testy kolejności zdarzeń i Startu w trakcie transkrypcji (atrapa STT z bramką) + test 5.Z1.1 | ✅ PR #67 | 203/0 + 14 ignored; CI zielone; 3 mutacje czerwone | 1 | 206955a | 2026-10-13 |
+
+| 9.4 `DecodingSettings`/`DECODING` (suppress blank/nst, temperatura 0 bez fallbacku, no_context, progi no-speech i pewności segmentu 0,3), filtr segmentów, `SpeechToText::set_language`; fixtures `noise_only.wav`, `speech_pl_mixed.wav` + test 9.4 | ✅ PR #52 | 176/0 + 13 ignored; prawdziwy model: szum → pusto, mieszane PL → polski, PL/EN/40 s pauzy bez regresji; mutacja progu pewności 0,3 → 0 czerwona | 1 | bf3371a | 2026-10-10 |
+
+| 9.3 Sygnał gotowe: `ControllerEvent::TranscriptReady(TranscriptPreview)` (60 znaków, Debug bez treści) po zapisie, pola `notify_on_transcript`/`sound_on_transcript`, `signal_ready` (powiadomienie + `afplay Glass.aiff`), log zdarzeń tylko z rodzajem; `AppSettings` dla `app::run` + test 9.3 | ✅ PR #51 | 174/0 + 10 ignored; mutacja (sygnał po pustej transkrypcji) czerwona; 1 poprawka CI (wyścig w atrapie z 7.3) | 2 | 5cae27d | 2026-10-10 |
+
+| 9.1 `logging::prune_old_logs` (7 dni, tylko `voice-asystent.log.*`) przy starcie + „Pokaż logi” w menu (`open <katalog>`) + test 9.1 | ✅ PR #49 | 164/0 + 10 ignored; mutacja progu 7 → 9 dni czerwona | 1 | fc508c3 | 2026-10-10 |
+
+| 9.2 Znacznik `<model>.verified` (rozmiar, mtime ns, sha256) zapisywany po weryfikacji w `check()` i `download()`, pomijanie sumy przy zgodności, `remove()` kasuje znacznik + test 9.2 | ✅ PR #50 | 167/0 + 10 ignored; prawdziwy model: start --self-check 3,38 s → 0,04 s; mutacja (ignorowanie daty) czerwona | 1 | 650e715 | 2026-10-10 |
+
+| 8.4 „Usuń model…” z potwierdzeniem w menu (RemovePrompt), usunięcie = zamknięcie kontrolera + `ModelStore::remove` + stan Missing, „Pobierz ponownie” → pobieranie → nowy kontroler; README/RUNBOOK + test 8.4 | ✅ PR #45 | 161/0 + 10 ignored; mutacja (usunięcie bez potwierdzenia) czerwona | 1 | c7cd4d6 | 2026-10-10 |
+
+| 7.6 Podmenu „Historia” (history_menu.rs: etykiety `HH:MM · tekst…`, id → `CopyHistoryEntry`/`ClearHistory`; TrayMenu::show_history, wpięcie w pętli tao), README/RUNBOOK + test 7.6 | ✅ PR #38 | 146/0 + 10 ignored; mutacja odwrócenia kolejności czerwona; aplikacja z podmenu startuje lokalnie | 1 | 6627cc3 | 2026-10-10 |
+
+### Problem log
+
+- [2026-10-10] Task 7.4: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, main.rs, messages.rs) — testy są w `#[cfg(test)] mod tests` tych samych plików (znana pułapka), nie do naprawy przenoszeniem. Powiadomienie systemowe przy limicie niezweryfikowane wizualnie — test ręczny 7.7 (limit 20 s w config.toml).
+
+- [2026-10-10] Task 7.3: zmiana testów `partial_file_keeps_defaults_for_missing_fields` (va-config) i `config_without_file_prints_defaults` (va-dev) — oczekiwany domyślny limit 300 → 600 s. Powód: kryterium 01M4K06AY61DWRJ5R2DFNDJD6W (VA-REC-6, telesma/changes/processed/2026-10-10-specky-9VFYND0.md) ustala domyślne 600 s. Spóźniony sygnał limitu z poprzedniego nagrania jest odrzucany po numerze nagrania (test `stale_limit_signal_from_previous_recording_is_ignored`).
