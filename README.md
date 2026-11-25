@@ -44,8 +44,8 @@ Metal); nagranie ani tekst nie opuszczają komputera.
 
 | Działanie                   | Jak                                                                                                                                                              |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Start nagrywania            | `ctrl+cmd+r` (w dowolnej aplikacji) albo kliknięcie szarego kółka                                                                                                |
-| Stop i transkrypcja         | `ctrl+cmd+s` albo kliknięcie czerwonego kółka                                                                                                                    |
+| Start nagrywania            | `ctrl+cmd+r` (w dowolnej aplikacji), kliknięcie szarego kółka albo prawy przycisk → **Nagrywaj notatkę**                                                       |
+| Stop i transkrypcja         | `ctrl+cmd+s`, kliknięcie czerwonego kółka albo prawy przycisk → **Zakończ nagrywanie**                                                                           |
 | Nagranie spotkania          | `ctrl+cmd+m` albo prawy przycisk → **Nagrywaj spotkanie**; kończysz jak zwykłe nagranie (`ctrl+cmd+s` / kliknięcie)                                              |
 | Wklejenie tekstu            | `cmd+v` w miejscu z kursorem — schowek zawiera ostatnią transkrypcję                                                                                             |
 | Wcześniejsza wypowiedź      | prawy przycisk na ikonie → **Historia** → pozycja z listy (kopiuje jej pełny tekst do schowka, potem `cmd+v`)                                                    |

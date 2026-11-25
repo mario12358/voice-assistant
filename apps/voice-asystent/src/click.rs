@@ -17,6 +17,12 @@ pub fn command_for(event: &TrayIconEvent, shown: State) -> Option<Command> {
     else {
         return None;
     };
+    toggle_command(shown)
+}
+
+/// Start albo Stop zależnie od pokazanego stanu — wspólne dla kliknięcia kółka (VA-UI-2)
+/// i pozycji menu „Nagrywaj notatkę” (VA-UI-3); w trakcie transkrypcji nic.
+pub fn toggle_command(shown: State) -> Option<Command> {
     match shown {
         State::Idle | State::Error => Some(Command::Start),
         State::Recording => Some(Command::Stop),

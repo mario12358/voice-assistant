@@ -1544,3 +1544,255 @@
 {"ts": "2026-10-13T14:18:08", "punkt": "wydanie", "head": "51c6e4f", "kontrola": "lint-typy", "decyzja": "czysto", "plikow": 12}
 {"ts": "2026-10-13T14:18:08", "punkt": "wydanie", "head": "51c6e4f", "kontrola": "intencja", "decyzja": "czysto", "plikow": 12}
 {"ts": "2026-10-13T14:18:08", "punkt": "wydanie", "head": "51c6e4f", "kontrola": "red-team", "decyzja": "czysto", "plikow": 12}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "secrets", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "weakenings", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "dependencies", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "dependency-audit", "decision": "clean", "files": 174}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "tests", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "hygiene", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "dead-entry", "decision": "clean", "files": 174}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "sast", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "lint-types", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "intent", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:29:21", "point": "commit", "head": "b301c53", "check": "red-team", "decision": "clean", "files": 3}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "secrets", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "weakenings", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "dependencies", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "tests", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "hygiene", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "sast", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "lint-types", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "intent", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:07", "point": "commit", "head": "51808b8", "check": "red-team", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T08:51:14", "point": "push", "head": "8679627", "check": "pr-status", "branch": "zadanie-faza-10-plan", "state": "failure", "description": "no check evidence for 3 of 5 commits (6603fe9, e823de3, b301c53) — commit outside the hook", "commits": 5, "decision": "posted"}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "secrets", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "weakenings", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "dependencies", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "tests", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "hygiene", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "sast", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "lint-types", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "intent", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:26", "point": "commit", "head": "51c6e4f", "check": "red-team", "decision": "clean", "files": 98}
+{"ts": "2026-11-04T08:51:37", "point": "push", "head": "75a8b6b", "check": "pr-status", "branch": "zadanie-faza-10-plan", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 08:51 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "secrets", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "weakenings", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "dependencies", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "tests", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "hygiene", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "sast", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "lint-types", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "intent", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:44", "point": "commit", "head": "963e06b", "check": "red-team", "decision": "clean", "files": 2}
+{"ts": "2026-11-04T08:59:59", "point": "push", "head": "b93f765", "check": "pr-status", "branch": "zadanie-10.1-konfiguracja-spotkania", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 08:59 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:13", "point": "commit", "head": "b93f765", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:00:20", "point": "push", "head": "47c1985", "check": "pr-status", "branch": "zadanie-10.1-konfiguracja-spotkania", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:00 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "secrets", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "weakenings", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "dependencies", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "tests", "rule": "skip-with-reason", "file": "crates/stt/tests/whisper_model.rs", "line": 15, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga pobranego modelu (va-dev model-download) i GPU Metal\"]` (+4 more in the file)", "fingerprint": "8f3e9e84e6c4", "decision": "warn"}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "hygiene", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "sast", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "lint-types", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "intent", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:25", "point": "commit", "head": "067a75d", "check": "red-team", "decision": "clean", "files": 9}
+{"ts": "2026-11-04T09:04:38", "point": "push", "head": "8f460d0", "check": "pr-status", "branch": "zadanie-10.2-znaczniki-czasu", "state": "success", "description": "1 warn.: 11 checks · 1 commit · 2026-11-04 09:04 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:44", "point": "commit", "head": "8f460d0", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:04:51", "point": "push", "head": "a9bbc8a", "check": "pr-status", "branch": "zadanie-10.2-znaczniki-czasu", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:04 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "secrets", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "weakenings", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "dependencies", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "dependency-audit", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "tests", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "hygiene", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "dead-entry", "decision": "clean", "files": 178}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "sast", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "lint-types", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "intent", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:10", "point": "commit", "head": "753f7d1", "check": "red-team", "decision": "clean", "files": 6}
+{"ts": "2026-11-04T09:08:22", "point": "push", "head": "408a91f", "check": "pr-status", "branch": "zadanie-10.4-spool", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:08 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "dependency-audit", "decision": "clean", "files": 179}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "dead-entry", "decision": "clean", "files": 179}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:30", "point": "commit", "head": "408a91f", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:08:37", "point": "push", "head": "f5793ec", "check": "pr-status", "branch": "zadanie-10.4-spool", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:08 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "secrets", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "weakenings", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "dependencies", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "dependency-audit", "decision": "clean", "files": 179}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "tests", "rule": "skip-with-reason", "file": "crates/core/tests/meeting_model.rs", "line": 55, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga pobranego modelu (va-dev model-download) i GPU Metal\"]`", "fingerprint": "70f48a00af8a", "decision": "warn"}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "hygiene", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "dead-entry", "decision": "clean", "files": 179}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "sast", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "lint-types", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "intent", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:22", "point": "commit", "head": "8b40d57", "check": "red-team", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:13:36", "point": "push", "head": "1267ba3", "check": "pr-status", "branch": "zadanie-10.3-scalanie-sciezek", "state": "success", "description": "1 warn.: 11 checks · 1 commit · 2026-11-04 09:13 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "dependency-audit", "decision": "clean", "files": 181}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "dead-entry", "decision": "clean", "files": 181}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:44", "point": "commit", "head": "1267ba3", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:13:50", "point": "push", "head": "b43423f", "check": "pr-status", "branch": "zadanie-10.3-scalanie-sciezek", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:13 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "secrets", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "weakenings", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "dependencies", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "dependency-audit", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "tests", "rule": "skip-with-reason", "file": "crates/system-audio/tests/process_tap.rs", "line": 35, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga sesji graficznej, wyjścia audio i zgody na nagrywanie dźwięku`", "fingerprint": "14de3569a4f4", "decision": "warn"}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "hygiene", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "dead-entry", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "sast", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "lint-types", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "intent", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:21:53", "point": "commit", "head": "6925e9a", "check": "red-team", "decision": "clean", "files": 10}
+{"ts": "2026-11-04T09:22:06", "point": "push", "head": "1557388", "check": "pr-status", "branch": "zadanie-10.5-dzwiek-systemowy", "state": "success", "description": "1 warn.: 11 checks · 1 commit · 2026-11-04 09:21 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "dependency-audit", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "dead-entry", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:14", "point": "commit", "head": "1557388", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:22:20", "point": "push", "head": "335e331", "check": "pr-status", "branch": "zadanie-10.5-dzwiek-systemowy", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:22 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "secrets", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "weakenings", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "dependencies", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "dependency-audit", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "tests", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "hygiene", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "dead-entry", "decision": "clean", "files": 187}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "sast", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "lint-types", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "intent", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:22", "point": "commit", "head": "262370c", "check": "red-team", "decision": "clean", "files": 16}
+{"ts": "2026-11-04T09:30:34", "point": "push", "head": "4ca311d", "check": "pr-status", "branch": "zadanie-10.6-kontroler-spotkania", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:30 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "dependency-audit", "decision": "clean", "files": 190}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "dead-entry", "decision": "clean", "files": 190}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:43", "point": "commit", "head": "4ca311d", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:30:49", "point": "push", "head": "aac17d8", "check": "pr-status", "branch": "zadanie-10.6-kontroler-spotkania", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:30 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "secrets", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "weakenings", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "dependencies", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "dependency-audit", "decision": "clean", "files": 190}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "tests", "rule": "skip-with-reason", "file": "apps/voice-asystent/tests/bundle.rs", "line": 153, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga builda release z Metal (kilka minut) — uruchamiane z --includ`", "fingerprint": "98ece743f73b", "decision": "warn"}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "tests", "rule": "skip-with-reason", "file": "crates/core/tests/meeting_real.rs", "line": 30, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga mikrofonu, wyjścia audio, zgody na dźwięk systemowy, modelu i`", "fingerprint": "ba4ccd59d6e4", "decision": "warn"}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "tests", "rule": "skip-with-reason", "file": "crates/system-audio/tests/process_tap.rs", "line": 35, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga sesji graficznej, wyjścia audio i zgody na nagrywanie dźwięku`", "fingerprint": "14de3569a4f4", "decision": "warn"}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "hygiene", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "dead-entry", "decision": "clean", "files": 190}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "sast", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "lint-types", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "intent", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:45", "point": "commit", "head": "e7afc09", "check": "red-team", "decision": "clean", "files": 19}
+{"ts": "2026-11-04T09:44:55", "point": "push", "head": "a05ac18", "check": "pr-status", "branch": "zadanie-10.7-menu-spotkania", "state": "success", "description": "3 warn.: 11 checks · 1 commit · 2026-11-04 09:44 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "secrets", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "weakenings", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "dependencies", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "dependency-audit", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "tests", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "hygiene", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "dead-entry", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "sast", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "lint-types", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "intent", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:45:04", "point": "commit", "head": "a05ac18", "check": "red-team", "decision": "clean", "files": 1}
+{"ts": "2026-11-04T09:47:22", "point": "push", "head": "8fe47c6", "check": "pr-status", "branch": "zadanie-10.7-menu-spotkania", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:45 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "secrets", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "weakenings", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "dependencies", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "dependency-audit", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "tests", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "hygiene", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "dead-entry", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "sast", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "lint-types", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "intent", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:48", "point": "commit", "head": "d41e56f", "check": "red-team", "decision": "clean", "files": 5}
+{"ts": "2026-11-04T09:48:54", "point": "push", "head": "277fe30", "check": "pr-status", "branch": "zadanie-faza-10-stan", "state": "success", "description": "clean: 11 checks · 1 commit · 2026-11-04 09:48 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "secrets", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "weakenings", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "dependencies", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "dependency-audit", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "tests", "rule": "code-without-test", "file": "apps/voice-asystent/src/login_item.rs", "line": null, "message": "3 code file(s) without any test file in the commit: apps/voice-asystent/src/login_item.rs, apps/voice-asystent/src/main.rs, apps/voice-asystent/src/messages.rs — a refactor without a behaviour change is fine; new logic is not", "fingerprint": "2d2057b81223", "decision": "warn"}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "hygiene", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "dead-entry", "decision": "clean", "files": 191}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "sast", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "lint-types", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "intent", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:50", "point": "commit", "head": "8f55394", "check": "red-team", "decision": "clean", "files": 4}
+{"ts": "2026-11-04T09:57:56", "point": "push", "head": "5a0da64", "check": "pr-status", "branch": "zadanie-poprawka-use-default", "state": "success", "description": "1 warn.: 11 checks · 1 commit · 2026-11-04 09:57 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "secrets", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "weakenings", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "dependencies", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "dependency-audit", "decision": "clean", "files": 194}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "tests", "rule": "skip-with-reason", "file": "crates/core/tests/meeting_model.rs", "line": 54, "message": "test disabled with a reason — remember the suite is green without it: `#[ignore = \"wymaga pobranego modelu (va-dev model-download) i GPU Metal\"]` (+1 more in the file)", "fingerprint": "70f48a00af8a", "decision": "warn"}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "hygiene", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "dead-entry", "decision": "clean", "files": 194}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "sast", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "lint-types", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "intent", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:25", "point": "commit", "head": "1184230", "check": "red-team", "decision": "clean", "files": 11}
+{"ts": "2026-11-04T10:32:31", "point": "push", "head": "f5d1c1a", "check": "pr-status", "branch": "zadanie-poprawka-kolejnosc-mowcow", "state": "success", "description": "1 warn.: 11 checks · 1 commit · 2026-11-04 10:32 · OSV audit 2026-11-04 clean", "commits": 1, "decision": "posted"}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "secrets", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "weakenings", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "dependencies", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "dependency-audit", "decision": "clean", "files": 194}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "tests", "rule": "code-without-test", "file": "apps/voice-asystent/src/app.rs", "line": null, "message": "3 code file(s) without any test file in the commit: apps/voice-asystent/src/app.rs, apps/voice-asystent/src/click.rs, apps/voice-asystent/src/tray_menu.rs — a refactor without a behaviour change is fine; new logic is not", "fingerprint": "2e7820573d7b", "decision": "warn"}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "hygiene", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "dead-entry", "decision": "clean", "files": 194}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "sast", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "lint-types", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "intent", "decision": "clean", "files": 8}
+{"ts": "2026-11-04T12:12:46", "point": "commit", "head": "b81078e", "check": "red-team", "decision": "clean", "files": 8}
