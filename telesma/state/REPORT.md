@@ -40,8 +40,6 @@ forever and grows in the prompt of every session.
 
 **Regression after Phases 7, 8 i 9 (2026-10-13) — GREEN:** na main (3eaedc8) `cargo test --workspace -- --include-ignored` 211/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; testy ręczne ⛔ 7.7, 8.5, 9.10 właściciela OK (2026-10-13). Bez zmian liczby testów od przebiegu po 9.11. Tagi `telesma/phase-7`, `telesma/phase-8`, `telesma/phase-9`.
 
-**Regression after Phase 6 (2026-10-10) — GREEN:** na main (1ae141a) `cargo test --workspace -- --include-ignored` 126/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; test ręczny 6.4 właściciela (2026-10-09) bez uwag. Bez zmian liczby testów od przebiegu po 6.3. Tag `telesma/phase-6`.
-
 | Metric | Value |
 |---------|---------|
 | Total tests | 260 |
@@ -61,16 +59,9 @@ forever and grows in the prompt of every session.
 | 10.4 `va-audio::StreamNormalizer` + `va-core::spool` (SpoolWriter 0600 `meeting-*.pcm`, SpooledAudio usuwany przy zniszczeniu, `remove_leftovers`) + test 10.4 | ✅ PR #73 | 213/0; mutacje (0600 → 0644, brak usuwania po odczycie) czerwone | 1 | 8b40d57 | 2026-11-04 |
 | 10.2 `Transcript.segments` (ms, po filtrach VA-STT-3) + `compress_pauses_mapped`/`TimeMap` (skrócona oś → oryginalna, `shifted`) + test 10.2 | ✅ PR #72 | 207/0; prawdziwy model: segmenty speech_pl rosnące w granicach nagrania; mutacja przeliczenia setnych → ms czerwona | 1 | 753f7d1 | 2026-11-04 |
 | 10.1 `max_meeting_secs` (7200) i `meeting_speaker_labels` (true) w `va-config`, README + test 10.1 | ✅ PR #71 | 206/0; mutacja domyślnego limitu 7200 → 600 czerwona | 1 | 067a75d | 2026-11-04 |
-| 5.Z1.1 `Dot::Yellow` w Transcribing (systemowy żółty 255/204/0), szare po zapisie do schowka / ciszy / błędzie; testy kolejności zdarzeń i Startu w trakcie transkrypcji (atrapa STT z bramką) + test 5.Z1.1 | ✅ PR #67 | 203/0 + 14 ignored; CI zielone; 3 mutacje czerwone | 1 | 206955a | 2026-10-13 |
 | 7.7 Test ręczny właściciela (historia, pauzy, limit) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
 | 8.5 Test ręczny właściciela (podmenu Model, usuwanie, pobieranie, model_path) | ✅ | ręcznie OK | 1 | — | 2026-10-13 |
 | 9.10 Test ręczny właściciela (Ustawienia, autostart, logi, q5_0, wydanie z CI v0.7.0) | ✅ | ręcznie OK (powiadomienie widoczne po odblokowaniu w macOS) | 1 | — | 2026-10-13 |
-| 9.4 `DecodingSettings`/`DECODING` (suppress blank/nst, temperatura 0 bez fallbacku, no_context, progi no-speech i pewności segmentu 0,3), filtr segmentów, `SpeechToText::set_language`; fixtures `noise_only.wav`, `speech_pl_mixed.wav` + test 9.4 | ✅ PR #52 | 176/0 + 13 ignored; prawdziwy model: szum → pusto, mieszane PL → polski, PL/EN/40 s pauzy bez regresji; mutacja progu pewności 0,3 → 0 czerwona | 1 | bf3371a | 2026-10-10 |
-| 9.3 Sygnał gotowe: `ControllerEvent::TranscriptReady(TranscriptPreview)` (60 znaków, Debug bez treści) po zapisie, pola `notify_on_transcript`/`sound_on_transcript`, `signal_ready` (powiadomienie + `afplay Glass.aiff`), log zdarzeń tylko z rodzajem; `AppSettings` dla `app::run` + test 9.3 | ✅ PR #51 | 174/0 + 10 ignored; mutacja (sygnał po pustej transkrypcji) czerwona; 1 poprawka CI (wyścig w atrapie z 7.3) | 2 | 5cae27d | 2026-10-10 |
-| 9.1 `logging::prune_old_logs` (7 dni, tylko `voice-asystent.log.*`) przy starcie + „Pokaż logi” w menu (`open <katalog>`) + test 9.1 | ✅ PR #49 | 164/0 + 10 ignored; mutacja progu 7 → 9 dni czerwona | 1 | fc508c3 | 2026-10-10 |
-| 9.2 Znacznik `<model>.verified` (rozmiar, mtime ns, sha256) zapisywany po weryfikacji w `check()` i `download()`, pomijanie sumy przy zgodności, `remove()` kasuje znacznik + test 9.2 | ✅ PR #50 | 167/0 + 10 ignored; prawdziwy model: start --self-check 3,38 s → 0,04 s; mutacja (ignorowanie daty) czerwona | 1 | 650e715 | 2026-10-10 |
-| 8.4 „Usuń model…” z potwierdzeniem w menu (RemovePrompt), usunięcie = zamknięcie kontrolera + `ModelStore::remove` + stan Missing, „Pobierz ponownie” → pobieranie → nowy kontroler; README/RUNBOOK + test 8.4 | ✅ PR #45 | 161/0 + 10 ignored; mutacja (usunięcie bez potwierdzenia) czerwona | 1 | c7cd4d6 | 2026-10-10 |
-| 7.6 Podmenu „Historia” (history_menu.rs: etykiety `HH:MM · tekst…`, id → `CopyHistoryEntry`/`ClearHistory`; TrayMenu::show_history, wpięcie w pętli tao), README/RUNBOOK + test 7.6 | ✅ PR #38 | 146/0 + 10 ignored; mutacja odwrócenia kolejności czerwona; aplikacja z podmenu startuje lokalnie | 1 | 6627cc3 | 2026-10-10 |
 
 ## Change history
 
@@ -139,42 +130,6 @@ The change's source file lives in telesma/changes/processed/<file-name>.md (audi
 - **New rework phase**: Phase 5.Z1 z 2 zadaniami (5.Z1.1 + test, ⛔ 5.Z1.2)
 - **New tasks**: none
 
-
-### 2026-10-10 2026-10-10-specky-PV3NVAC.md
-- **Kind**: feature
-- **Priority**: normal
-- **Affects**: general (VA-OPS-1; logging.rs, tray_menu.rs, main.rs)
-- **Summary**: „Pokaż logi” w menu i usuwanie logów starszych niż 7 dni przy starcie.
-- **Modified pending tasks**: none
-- **New rework phase**: none
-- **New tasks**: 9.1, 9.10 (Faza 9)
-
-### 2026-10-10 2026-10-10-specky-F01XRR5.md
-- **Kind**: feature
-- **Priority**: normal
-- **Affects**: general (VA-STT-3; crates/stt, fixtures)
-- **Summary**: Parametry Whispera przeciw halucynacjom i zmiana języka w działającym modelu; szum daje pusty wynik.
-- **Modified pending tasks**: none
-- **New rework phase**: none
-- **New tasks**: 9.4, 9.10 (Faza 9)
-
-### 2026-10-10 2026-10-10-specky-1JBKCWR.md
-- **Kind**: feature
-- **Priority**: normal
-- **Affects**: general (VA-MODEL-4; crates/model, va-config, startup.rs, model_menu.rs, app.rs)
-- **Summary**: Wariant skwantyzowany q5_0 (~0,6 GB) do wyboru w podmenu „Model” z pobieraniem i przeładowaniem bez restartu; VA-STT-1 bez zmian.
-- **Modified pending tasks**: none
-- **New rework phase**: none
-- **New tasks**: 9.7, 9.8, 9.10 (Faza 9)
-
-### 2026-10-10 2026-10-10-specky-47S54D5.md
-- **Kind**: feature
-- **Priority**: normal
-- **Affects**: general (VA-CI-1; .github/workflows/release.yml, scripts/)
-- **Summary**: Tag v* buduje .dmg w CI i publikuje wydanie GitHub z opisem z tagu; obraz < 20 MB bez modelu.
-- **Modified pending tasks**: none
-- **New rework phase**: none
-- **New tasks**: 9.9, 9.10 (Faza 9)
 
 ### 2026-10-10 2026-10-10-specky-NFWQ1DA.md
 - **Kind**: feature
@@ -253,8 +208,6 @@ below the table with the prefix `> ⚠ Info:` so the user can see what happened 
 - [2026-10-13] Blokada z poprzedniej sesji rozwiązana: właściciel dopisał cargo (test, clippy, fmt, check, build) i `gh pr merge` do allowlisty; telesma/state/BLOCKED.md usunięty.
 - [2026-10-13] Start sesji: każde wywołanie `cargo` (także `cargo --version`, z `export PATH` i pełną ścieżką `~/.cargo/bin/cargo`) zwraca „requires approval” od sędziego uprawnień; w trybie bez nadzoru nie ma kto zatwierdzić. Regresja Faz 7–9 i 5.Z1.1 wstrzymane — TELESMA BLOCKED (telesma/state/BLOCKED.md).
 - [2026-10-13] Zadania 7.7/9.10: powiadomienia (gotowa transkrypcja, limit) nie pojawiały się, także w Centrum powiadomień — przyczyna: powiadomienia zablokowane w ustawieniach macOS u właściciela; po odblokowaniu widoczne. Zgłoszenie błędu (telesma/changes/2026-10-13-powiadomienia-niewidoczne.md) wycofane przed przetworzeniem. Powiadomienia są podpisane jako VoiceAsystent (osobna pozycja w Ustawieniach → Powiadomienia, potwierdzone zrzutem właściciela).
-- [2026-10-10] Task 7.4: ostrzeżenie kontroli `testy/kod-bez-testu` (app.rs, main.rs, messages.rs) — testy są w `#[cfg(test)] mod tests` tych samych plików (znana pułapka), nie do naprawy przenoszeniem. Powiadomienie systemowe przy limicie niezweryfikowane wizualnie — test ręczny 7.7 (limit 20 s w config.toml).
-- [2026-10-10] Task 7.3: zmiana testów `partial_file_keeps_defaults_for_missing_fields` (va-config) i `config_without_file_prints_defaults` (va-dev) — oczekiwany domyślny limit 300 → 600 s. Powód: kryterium 01M4K06AY61DWRJ5R2DFNDJD6W (VA-REC-6, telesma/changes/processed/2026-10-10-specky-9VFYND0.md) ustala domyślne 600 s. Spóźniony sygnał limitu z poprzedniego nagrania jest odrzucany po numerze nagrania (test `stale_limit_signal_from_previous_recording_is_ignored`).
 - [2026-10-10] Task 7.2: zmiana testu `transcribe_keeps_both_sentences_around_a_long_pause_without_extra_phrases` — słowo kluczowe «biurze» → «jutro»: syntezator `say` (Zosia) wymawia „biurze” tak, że Whisper daje „Białże”; kryterium 01M4K06AR8TJXY24K05X0MNBJC (VA-REC-5, telesma/changes/processed/2026-10-10-specky-1BY4F4Z.md) wymaga obu zdań bez dodatkowych fraz, nie rozpoznania konkretnego słowa. Wynik prawdziwej transkrypcji: „Dzisiaj jest piękna pogoda, idę na spacer do parku. Jutro rano mam spotkanie w Białże o 9.00.” — 17 słów, bez halucynacji w 40 s pauzy.
 - [2026-10-10] Start Fazy 7: pełny suite po przetworzeniu telesma/changes/ nie powtórzony — kod (crates/apps/scripts/Cargo) bajt w bajt ten sam, co w regresji Fazy 6 z 2026-10-10 (126/0); zmiany dotyczyły tylko telesma/, docs/ i telesma/changes/.
 - [2026-10-10] Task 9.11: pełny suite po 9.9 dał 209/1 — `model_loads_once_on_metal_and_transcribes_polish_and_english` (VA-STT-1) padał 4/4 przy całym pliku `whisper_model.rs`, sam przechodził. Przyczyna: subskrybent `tracing` przypięty do wątku testu, a logi whisper.cpp idą przez globalny hook; równoległe testy modelu dodane w 9.4 i 9.7 gubiły linie o Metalu w buforze (asercje w liniach 85 i 93). Kod aplikacji bez zmian; test przeniesiony do osobnego pliku (osobny proces), asercje bez zmian. Regresja izolacji testów — powstała w 9.4, niewidoczna, bo przebiegi zadań uruchamiały tylko testy zadania. Ostrzeżenie `testy/mniej-asercji` (whisper_model.rs 18 → 10) — asercje nie usunięte, tylko przeniesione do whisper_metal.rs razem z testem; `skip-z-powodem` jak wcześniej (model i GPU).
