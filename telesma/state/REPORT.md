@@ -40,13 +40,15 @@ forever and grows in the prompt of every session.
 
 **Regression after Phases 7, 8 i 9 (2026-10-13) — GREEN:** na main (3eaedc8) `cargo test --workspace -- --include-ignored` 211/0, clippy `-D warnings` czysto, `cargo fmt --check` czysto; testy ręczne ⛔ 7.7, 8.5, 9.10 właściciela OK (2026-10-13). Bez zmian liczby testów od przebiegu po 9.11. Tagi `telesma/phase-7`, `telesma/phase-8`, `telesma/phase-9`.
 
+**Regression after Phase 10.Z1 (2026-11-25) — GREEN:** `cargo test --workspace -- --include-ignored && cargo clippy --workspace --all-targets -- -D warnings && cargo fmt --all --check` — 266 passed, 0 failed, 0 skipped (139 s). Tag `telesma/phase-10.Z1`.
+
 | Metric | Value |
 |---------|---------|
-| Total tests | 260 |
-| Pass | 260 |
+| Total tests | 266 |
+| Pass | 266 |
 | Fail | 0 |
-| Skip | 0 (z --include-ignored) |
-| Last run | 2026-11-04 (pełny suite przed testem ręcznym 10.8, kod = main d41e56f) |
+| Skip | 0 |
+| Last run | 2026-11-25 15:08 |
 
 ## Task history
 
