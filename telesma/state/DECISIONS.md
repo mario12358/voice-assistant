@@ -354,3 +354,9 @@ It is a changelog for humans, to remember "what we agreed on and why".
 - Właściciel (test Meet): kolejność wypowiedzi poprawna; brak w menu standardowego nagrania solo. Propozycja VA-UI-3 w Specky, zaakceptowana na wyraźną prośbę („zaakceptuj”).
 - Jedna pozycja przełączana stanem (Start / Zakończ / nieaktywna), logika wspólna z kliknięciem kółka (`click::toggle_command`).
 - Pierwsza linia „Rozmówcy: Dziękuje za oglądanie!” — halucynacja Whispera na krótkim dźwięku bez mowy; poprawka zaproponowana właścicielowi, czeka na decyzję.
+
+## 2026-11-25 21:14 — Zgoda na wersję v0.9.0
+**Kind**: operations
+**Question/context**: Właściciel odpowiedział „tak” na propozycję wydania v0.9.0 (tryb spotkania, żółte kółko, „Nagrywaj notatkę”).
+**Outcome**: Uzgodniliśmy wersję v0.9.0 (minor) tworzona na main zaraz po scaleniu PR #84 — właściciel zdecydował, że NIE czekamy na testy ręczne ⛔ 10.8 i ⛔ 5.Z1.2 (zostają do zrobienia po wydaniu). Dziś nie da się jej utworzyć — PR #84 stoi na błędnym polu `Linter/formatter` w `## Tests`, a drzewo ma niezacommitowaną poprawkę testu.
+**Impact**: wydanie v0.9.0, PR #84, zadania 10.8 i 5.Z1.2

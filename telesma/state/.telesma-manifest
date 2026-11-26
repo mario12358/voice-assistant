@@ -47,7 +47,6 @@ terraform.md 1516477897-6584
 typescript.md 421654300-2624
 vue.md 1649194429-5057
 wpf.md 202626662-9036
-TEST_SCENARIOS_TEMPLATE.md 2367254299-3534
 checks/dead-entry/CHECK.md 4026555943-5877
 checks/dependencies/CHECK.md 1807362978-1977
 checks/dependency-audit/CHECK.md 218397546-1725
@@ -64,7 +63,6 @@ checks/red-team/run.py 868777145-9602
 checks/red-team/CHECK.md 1421652077-4004
 checks/secrets/run.py 2751153069-16467
 checks/secrets/CHECK.md 4060878613-2492
-checks/telesma-checks.py 652421797-96884
 checks/tests/run.py 1952479280-24925
 checks/tests/CHECK.md 2463909287-6777
 checks/dependencies/run.py 3716306365-20586
@@ -76,3 +74,5 @@ checks/intent/run.py 2402530469-16837
 checks/sast/run.py 926377655-27035
 checks/sast/CHECK.md 3033300724-9077
 checks/weakenings/run.py 1947940171-6881
+TEST_SCENARIOS_TEMPLATE.md 4133546461-4965
+checks/telesma-checks.py 4270161751-99018

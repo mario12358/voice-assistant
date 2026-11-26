@@ -34,7 +34,7 @@
   <!-- not at the end of the phase). E.g. tests of completed modules. Small projects: full suite. -->
   <!-- "none" = skip (task tests only + full suite after the phase).                      -->
 - **Full suite after**: every phase
-- **Linter/formatter**: `cargo clippy --workspace --all-targets -- -D warnings` · `cargo fmt --all --check`
+- **Linter/formatter**: `cargo clippy --workspace --all-targets -- -D warnings && cargo fmt --all --check`
 - **Typecheck command**: cargo check --workspace --all-targets
   <!-- Typechecker, e.g. `mypy src`, `pyright`, `npx tsc --noEmit`. The lint-types check (## Checks) -->
   <!-- runs the linter on changed files at commit, and the typechecker at phase end.               -->
