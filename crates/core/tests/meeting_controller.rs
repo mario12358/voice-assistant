@@ -283,6 +283,10 @@ fn denied_system_audio_permission_keeps_idle_and_reports() {
     meeting.handle.send(Command::Start);
     let after =
         meeting.events_until(|event| *event == ControllerEvent::StateChanged(State::Recording));
+    // `StateChanged(Recording)` wychodzi przed startem nagrywarki; Stop i powrót do Idle
+    // gwarantują, że wątek kontrolera wykonał już start (bez tego wyścig na CI).
+    meeting.handle.send(Command::Stop);
+    meeting.events_until(|event| *event == ControllerEvent::StateChanged(State::Idle));
 
     assert!(
         !events.contains(&ControllerEvent::StateChanged(State::Recording)),
